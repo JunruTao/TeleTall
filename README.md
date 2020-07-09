@@ -15,7 +15,9 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
 * **gcc/g++** >= 5.4
   * Linux: gcc / g++ is installed by default on most Linux distros
   * Mac: same deal as make - [install Xcode command line tools](https://developer.apple.com/xcode/features/)
+      > This program was not yet tested building on Mac OS, be sure you follow the xcode instructions, and find the missing packages such as thread and SLD.h
   * Windows: recommend using [MinGW](http://www.mingw.org/)
+      >  For windows users, make sure after download, using <ins>*MinGW Installation Manager*</ins> to install <ins>*mingw32-pthread-w32-dev*</ins> package or find c++ standard library of threading for MinGW from their websites!
 ***
 ### Basic Build Instructions
 
@@ -28,10 +30,12 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
 **<strong><em>! Important:</strong></em>** 
   * <ins>Because the environment that this project was developed was based in Window OS, therefore if you are building on Lunix System, Plese make sure you do the following things with the **source code**:</ins>
 
-  | list |         Needed to Change              |    to  | Changed           |
-  | ---  | ------------------------------------- | ---    | ----              |
+  | list |     Code Needed to Adjust              |    to  | Changed           |
+  | :---  | ------------------------------------- | ---    | ----              |
   |  1.  | Change all the `#include <SDL2/SDL.h>`| &rarr; | `#include <SDL.h>`|
-  |  2.  | In<ins>`CMakeLists.txt`</ins> delete last few **-flags** in the last line | &rarr; | <s>`-lmingw32 -lSDL2main -lSDL2`</s> |
+  | 2.*  | You might have to change `#include <pthread.h>` | &rarr; | `#include <thread>` |
+  |  3.  | In<ins>`CMakeLists.txt`</ins> delete last few **-flags** in the last line | &rarr; | <s>`-lmingw32 -lSDL2main -lSDL2`</s> |
+ 
 
 
 * **Windows:**
