@@ -82,19 +82,18 @@ First time trying to build the project with cmake and MinGW-make compiler, inclu
 
  * OLD VERSION
 
-|   |
-| :---   |
-|<sub><s>`cmake_minimum_required(VERSION 3.7)`</s></sub>|
-|<sub><s> `add_definitions(-std=c++17)`</s></sub> |
-|<sub><s>`set(CXX_FLAGS "-Wall")`</s></sub> |
-|<sub><s>`set(CMAKE_CXX_FLAGS, "${CXX_FLAGS}")`</s></sub> |
-|<sub><s>`project(SDL2Test)`</s></sub> |
-|<sub><s>`set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")`</s></sub> |
-|<sub><s>`find_package(SDL2 REQUIRED)`</s></sub> |
-|<sub><s>`include_directories(${SDL2_INCLUDE_DIRS} source header)`</s></sub> |
-|<sub><s>`add_executable(game source/main.cpp)`</s></sub> |
-|<sub><s>`string(STRIP ${SDL2_LIBRARIES} SDL2_LIBRARIES)`</s> </sub>|
-|<sub><s>`target_link_libraries(game ${SDL2_LIBRARIES} -lmingw32 -lSDL2main -lSDL2)`</s></sub> |
+
+<sub><s>`cmake_minimum_required(VERSION 3.7)`</s></sub>
+<sub><s> `add_definitions(-std=c++17)`</s></sub> 
+<sub><s>`set(CXX_FLAGS "-Wall")`</s></sub> 
+<sub><s>`set(CMAKE_CXX_FLAGS, "${CXX_FLAGS}")`</s></sub> 
+<sub><s>`project(SDL2Test)`</s></sub> 
+<sub><s>`set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")`</s></sub> 
+<sub><s>`find_package(SDL2 REQUIRED)`</s></sub> 
+<sub><s>`include_directories(${SDL2_INCLUDE_DIRS} source header)`</s></sub> 
+<sub><s>`add_executable(game source/main.cpp)`</s></sub> 
+<sub><s>`string(STRIP ${SDL2_LIBRARIES} SDL2_LIBRARIES)`</s> </sub>
+<sub><s>`target_link_libraries(game ${SDL2_LIBRARIES} -lmingw32 -lSDL2main -lSDL2)`</s></sub> 
 
  * NEW VERSION
 ```cmake
