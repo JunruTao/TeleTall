@@ -1,9 +1,9 @@
-# My Game (Not yet titled)
+# :radio_button: My Game (Not yet titled)
 
 This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](https://www.udacity.com/course/c-plus-plus-nanodegree--nd213). The Capstone Project is a chance to integrate what I've learned throughout this program. 
 ***
 
-### Dependencies for Running Locally
+### :red_circle: Dependencies for Running Locally
 * **cmake** >= 3.7
   * All OSes: [click here for installation instructions](https://cmake.org/install/)
 * **make** >= 4.1 (Linux, Mac), 3.81 (Windows)
@@ -20,7 +20,7 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
   * Windows: recommend using [MinGW](http://www.mingw.org/)
       >  For windows users, make sure after download, using <ins>*MinGW Installation Manager*</ins> to install <ins>*mingw32-pthread-w32-dev*</ins> package or find c++ standard library of threading for MinGW from their websites!
 ***
-### Basic Build Instructions
+### :large_blue_circle: Basic Build Instructions
 
 * **Linux:**
   1. Clone this repo.
@@ -43,25 +43,27 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
   4. Build(make): `mingw32-make` 
   5. Run it: `./${ProjectName}`
 ***
-### Game Play and Usage
+### :white_circle:Game Play and Usage
 
 ---JT 2020 - text = NULL---
 
 ***
-### License
+### :white_circle:License
 
 ---JT 2020 - text = NULL---
 
 ***
 
-### Release
+### :white_circle:Release
 
 None
 
 
 ***
 
-## Production Logs:
+## :black_circle:Production Logs:
+**<p style="text-align: center;"> :radio_button:  </p>**
+
 * #### DAY 1 { <ins>7/9/2020</ins> } : Prepare SDL on windows
 First time trying to build the project with cmake and MinGW-make compiler, including and linking the SLD headers and libraries. There was some interesting issues with building SLD on windows. 
  |Findings and Solutions |
@@ -76,6 +78,9 @@ First time trying to build the project with cmake and MinGW-make compiler, inclu
  | &rarr; <sup>**5. 1**</sup> The first problem: if using `SDL_Delay(1000);`, In the Initiation function `init()` => `SDL_Init(SDL_INIT_VIDEO | ` <ins>**`SDL_INIT_TIMER`** </ins> `)` timer's init flag must added. |
  | &rarr; <sup>**5. 2**</sup> Secondly <s>`if (!ContextInit())`</s> then <s>{ `if(!LoadMedia){..}else{..}` }</s> this logic won't work, somehow it will be skipped by the main and quit the program real fast if there something when wrong in the initiation. the correct way is "run if returns true then else" like this: `if ( ContextInit() ){ if(LoadMedia){..<main features>..}else{..} }else{..}` will do just fine. |
  | &rarr; <sup>**5. 3**</sup> The last one is a trick one as well, which is the media loading. The main reason it quits: <ins>*The Bitmap file must be placed in the **same directory** where the `.exe` or your IDE's project is located*</ins>. Reference solution can be found [here](https://stackoverflow.com/questions/38012690/cant-load-bmp-file-with-sdl-loadbmp-in-codeblocks). And then everything is running just fine.
+
+**<p style="text-align: center;"> :radio_button:  </p>**
+**<p style="text-align: center;"> - - -  </p>**
 
  * #### DAY 2 { <ins>M/D/2020</ins> } : Prepare SDL_image on Windows
  [3:07 AM] Some late night updates with loading `SDL_image.h`header/ `-lSDL2_image`lib. The package should be found automatically by the file `FindSDL2_image.cmake` under `${ProjectDir}/cmake/`.But still it took me a long time figuring out how to link the library, first thing I did was find the proper cmake list settup:
