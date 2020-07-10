@@ -1,4 +1,4 @@
-# :radio_button: My Game (Not yet titled)
+# :radio_button: TeleTall 
 
 This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](https://www.udacity.com/course/c-plus-plus-nanodegree--nd213). The Capstone Project is a chance to integrate what I've learned throughout this program. 
 ***
@@ -43,26 +43,28 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
   4. Build(make): `mingw32-make` 
   5. Run it: `./${ProjectName}`
 ***
-### :white_circle:Game Play and Usage
+### :white_circle:Program Guide
 
----JT 2020 - text = NULL---
+...
 
 ***
 ### :white_circle:License
 
----JT 2020 - text = NULL---
+...
 
 ***
 
 ### :white_circle:Release
 
-None
+...
 
 
 ***
 
 ## :black_circle:Production Logs:
-**<p style="text-align: center;"> :radio_button:  </p>**
+
+
+:radio_button: &larr;- - - - :bookmark_tabs: </p>
 
 * #### DAY 1 { <ins>7/9/2020</ins> } : Prepare SDL on windows
 First time trying to build the project with cmake and MinGW-make compiler, including and linking the SLD headers and libraries. There was some interesting issues with building SLD on windows. 
@@ -79,11 +81,16 @@ First time trying to build the project with cmake and MinGW-make compiler, inclu
  | &rarr; <sup>**5. 2**</sup> Secondly <s>`if (!ContextInit())`</s> then <s>{ `if(!LoadMedia){..}else{..}` }</s> this logic won't work, somehow it will be skipped by the main and quit the program real fast if there something when wrong in the initiation. the correct way is "run if returns true then else" like this: `if ( ContextInit() ){ if(LoadMedia){..<main features>..}else{..} }else{..}` will do just fine. |
  | &rarr; <sup>**5. 3**</sup> The last one is a trick one as well, which is the media loading. The main reason it quits: <ins>*The Bitmap file must be placed in the **same directory** where the `.exe` or your IDE's project is located*</ins>. Reference solution can be found [here](https://stackoverflow.com/questions/38012690/cant-load-bmp-file-with-sdl-loadbmp-in-codeblocks). And then everything is running just fine.
 
-**<p style="text-align: center;"> :radio_button:  </p>**
-**<p style="text-align: center;"> - - -  </p>**
 
- * #### DAY 2 { <ins>M/D/2020</ins> } : Prepare SDL_image on Windows
- [3:07 AM] Some late night updates with loading `SDL_image.h`header/ `-lSDL2_image`lib. The package should be found automatically by the file `FindSDL2_image.cmake` under `${ProjectDir}/cmake/`.But still it took me a long time figuring out how to link the library, first thing I did was find the proper cmake list settup:
+
+---
+:radio_button: &larr;- - - - :bookmark_tabs: 
+
+
+
+
+ * #### DAY 2 { <ins>7/10/2020</ins> } : Prepare SDL_image on Windows
+ **[3:07 AM]** Some late night updates with loading `SDL_image.h`header/ `-lSDL2_image`lib. The package should be found automatically by the file `FindSDL2_image.cmake` under `${ProjectDir}/cmake/`.But still it took me a long time figuring out how to link the library, first thing I did was find the proper cmake list settup:
 
  * OLD VERSION
 
@@ -119,7 +126,39 @@ TARGET_LINK_LIBRARIES(game ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES} -lmingw32 -
 where I have marked new in this list are modifed arguments. However, even though the linking status from cmake says the package was found, however the compiler still telling undefined-functions(not linked). I've tried different ways this however magically worked: 
 * **Extract** the `i686-w64-mingw32` **64bit*** version **instead of 32bit** from the dev-kit package `SDL2_image-devel-2.0.5-mingw.tar.gz` place under the MinGW directory.
 
-Now the compilation is successful, and using a example code I successfully loaded a `.png` file into the program using this SDL_image library.
+Now the compilation is successful, and using a example code I successfully loaded a `.png` file into the program using this SDL_image library.\
 
-#### 
+---
+:radio_button: &larr;- - - - :bookmark_tabs: 
+* #### DAY 3 { <ins>7/11/2020</ins> } : Experiment with SDL2, Events and Drawings
 
+**[12:00 AM]** More Tests:
+  * Played around with Events: rendering a bitmap on the screen and using &larr; &uarr; &darr; &rarr; to move around. Also, combining mouse button events to use mouse right mouse button to drag the object around. 
+    > :memo: source code &rarr; repo/.oldtestcode / 02...cpp
+    > ...
+  * Drawing static lines using `SDL_RenderDrawLine()/..Lines()` function. This script was actually found on the SDL2's wiki
+    > :memo: source code &rarr; repo/.oldtestcode / 03...cpp
+    > ...
+  * Combining both tests using mouse click and drag to draw a line on the screen.This script only does: click and hold, draw the line, then release the mouse, the line vanishes. However it is already a interative app now.
+    > :memo: source code &rarr; repo/.oldtestcode / 04...cpp
+    > ...
+  * I decided to play with these all combined making a CAD like environment where you can draw nurbs and polylines. So I made a new class called `ZCurve` which at the beginning contains 4 points Zig-zagged like a `Z`. Then in `ZCurve -> DrawCurve()` Function, there is a subdiv loop making the curve into small smoothed segments using [Catmull–Clark Subdivision algorithm](https://en.wikipedia.org/wiki/Catmull%E2%80%93Clark_subdivision_surface). I then as long as the `while` loop has 5-20 milliseconds delay, the CUP and GPU won't be really overwhelmed(no delays will burn the GPU, you'll see). In order to make curves stay on the screen, I made a `vector<ZCurve>` container at top level. Here comes the hardest part, it crashed a lot because the loop is too fast so that there are so many ZCurves flowing into this container and overflew the stack. The solution I made was using 2 booleans at the top: 1.`bool hold;` 2.`bool creation;` to lock the real-time curve to stop creating when mouse button is up.(there should be a better way however I have not yet found it). The final app is like this:
+
+    > - Build Test: 
+    >  <img src=".markdown.images/20200710_md_img2.gif"/>
+
+ you can use key `1` and `3` to toggle around z-polyline or smoothed nurbs curve. 
+
+* :mega: **Project direction:**
+Personally I really admire node-based softwares like HoudiniFX, Unreal, Maya's node editor, Grasshopper for Rhino3D etc. I am planning to make an app which has a node editor where you can place and connect nodes. these nodes' connections will run as seperate threads and do simple calculations such as `+`,`-` and `*` based on different input nodes. 
+
+* :mega: **Project Naming:** 
+  > . . . .
+  > ## :telescope: **_" Tele.Tall. "_** 
+  > **_<ins>Teleportational Technology of Anti-Linearity Locator</ins>_** 
+  > and nevermind, my name is Tao, that's all
+
+  For this project, my strategy is building the structure very carefully. Make things more generic and abstract(`virtual`&`Template` classes) as possible. So every stages should be tested and use small prototypes to debug the logic. As the same time, enhance the performance using memory management and concurrencies.
+---
+:radio_button: &larr;- - - - :bookmark_tabs: 
+* #### DAY 4 { <ins>7/D/2020</ins> } : Experiment with SDL2, Events and Drawings
