@@ -2,6 +2,7 @@
 
 This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](https://www.udacity.com/course/c-plus-plus-nanodegree--nd213). The Capstone Project is a chance to integrate what I've learned throughout this program. 
 ***
+
 ### Dependencies for Running Locally
 * **cmake** >= 3.7
   * All OSes: [click here for installation instructions](https://cmake.org/install/)
@@ -34,7 +35,7 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
   | :---  | ------------------------------------- | ---    | ----              |
   |  1.  | Change all the `#include <SDL2/SDL.h>`| &rarr; | `#include <SDL.h>`|
   | 2.*  | You might have to change `#include <pthread.h>` | &rarr; | `#include <thread>` |
-  |  3.  | In<ins>`CMakeLists.txt`</ins> delete last few **-flags** in the last line | &rarr; | <s>`-lmingw32 -lSDL2main -lSDL2`</s> | 
+  |  3.  | In<ins>`CMakeLists.txt`</ins> delete last few **-flags** in the last line | &rarr; | <s>`-lmingw32 -lSDL2main -lSDL2...`</s> | 
 * **Windows:**
   1. Clone this repo.
   2. Make a build directory in the top level directory: `mkdir build` then `cd build`, two commands
@@ -61,7 +62,7 @@ None
 ***
 
 ## Production Logs:
-* #### DAY 1 { <ins>7/9/2020</ins> } :
+* #### DAY 1 { <ins>7/9/2020</ins> } : Prepare SDL on windows
 First time trying to build the project with cmake and MinGW-make compiler, including and linking the SLD headers and libraries. There was some interesting issues with building SLD on windows. 
  |Findings and Solutions |
  |:---|
@@ -76,4 +77,46 @@ First time trying to build the project with cmake and MinGW-make compiler, inclu
  | &rarr; <sup>**5. 2**</sup> Secondly <s>`if (!ContextInit())`</s> then <s>{ `if(!LoadMedia){..}else{..}` }</s> this logic won't work, somehow it will be skipped by the main and quit the program real fast if there something when wrong in the initiation. the correct way is "run if returns true then else" like this: `if ( ContextInit() ){ if(LoadMedia){..<main features>..}else{..} }else{..}` will do just fine. |
  | &rarr; <sup>**5. 3**</sup> The last one is a trick one as well, which is the media loading. The main reason it quits: <ins>*The Bitmap file must be placed in the **same directory** where the `.exe` or your IDE's project is located*</ins>. Reference solution can be found [here](https://stackoverflow.com/questions/38012690/cant-load-bmp-file-with-sdl-loadbmp-in-codeblocks). And then everything is running just fine.
 
- * #### DAY 2 { <ins>M/D/2020</ins> } :
+ * #### DAY 2 { <ins>M/D/2020</ins> } : Prepare SDL_image on Windows
+ [3:07 AM] Some late night updates with loading `SDL_image.h`header/ `-lSDL2_image`lib. The package should be found automatically by the file `FindSDL2_image.cmake` under `${ProjectDir}/cmake/`.But still it took me a long time figuring out how to link the library, first thing I did was find the proper cmake list settup:
+
+ * OLD VERSION
+<s>
+```cmake
+ cmake_minimum_required(VERSION 3.7)
+add_definitions(-std=c++17)
+set(CXX_FLAGS "-Wall")
+set(CMAKE_CXX_FLAGS, "${CXX_FLAGS}")
+project(SDL2Test)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+find_package(SDL2 REQUIRED)
+include_directories(${SDL2_INCLUDE_DIRS} source header)
+add_executable(game source/main.cpp)
+string(STRIP ${SDL2_LIBRARIES} SDL2_LIBRARIES)
+target_link_libraries(game ${SDL2_LIBRARIES} -lmingw32 -lSDL2main -lSDL2)
+```
+</s>
+
+ * NEW VERSION
+```cmake
+#.....Same as before
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/") #---new
+
+find_package(SDL2 REQUIRED)
+find_package(SDL2_image REQUIRED) #---new
+
+include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIR} source header)#---new
+add_executable(game source/main.cpp)
+
+string(STRIP ${SDL2_LIBRARIES} SDL2_LIBRARIES )
+
+TARGET_LINK_LIBRARIES(game ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES} -lmingw32 -lSDL2main -lSDL2 -lSDL2_image)#---new
+```
+
+where I have marked new in this list are modifed arguments. However, even though the linking status from cmake says the package was found, however the compiler still telling undefined-functions(not linked). I've tried different ways this however magically worked: 
+* **Extract** the `i686-w64-mingw32` **64bit*** version **instead of 32bit** from the dev-kit package `SDL2_image-devel-2.0.5-mingw.tar.gz` place under the MinGW directory.
+
+Now the compilation is successful, and using a example code I successfully loaded a `.png` file into the program using this SDL_image library.
+
+#### 
+
