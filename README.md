@@ -80,21 +80,21 @@ First time trying to build the project with cmake and MinGW-make compiler, inclu
  * #### DAY 2 { <ins>M/D/2020</ins> } : Prepare SDL_image on Windows
  [3:07 AM] Some late night updates with loading `SDL_image.h`header/ `-lSDL2_image`lib. The package should be found automatically by the file `FindSDL2_image.cmake` under `${ProjectDir}/cmake/`.But still it took me a long time figuring out how to link the library, first thing I did was find the proper cmake list settup:
 
- * OLD VERSION<s>
-```cmake
- cmake_minimum_required(VERSION 3.7)
-add_definitions(-std=c++17)
-set(CXX_FLAGS "-Wall")
-set(CMAKE_CXX_FLAGS, "${CXX_FLAGS}")
-project(SDL2Test)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
-find_package(SDL2 REQUIRED)
-include_directories(${SDL2_INCLUDE_DIRS} source header)
-add_executable(game source/main.cpp)
-string(STRIP ${SDL2_LIBRARIES} SDL2_LIBRARIES)
-target_link_libraries(game ${SDL2_LIBRARIES} -lmingw32 -lSDL2main -lSDL2)
-```
-</s>
+ * OLD VERSION
+
+|   |
+| :---   |
+|<sub><s>`cmake_minimum_required(VERSION 3.7)`</s></sub>|
+|<sub><s> `add_definitions(-std=c++17)`</s></sub> |
+|<sub><s>`set(CXX_FLAGS "-Wall")`</s></sub> |
+|<sub><s>`set(CMAKE_CXX_FLAGS, "${CXX_FLAGS}")`</s></sub> |
+|<sub><s>`project(SDL2Test)`</s></sub> |
+|<sub><s>`set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")`</s></sub> |
+|<sub><s>`find_package(SDL2 REQUIRED)`</s></sub> |
+|<sub><s>`include_directories(${SDL2_INCLUDE_DIRS} source header)`</s></sub> |
+|<sub><s>`add_executable(game source/main.cpp)`</s></sub> |
+|<sub><s>`string(STRIP ${SDL2_LIBRARIES} SDL2_LIBRARIES)`</s> </sub>|
+|<sub><s>`target_link_libraries(game ${SDL2_LIBRARIES} -lmingw32 -lSDL2main -lSDL2)`</s></sub> |
 
  * NEW VERSION
 ```cmake
