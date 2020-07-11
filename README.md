@@ -63,6 +63,18 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
 *****************************************************************
 ## :black_circle:Production Logs:
 #### :pushpin: Latest: :arrow_down: :arrow_down: :arrow_down:
+:radio_button: &larr;- - - - :bookmark_tabs: 
+* #### DAY 4 { <ins>7/12/2020</ins> } : Experiments
+
+
+
+
+
+| | Other Findings with SDL |
+| ---- | ---|
+|**1.**| The `SDL_LoadBMP` or `IMG_Load`  works from the executable's directory, therefore if I have a `${ProjectDir}/bitmaps/icon_001.bmp` all I need is move the executable file to the directory level. The code will be much simpler `hSurface = SDL_LoadBMP("bitmaps/icon_001.bmp");` done!
+
+
 ---
 :radio_button: &larr;- - - - :bookmark_tabs: 
 * #### DAY 3 { <ins>7/11/2020</ins> } : Design of Structure

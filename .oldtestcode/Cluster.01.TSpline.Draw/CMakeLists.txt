@@ -5,7 +5,7 @@ add_definitions(-std=c++17)
 set(CXX_FLAGS "-Wall")
 set(CMAKE_CXX_FLAGS, "${CXX_FLAGS} -std=c++0x")
 
-project(TellTao_Project)
+project(SDL2Test)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
@@ -15,8 +15,8 @@ find_package(SDL2_image REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIR} source)
 
 
-add_executable(teletall source/main.cpp source/teletall.cpp)
+add_executable(game source/main.cpp source/curve.cpp)
 string(STRIP ${SDL2_LIBRARIES} SDL2_LIBRARIES )
 
-TARGET_LINK_LIBRARIES(teletall ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES} -lmingw32 -lSDL2main -lSDL2 -lSDL2_image)
+TARGET_LINK_LIBRARIES(game ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES} -lmingw32 -lSDL2main -lSDL2 -lSDL2_image)
 
