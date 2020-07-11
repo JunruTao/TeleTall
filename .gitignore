@@ -1,5 +1,6 @@
 ###Exclude dir/
 build/*
+.markdown.plannings/*
 
 
 ### C++ ###

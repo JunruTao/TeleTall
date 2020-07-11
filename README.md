@@ -59,35 +59,56 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
 ...
 
 
-***
-
+*****************************************************************
+*****************************************************************
 ## :black_circle:Production Logs:
+#### :pushpin: Latest: :arrow_down: :arrow_down: :arrow_down:
+---
+:radio_button: &larr;- - - - :bookmark_tabs: 
+* #### DAY 3 { <ins>7/11/2020</ins> } : Design of Structure
+**[4:50 PM]** Program Structure Concept:
+  > - Build Test: 
+    >  <img src=".markdown.images/20200711_structure_diagram1.png"/>
 
+In the main entry, the program should stay very clean, context initiation following a common running while loop: `process device input` &rarr; `Update(Tele-Graph Panel & Tall-viewport2D)` &rarr; `render viewports`. The key concept in terms of displaying and interacting with the viewport2D and node-graph panel(`TeleGraph`) is setting a local-world space which has it own (0,0) origin and panning will be applied on top of that translating it into view(pixel) space of the screen.
 
-:radio_button: &larr;- - - - :bookmark_tabs: </p>
+In terms of the `TeleNodes`, the hierarchy is shown in the diagram above. the key functionalities are `storing data` `pass data` `recieve data` `process data` and nodes will be drawn on the screen and the data that stored on the current seleted node will be send to Viewport2D(`Tall`) to display.
 
-* #### DAY 1 { <ins>7/9/2020</ins> } : Prepare SDL on windows
-First time trying to build the project with cmake and MinGW-make compiler, including and linking the SLD headers and libraries. There was some interesting issues with building SLD on windows. 
- |Findings and Solutions |
- |:---|
- | <sub> **[ General: ]** |
- | **1.** CMake: The first is that the -flags in the CMakeLists.txt `-lmingw32 -lSDL2main -lSDL2` must be included in the last line;|
-  |**2.** Includes: The `SDL2/SDL.h` should be in the include instead of `SDL.h`.|
- | **3.** CMake: Some Extra things I've learnt, that if you have headers in a separete directory, you have to put that into CMakeLists.txt argument: `include_directories( ... header)`. And apparently you don't have to put header files `.h` into `add_executable(..)` argument list.|
- | <sub> **[ Regarding SDL Code: ]**  |
- | **4.** Building the program I found another problem with the example code is that the <s>`int main()`</s> fuction must include extra argument input parameters: which is: `int main`**`( int argc, char* args[] )`**. My assumption is that the SDL.h's implementation on windows is using the library `windows.h` so that the main window is actually : `int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE  hPrevInstance, PWSTR lpCmdLine, int nCmdShow)` there is a quite good [explaination](https://stackoverflow.com/questions/13871617/winmain-and-main-in-c-extended) I found.|
- | **5.** The first program that I was trying to test the SDL context is loading a bitmap to display on the screen for few seconds, the source code reference is from [SDL wiki](http://lazyfoo.net/tutorials/SDL/02_getting_an_image_on_the_screen/index.php). And I found somehow it not printing anything to the console and just quit. I assume might be the IDE and it seems not running as a concole app on windows. the solution I found is [here](https://stackoverflow.com/questions/31571897/window-closes-too-fast). |
- | &rarr; <sup>**5. 1**</sup> The first problem: if using `SDL_Delay(1000);`, In the Initiation function `init()` => `SDL_Init(SDL_INIT_VIDEO | ` <ins>**`SDL_INIT_TIMER`** </ins> `)` timer's init flag must added. |
- | &rarr; <sup>**5. 2**</sup> Secondly <s>`if (!ContextInit())`</s> then <s>{ `if(!LoadMedia){..}else{..}` }</s> this logic won't work, somehow it will be skipped by the main and quit the program real fast if there something when wrong in the initiation. the correct way is "run if returns true then else" like this: `if ( ContextInit() ){ if(LoadMedia){..<main features>..}else{..} }else{..}` will do just fine. |
- | &rarr; <sup>**5. 3**</sup> The last one is a trick one as well, which is the media loading. The main reason it quits: <ins>*The Bitmap file must be placed in the **same directory** where the `.exe` or your IDE's project is located*</ins>. Reference solution can be found [here](https://stackoverflow.com/questions/38012690/cant-load-bmp-file-with-sdl-loadbmp-in-codeblocks). And then everything is running just fine.
+---
+:radio_button: &larr;- - - - :bookmark_tabs: 
+* #### DAY 3 { <ins>7/11/2020</ins> } : Experiment with SDL2, Events and Drawings
 
+**[12:00 AM]** More Tests:
+  * Played around with Events: rendering a bitmap on the screen and using &larr; &uarr; &darr; &rarr; to move around. Also, combining mouse button events to use mouse right mouse button to drag the object around. 
+    > :memo: source code &rarr; repo/.oldtestcode / 02...cpp
+    > ...
+  * Drawing static lines using `SDL_RenderDrawLine()/..Lines()` function. This script was actually found on the SDL2's wiki
+    > :memo: source code &rarr; repo/.oldtestcode / 03...cpp
+    > ...
+  * Combining both tests using mouse click and drag to draw a line on the screen.This script only does: click and hold, draw the line, then release the mouse, the line vanishes. However it is already a interative app now.
+    > :memo: source code &rarr; repo/.oldtestcode / 04...cpp
+    > ...
+  * I decided to play with these all combined making a CAD like environment where you can draw nurbs and polylines. So I made a new class called `ZCurve` which at the beginning contains 4 points Zig-zagged like a `Z`. Then in `ZCurve -> DrawCurve()` Function, there is a subdiv loop making the curve into small smoothed segments using [Catmull–Clark Subdivision algorithm](https://en.wikipedia.org/wiki/Catmull%E2%80%93Clark_subdivision_surface). I then as long as the `while` loop has 5-20 milliseconds delay, the CUP and GPU won't be really overwhelmed(no delays will burn the GPU, you'll see). In order to make curves stay on the screen, I made a `vector<ZCurve>` container at top level. Here comes the hardest part, it crashed a lot because the loop is too fast so that there are so many ZCurves flowing into this container and overflew the stack. The solution I made was using 2 booleans at the top: 1.`bool hold;` 2.`bool creation;` to lock the real-time curve to stop creating when mouse button is up.(there should be a better way however I have not yet found it). The final app is like this:
+
+    > - Build Test: 
+    >  <img src=".markdown.images/20200710_md_img2.gif"/>
+
+ you can use key `1` and `3` to toggle around z-polyline or smoothed nurbs curve. 
+
+* :mega: **Project direction:**
+Personally I really admire node-based softwares like HoudiniFX, Unreal, Maya's node editor, Grasshopper for Rhino3D etc. I am planning to make an app which has a node editor where you can place and connect nodes. these nodes' connections will run as seperate threads and do simple calculations such as `+`,`-` and `*` based on different input nodes. 
+
+* :mega: **Project Naming:** 
+  > . . . .
+  > ## :telescope: **_" Tele.Tall. "_** 
+  > **_<ins>Teleportational Technology of Anti-Linearity Locator</ins>_** 
+  > and nevermind, my name is Tao, that's all
+
+  For this project, my strategy is building the structure very carefully. Make things more generic and abstract(`virtual`&`Template` classes) as possible. So every stages should be tested and use small prototypes to debug the logic. As the same time, enhance the performance using memory management and concurrencies.
 
 
 ---
 :radio_button: &larr;- - - - :bookmark_tabs: 
-
-
-
 
  * #### DAY 2 { <ins>7/10/2020</ins> } : Prepare SDL_image on Windows
  **[3:07 AM]** Some late night updates with loading `SDL_image.h`header/ `-lSDL2_image`lib. The package should be found automatically by the file `FindSDL2_image.cmake` under `${ProjectDir}/cmake/`.But still it took me a long time figuring out how to link the library, first thing I did was find the proper cmake list settup:
@@ -128,37 +149,29 @@ where I have marked new in this list are modifed arguments. However, even though
 
 Now the compilation is successful, and using a example code I successfully loaded a `.png` file into the program using this SDL_image library.\
 
+
+
+
+
+
 ---
-:radio_button: &larr;- - - - :bookmark_tabs: 
-* #### DAY 3 { <ins>7/11/2020</ins> } : Experiment with SDL2, Events and Drawings
+:radio_button: &larr;- - - - :bookmark_tabs: </p>
 
-**[12:00 AM]** More Tests:
-  * Played around with Events: rendering a bitmap on the screen and using &larr; &uarr; &darr; &rarr; to move around. Also, combining mouse button events to use mouse right mouse button to drag the object around. 
-    > :memo: source code &rarr; repo/.oldtestcode / 02...cpp
-    > ...
-  * Drawing static lines using `SDL_RenderDrawLine()/..Lines()` function. This script was actually found on the SDL2's wiki
-    > :memo: source code &rarr; repo/.oldtestcode / 03...cpp
-    > ...
-  * Combining both tests using mouse click and drag to draw a line on the screen.This script only does: click and hold, draw the line, then release the mouse, the line vanishes. However it is already a interative app now.
-    > :memo: source code &rarr; repo/.oldtestcode / 04...cpp
-    > ...
-  * I decided to play with these all combined making a CAD like environment where you can draw nurbs and polylines. So I made a new class called `ZCurve` which at the beginning contains 4 points Zig-zagged like a `Z`. Then in `ZCurve -> DrawCurve()` Function, there is a subdiv loop making the curve into small smoothed segments using [Catmull–Clark Subdivision algorithm](https://en.wikipedia.org/wiki/Catmull%E2%80%93Clark_subdivision_surface). I then as long as the `while` loop has 5-20 milliseconds delay, the CUP and GPU won't be really overwhelmed(no delays will burn the GPU, you'll see). In order to make curves stay on the screen, I made a `vector<ZCurve>` container at top level. Here comes the hardest part, it crashed a lot because the loop is too fast so that there are so many ZCurves flowing into this container and overflew the stack. The solution I made was using 2 booleans at the top: 1.`bool hold;` 2.`bool creation;` to lock the real-time curve to stop creating when mouse button is up.(there should be a better way however I have not yet found it). The final app is like this:
+* #### DAY 1 { <ins>7/9/2020</ins> } : Prepare SDL on windows
+First time trying to build the project with cmake and MinGW-make compiler, including and linking the SLD headers and libraries. There was some interesting issues with building SLD on windows. 
+ |Findings and Solutions |
+ |:---|
+ | <sub> **[ General: ]** |
+ | **1.** CMake: The first is that the -flags in the CMakeLists.txt `-lmingw32 -lSDL2main -lSDL2` must be included in the last line;|
+  |**2.** Includes: The `SDL2/SDL.h` should be in the include instead of `SDL.h`.|
+ | **3.** CMake: Some Extra things I've learnt, that if you have headers in a separete directory, you have to put that into CMakeLists.txt argument: `include_directories( ... header)`. And apparently you don't have to put header files `.h` into `add_executable(..)` argument list.|
+ | <sub> **[ Regarding SDL Code: ]**  |
+ | **4.** Building the program I found another problem with the example code is that the <s>`int main()`</s> fuction must include extra argument input parameters: which is: `int main`**`( int argc, char* args[] )`**. My assumption is that the SDL.h's implementation on windows is using the library `windows.h` so that the main window is actually : `int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE  hPrevInstance, PWSTR lpCmdLine, int nCmdShow)` there is a quite good [explaination](https://stackoverflow.com/questions/13871617/winmain-and-main-in-c-extended) I found.|
+ | **5.** The first program that I was trying to test the SDL context is loading a bitmap to display on the screen for few seconds, the source code reference is from [SDL wiki](http://lazyfoo.net/tutorials/SDL/02_getting_an_image_on_the_screen/index.php). And I found somehow it not printing anything to the console and just quit. I assume might be the IDE and it seems not running as a concole app on windows. the solution I found is [here](https://stackoverflow.com/questions/31571897/window-closes-too-fast). |
+ | &rarr; <sup>**5. 1**</sup> The first problem: if using `SDL_Delay(1000);`, In the Initiation function `init()` => `SDL_Init(SDL_INIT_VIDEO | ` <ins>**`SDL_INIT_TIMER`** </ins> `)` timer's init flag must added. |
+ | &rarr; <sup>**5. 2**</sup> Secondly <s>`if (!ContextInit())`</s> then <s>{ `if(!LoadMedia){..}else{..}` }</s> this logic won't work, somehow it will be skipped by the main and quit the program real fast if there something when wrong in the initiation. the correct way is "run if returns true then else" like this: `if ( ContextInit() ){ if(LoadMedia){..<main features>..}else{..} }else{..}` will do just fine. |
+ | &rarr; <sup>**5. 3**</sup> The last one is a trick one as well, which is the media loading. The main reason it quits: <ins>*The Bitmap file must be placed in the **same directory** where the `.exe` or your IDE's project is located*</ins>. Reference solution can be found [here](https://stackoverflow.com/questions/38012690/cant-load-bmp-file-with-sdl-loadbmp-in-codeblocks). And then everything is running just fine.
 
-    > - Build Test: 
-    >  <img src=".markdown.images/20200710_md_img2.gif"/>
 
- you can use key `1` and `3` to toggle around z-polyline or smoothed nurbs curve. 
 
-* :mega: **Project direction:**
-Personally I really admire node-based softwares like HoudiniFX, Unreal, Maya's node editor, Grasshopper for Rhino3D etc. I am planning to make an app which has a node editor where you can place and connect nodes. these nodes' connections will run as seperate threads and do simple calculations such as `+`,`-` and `*` based on different input nodes. 
 
-* :mega: **Project Naming:** 
-  > . . . .
-  > ## :telescope: **_" Tele.Tall. "_** 
-  > **_<ins>Teleportational Technology of Anti-Linearity Locator</ins>_** 
-  > and nevermind, my name is Tao, that's all
-
-  For this project, my strategy is building the structure very carefully. Make things more generic and abstract(`virtual`&`Template` classes) as possible. So every stages should be tested and use small prototypes to debug the logic. As the same time, enhance the performance using memory management and concurrencies.
----
-:radio_button: &larr;- - - - :bookmark_tabs: 
-* #### DAY 4 { <ins>7/D/2020</ins> } : Experiment with SDL2, Events and Drawings
