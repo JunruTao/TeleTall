@@ -1,27 +1,34 @@
 #ifndef TELETALL_H
 #define TELETALL_H
-//include area
+
 #include <SDL2/SDL.h>
+
+#include "telepad.h"
+#include "tallwindow.h"
+#include "teletall_control.h"
 
 class TeleTall
 {
-    public:
+public:
     //Constructor: (Initialise all context)
-    TeleTall(size_t tltl_Window_Width, size_t tltl_Window_Height);
+    TeleTall(const size_t &tltl_Window_Width, const size_t &tltl_Window_Height);
     //Destructor: (Free all resource)
     ~TeleTall();
 
     //Running Program: while loop here
-    void Run(size_t tltl_Frame_Rate);
+    void Run(
+        size_t tltl_Frame_Rate,
+        Telepad &_ref_telepad,
+        Tallwindow &_ref_tallwindow,
+        const Telecontroller &controller);
     void Update();
+    void Render();
 
-    private:
-    void ErrorReporter(const char* errorMessage);
+private:
+    void ErrorReporter(const char *errorMessage);
 
-    SDL_Window* hwnd_main;
+    SDL_Window *hwnd_main;
     SDL_Renderer *hRenderer;
-
-
 };
 
 #endif

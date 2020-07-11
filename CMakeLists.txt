@@ -15,7 +15,7 @@ find_package(SDL2_image REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIR} source)
 
 
-add_executable(teletall source/main.cpp source/teletall.cpp)
+add_executable(teletall source/main.cpp source/teletall.cpp source/telepad.cpp source/tallwindow.cpp source/teletall_control.cpp)
 string(STRIP ${SDL2_LIBRARIES} SDL2_LIBRARIES )
 
 TARGET_LINK_LIBRARIES(teletall ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES} -lmingw32 -lSDL2main -lSDL2 -lSDL2_image)

@@ -1,8 +1,10 @@
 #include "teletall.h"
 #include <string>
 
+#define WINDOW_NAME "TeleTall - SDL2 Version - v.01"
+
 //[CONSTRUCTOR]-------------------------------------------------------------------------------------
-TeleTall::TeleTall(size_t tltl_Window_Width, size_t tltl_Window_Height)
+TeleTall::TeleTall(const size_t& tltl_Window_Width, const size_t& tltl_Window_Height)
 {
     //[1] SDL initialisation:
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -10,7 +12,7 @@ TeleTall::TeleTall(size_t tltl_Window_Width, size_t tltl_Window_Height)
 
     //[2] Creating SDL_Window:
     hwnd_main = SDL_CreateWindow(
-        "TeleTall - SDL ersion", //--Window title
+        WINDOW_NAME, //--Window title
         SDL_WINDOWPOS_CENTERED,  //--Place window in the center of the screen
         SDL_WINDOWPOS_CENTERED,  //--Place window in the center of the screen
         tltl_Window_Width,       //--Main Window Width
@@ -33,7 +35,11 @@ TeleTall::~TeleTall()
 }
 
 //[RUN]-------------------------------------------------------------------------------------
-void TeleTall::Run(size_t tltl_Frame_Rate)
+void TeleTall::Run(
+    size_t tltl_Frame_Rate, 
+    Telepad& telepad, 
+    Tallwindow& tallwindow,
+    const Telecontroller& controller)
 {
 
     //Field For time measuring
@@ -43,8 +49,10 @@ void TeleTall::Run(size_t tltl_Frame_Rate)
     Uint32 frame_duration;
     unsigned int frame_count = 0;
     unsigned int MsPerFrame = 1000 / tltl_Frame_Rate;
+
     //Field for toggles
     bool running = true;
+    bool tltl_showframerate = true;
 
     /*The Feedback Loop*/
     while (running)
@@ -56,30 +64,24 @@ void TeleTall::Run(size_t tltl_Frame_Rate)
         SDL_Event e;
         SDL_PollEvent(&e);
         if (e.type == SDL_QUIT)
-            running = false;
+           { running = false;}
+
+
 
         //Update Function here:
         //..
         Update();
+
+
+
+
         //Render here:
         //..
-        //. TestCode start
-        SDL_SetRenderDrawColor(hRenderer, 255, 200, 200, 255);
-        SDL_RenderClear(hRenderer);
-        SDL_Rect rect;
-        rect.x = 100;
-        rect.y = 100;
-        rect.w = 200;
-        rect.h = 200;
-        SDL_RenderFillRect(hRenderer, &rect);
-
-
-
-        SDL_RenderPresent(hRenderer);
-        //.. TestCode start
+        Render();
         //.
         //.
 
+        //------------------------TIME---------------------------
         //Time Frame Section(calculate current framerate and stablise)
         frame_end = SDL_GetTicks();
         frame_count++;
@@ -87,27 +89,49 @@ void TeleTall::Run(size_t tltl_Frame_Rate)
         if (frame_end - time_stamp >= 1000)
         {
             //...set tile every second
-            std::string title{"FPS" + std::to_string(frame_count)};
-            SDL_SetWindowTitle(hwnd_main, title.c_str());
+            if (tltl_Frame_Rate)
+            {
+                std::string title{
+                    std::string(WINDOW_NAME)
+                    + "   -" 
+                    + "running status: " 
+                    + std::to_string(frame_count)
+                    + " fps"};
+
+                SDL_SetWindowTitle(hwnd_main, title.c_str());
+            }
             //clearing the count
             frame_count = 0;
             time_stamp = frame_end;
         }
+
         if (frame_duration < MsPerFrame)
         {
             //using this to stablise the machine
             SDL_Delay(MsPerFrame - frame_duration);
         }
+        //------------------------TIME---------------------------
     }
 }
-
-
+//[Update]---------------------------------------------------------------------------------
 void TeleTall::Update()
 {
-
 }
 
 
+//[Render]---------------------------------------------------------------------------------
+void TeleTall::Render()
+{
+    SDL_SetRenderDrawColor(hRenderer, 255, 200, 200, 255);
+    SDL_RenderClear(hRenderer);
+    SDL_Rect rect;
+    rect.x = 100;
+    rect.y = 100;
+    rect.w = 200;
+    rect.h = 200;
+    SDL_RenderFillRect(hRenderer, &rect);
+    SDL_RenderPresent(hRenderer);
+}
 
 //[Utility] for reporting errors------------------------------------------------------------
 void TeleTall::ErrorReporter(const char *errorMessage)
