@@ -1,7 +1,10 @@
 #ifndef TELETALL_CONTROL_H
 #define TELETALL_CONTROL_H
 #include <SDL2/SDL.h>
+#include <string>
+#include <vector>
 
+enum class PanelID {ON_PAD,ON_BAR,ON_MENU,ON_TALL};
 
 class Telecontroller
 {
@@ -10,9 +13,11 @@ public:
     ~Telecontroller();
 
     void ProcessInput(bool& running);
-    void Synchoronise();
+    void SendToConcole();
     
+    //for these 2 panels
     int GetSplitLocation()const;
+    void UpdateSplitLocation(int new_split);
 
     static int lastMouseLocation_X;
     static int lastMouseLocation_Y;
@@ -24,6 +29,12 @@ public:
 
     bool key_HOME;
     bool key_FRAME;
+    PanelID current_panel;
+    
+    
+private:
+    int _split_location; 
+    std::vector<std::string> _msg;
 
 };
 

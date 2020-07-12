@@ -26,13 +26,13 @@ struct Point2D
 
     double Length(const Point2D &vec2)
     {
-        double len = sqrt(pow((double)vec2.x,2) + pow((double)vec2.y,2));
+        double len = sqrt(pow((double)vec2.x, 2) + pow((double)vec2.y, 2));
         return len;
     }
-    
+
     double Length()
     {
-        double len = sqrt(pow((double)this->x,2) + pow((double)this->y,2));
+        double len = sqrt(pow((double)this->x, 2) + pow((double)this->y, 2));
         return len;
     }
 
@@ -40,6 +40,11 @@ struct Point2D
     {
         this->x += vec2.x;
         this->y += vec2.y;
+    }
+
+    bool InBound(const var &minx, const var &miny, const var &maxx, const var &maxy)
+    {
+        return (this->x > minx) && (this->x < maxx) && (this->y > miny) && (this->y < maxy);
     }
 };
 

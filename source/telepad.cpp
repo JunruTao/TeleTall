@@ -4,6 +4,7 @@
 
 #define SLIDEBAR_WIDTH 12
 #define HALF_SLIDEBAR 6
+#define SLIDEBAR_SEL_BLEED 5
 #define TELEPAD_GRID_SIZE 60
 //--------------------------------------------------------------------------------------
 Telepad::Telepad(
@@ -57,13 +58,15 @@ Point2D<int> *Telepad::GetOrigin()
 #[[[[[[[[[[[]]]]]]]]]]]
 */
 //--------------------------------------------------------------------------------------
-void Telepad::Update(const Telecontroller &controller)
+void Telepad::Update(Telecontroller &controller)
 {
     //current mouse location
     int x, y;
     SDL_GetMouseState(&x, &y);
     Resize(controller, x, y);
     MoveGrid(controller, x, y);
+
+    controller.UpdateSplitLocation(pad_width + HALF_SLIDEBAR + SLIDEBAR_SEL_BLEED);
 }
 /*
 #
@@ -79,13 +82,16 @@ void Telepad::Render(SDL_Renderer *renderer)
     SDL_RenderFillRect(renderer, &padViewport);
     //clipping here
     SDL_RenderSetClipRect(renderer, &padViewport);
-    //Some Sample gird---------------------------
-    DrawGrid(renderer);
+    //Draw gird---------------------------
+    DrawGrid(renderer,origin,grid_size,pad_width,pad_height,70);
     //render nodes and geo's here:
-
+    if(origin.InBound(0,0,pad_width,pad_height))
+    {
+        DrawCross(renderer,origin,5,110,110,110);
+    }
     //..
 
-    //Some Sample gird---------------------------
+    //Draw slider---------------------------
     DrawSlideBar(renderer);
 }
 /*
@@ -126,148 +132,30 @@ void Telepad::DrawSlideBar(SDL_Renderer *renderer)
 #
 #
 #
-#
-#
-#
-#
-#
-#
-#
-*/
-//------------------------------------------------------------------------------------
-//[[[[[[[[[[[[[DRAW GRID]]]]]]]]]]]]]
-void Telepad::DrawGrid(SDL_Renderer *renderer)
-{
-    //Draw -Vertical
-    int distance = 0;
-    SDL_SetRenderDrawColor(renderer, 70, 70, 70, 255);
-    if (origin.x > 0)
-    {
-        if (origin.x <= pad_width)
-        {
-            distance = origin.x;
-            while (distance > 0 && distance < pad_width)
-            {
-                SDL_RenderDrawLine(renderer, distance, 0, distance, pad_height);
-                distance -= grid_size;
-            }
-            distance = origin.x;
-            while (distance < pad_width)
-            {
-                SDL_RenderDrawLine(renderer, distance, 0, distance, pad_height);
-                distance += grid_size;
-            }
-        }
-        else
-        {
-            distance = origin.x;
-            while (distance > pad_width)
-            {
-                distance -= grid_size;
-            }
-            while (distance > 0 && distance < pad_width)
-            {
-                SDL_RenderDrawLine(renderer, distance, 0, distance, pad_height);
-                distance -= grid_size;
-            }
-        }
-    }
-    else
-    {
-        distance = origin.x;
-        while (distance < 0)
-        {
-            distance += grid_size;
-        }
-        while (distance < pad_width)
-        {
-            SDL_RenderDrawLine(renderer, distance, 0, distance, pad_height);
-            distance += grid_size;
-        }
-    }
-    //---------------------------------
-    //Draw Horizontal
-    distance = 0;
-    if (origin.y > 0)
-    {
-        if (origin.y <= pad_height)
-        {
-            distance = origin.y;
-            while (distance > 0 && distance < pad_height)
-            {
-                SDL_RenderDrawLine(renderer, 0, distance, pad_width, distance);
-                distance -= grid_size;
-            }
-            distance = origin.y;
-            while (distance < pad_height)
-            {
-                SDL_RenderDrawLine(renderer, 0, distance, pad_width, distance);
-                distance += grid_size;
-            }
-        }
-        else
-        {
-            distance = origin.y;
-            while (distance > pad_height)
-            {
-                distance -= grid_size;
-            }
-            while (distance > 0 && distance < pad_height)
-            {
-                SDL_RenderDrawLine(renderer, 0, distance, pad_width, distance);
-                distance -= grid_size;
-            }
-        }
-    }
-    else
-    {
-        distance = origin.y;
-        while (distance < 0)
-        {
-            distance += grid_size;
-        }
-        while (distance < pad_height)
-        {
-            SDL_RenderDrawLine(renderer, 0, distance, pad_width, distance);
-            distance += grid_size;
-        }
-    }
 
-    SDL_SetRenderDrawColor(renderer, 130, 130, 130, 255);
-    SDL_RenderDrawLine(renderer, origin.x + 5, origin.y, origin.x - 5, origin.y);
-    SDL_RenderDrawLine(renderer, origin.x, origin.y + 5, origin.x, origin.y - 5);
-}
-
-/*
-#
-#
-#
-#
-#
-#
-#
-#
 #
 #
 */
 //--------------------------------------------------------------------------------------
-void Telepad::Resize(const Telecontroller &controller, const int &x, const int &y)
+void Telepad::Resize(Telecontroller &controller, const int &x, const int &y)
 {
     SDL_Cursor *cursor = NULL;
-    bool onBar = (x > slidebar.x - 5) && (x < slidebar.x + slidebar.w + 5);
-    bool onTall = (x > slidebar.x + slidebar.w + 5) && (x < win_width);
+    bool onBar = (x > slidebar.x - SLIDEBAR_SEL_BLEED) && (x < slidebar.x + slidebar.w + SLIDEBAR_SEL_BLEED);
+    bool onTall = (x > slidebar.x + slidebar.w + SLIDEBAR_SEL_BLEED) && (x < win_width);
+
+ 
 
     if (onBar) //Mouse passing the slide bar
     {
         cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZEWE);
         SDL_SetCursor(cursor);
+        controller.current_panel = PanelID::ON_BAR;
         //changing cursor
     }
 
-    else if(onTall)//Mouse passing rest of the area
+    else if (onTall) //Mouse passing rest of the area
     {
         cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_CROSSHAIR);
-
         SDL_SetCursor(cursor);
     }
 
@@ -275,9 +163,9 @@ void Telepad::Resize(const Telecontroller &controller, const int &x, const int &
     {
         if (onBar || slidebarSelected) //Hold or Grag
         {
+            controller.current_panel = PanelID::ON_BAR;
             cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZEALL);
             SDL_SetCursor(cursor);
-
             slidebarSelected = true;
             pad_width = x;
             JUTA_Math::Clamp<size_t>(pad_width, 20, win_width - 20);
@@ -290,6 +178,8 @@ void Telepad::Resize(const Telecontroller &controller, const int &x, const int &
     {
         slidebarSelected = false; //Set seleted state to false
     }
+
+    if(onTall) controller.current_panel = PanelID::ON_TALL;
 }
 /*
 #
@@ -304,7 +194,7 @@ void Telepad::Resize(const Telecontroller &controller, const int &x, const int &
 #
 */
 //-------------------------------------------------------------------------------------
-void Telepad::MoveGrid(const Telecontroller &controller, const int &x, const int &y)
+void Telepad::MoveGrid(Telecontroller &controller, const int &x, const int &y)
 {
     SDL_Cursor *cursor = NULL;
     bool onPad = (x > 0) && (x < pad_width - HALF_SLIDEBAR);
@@ -312,6 +202,7 @@ void Telepad::MoveGrid(const Telecontroller &controller, const int &x, const int
     {
         if (onPad)
         {
+            controller.current_panel = PanelID::ON_PAD;
             cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZEALL);
             SDL_SetCursor(cursor);
         }
@@ -324,6 +215,7 @@ void Telepad::MoveGrid(const Telecontroller &controller, const int &x, const int
 
         if (onPad || gridSelected)
         {
+            controller.current_panel = PanelID::ON_PAD;
             if (mouse_trail.size() > 1)
             {
                 mouse_trail.erase(mouse_trail.begin());
@@ -332,7 +224,7 @@ void Telepad::MoveGrid(const Telecontroller &controller, const int &x, const int
             mouse_trail.emplace_back(std::move(temp));
             Point2D<int> motion = mouse_trail[1] - mouse_trail[0];
 
-             if (motion.Length() > 700)
+            if (motion.Length() > 700)
             {
                 motion.x = 0;
                 motion.y = 0;
@@ -352,6 +244,7 @@ void Telepad::MoveGrid(const Telecontroller &controller, const int &x, const int
     {
         if (onPad)
         {
+            controller.current_panel = PanelID::ON_PAD;
             cursor = SDL_GetDefaultCursor();
             SDL_SetCursor(cursor);
         }

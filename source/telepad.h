@@ -6,6 +6,7 @@
 #include "teletall_control.h"
 #include "JUTA/JUTA_math.h"
 #include "JUTA/JUTA_geometry_core.h"
+#include "ui/teletall_graphics.h"
 
 class Telepad
 {
@@ -13,7 +14,7 @@ public:
     Telepad(const size_t &master_width, const size_t &master_height);
     ~Telepad();
 
-    void Update(const Telecontroller &controller);
+    void Update(Telecontroller &controller);
     void Render(SDL_Renderer *renderer);
     Point2D<int>* GetOrigin();
 
@@ -33,9 +34,8 @@ private:
     int grid_size;
 
     void DrawSlideBar(SDL_Renderer *renderer);
-    void DrawGrid(SDL_Renderer *renderer);
-    void MoveGrid(const Telecontroller &controller, const int &x, const int &y);
-    void Resize(const Telecontroller &controller, const int &x, const int &y);
+    void MoveGrid(Telecontroller &controller, const int &x, const int &y);
+    void Resize(Telecontroller &controller, const int &x, const int &y);
 };
 
 #endif

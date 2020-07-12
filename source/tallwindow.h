@@ -5,6 +5,7 @@
 #include "teletall_control.h"
 #include "JUTA/JUTA_geometry_core.h"
 #include "JUTA/JUTA_math.h"
+#include "ui/teletall_graphics.h"
 #include <vector>
 
 class Tallwindow
@@ -33,7 +34,6 @@ private:
     std::vector<Point2D<int>> mouse_trail; 
     int grid_size;
 
-    void DrawGrid(SDL_Renderer *renderer);
     void MoveGrid(const Telecontroller &controller, const int &x, const int &y);
 
 };

@@ -1,4 +1,6 @@
 #include "teletall.h"
+
+
 #include <string>
 
 #define WINDOW_NAME "TeleTall - SDL2 Version - v.01"
@@ -69,11 +71,9 @@ void TeleTall::Run(
 
         //Render here:
         //..
-        SDL_SetRenderDrawColor(hRenderer, 220, 220, 220, 255);
-        SDL_RenderClear(hRenderer); //this will be the back ground for tall
 
 
-
+        tallwindow.Render(hRenderer);
         telepad.Render(hRenderer);
 
         SDL_RenderPresent(hRenderer);
@@ -112,7 +112,6 @@ void TeleTall::Run(
         }
 
         //------------------------TIME---------------------------
-        controller.Synchoronise();
     }
 }
 

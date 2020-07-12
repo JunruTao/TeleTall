@@ -1,5 +1,4 @@
 #include "teletall_control.h"
-#include "SDL2/SDL.h"
 
 int Telecontroller::lastMouseLocation_X = 0;
 int Telecontroller::lastMouseLocation_Y = 0;
@@ -18,11 +17,6 @@ Telecontroller::Telecontroller()
 
 Telecontroller::~Telecontroller() {}
 
-void Telecontroller::Synchoronise()
-{
-    lastMouseLocation_X = nowMouseLocation_Y;
-    lastMouseLocation_X = nowMouseLocation_Y;
-}
 
 void Telecontroller::ProcessInput(bool &running)
 {
@@ -88,3 +82,15 @@ void Telecontroller::ProcessInput(bool &running)
     }
     //--------------------------------------[Nothing]
 } //end of ProcessInput scope
+
+
+
+int Telecontroller::GetSplitLocation()const
+{
+    return _split_location;
+}
+
+void Telecontroller::UpdateSplitLocation(int new_split)
+{
+    _split_location = new_split;
+}
