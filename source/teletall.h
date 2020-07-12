@@ -20,9 +20,7 @@ public:
         size_t tltl_Frame_Rate,
         Telepad &_ref_telepad,
         Tallwindow &_ref_tallwindow,
-        const Telecontroller &controller);
-    void Update();
-    void Render();
+        Telecontroller &controller);
 
 private:
     void ErrorReporter(const char *errorMessage);

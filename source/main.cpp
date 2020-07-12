@@ -15,8 +15,8 @@ int main(int argc, char *argv[])
 
     /*CREATE THE PROGRAM CORE*/
     Telecontroller controller;
-    Telepad myTelePad(tltl_Window_Width, tltl_Window_Height, controller);
-    Tallwindow myTallwindow(tltl_Window_Width, tltl_Window_Height, controller);
+    Telepad myTelePad(tltl_Window_Width, tltl_Window_Height);
+    Tallwindow myTallwindow(tltl_Window_Width, tltl_Window_Height);
 
     TeleTall tltlApp(tltl_Window_Width, tltl_Window_Height);
     /*RUN THE PROGRAM*/

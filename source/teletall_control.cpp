@@ -1,24 +1,65 @@
 #include "teletall_control.h"
+#include "SDL2/SDL.h"
 
+size_t Telecontroller::lastMouseLocation_X = 0;
+size_t Telecontroller::lastMouseLocation_Y = 0;
+size_t Telecontroller::nowMouseLocation_X = 0;
+size_t Telecontroller::nowMouseLocation_Y = 0;
 
-Telecontroller::Telecontroller() : _tltlvertprop(0.5)
+bool Telecontroller::RMB_hold = false;
+bool Telecontroller::LMB_hold = false;
+bool Telecontroller::MMB_hold = false;
+
+Telecontroller::Telecontroller()
 {
-
+    _tltlvertprop = 0;
 }
-
 
 Telecontroller::~Telecontroller()
-{}
-
-
-
-
-double Telecontroller::GetSplitLocation()
 {
-    return _tltlvertprop;
 }
 
-void Telecontroller::SetSplitLocation(double new_prop)
+void Telecontroller::ProcessInput(bool &running)
 {
-    _tltlvertprop = new_prop;
-}
+
+    SDL_Event event;
+    SDL_PollEvent(&event);
+
+    //-------------------------------------[Quit Only]
+    if (event.type == SDL_QUIT)
+    {
+        running = false;
+    }
+
+    //--------------------------------------[Mouse press]
+    else if (event.type == SDL_MOUSEBUTTONDOWN)
+    {
+        switch (event.button.button)
+        {
+        case SDL_BUTTON_LEFT:
+            LMB_hold = true;
+            break;
+        case SDL_BUTTON_RIGHT:
+            RMB_hold = true;
+
+            break;
+        default:
+            MMB_hold = true;
+            RMB_hold = false;
+            LMB_hold = false;
+            break;
+        }
+    }
+    //--------------------------------------[Mouse Moving]
+    //else if (event.type == SDL_MOUSEMOTION)
+    //{   }
+    //--------------------------------------[Mouse Release]
+    else if (event.type == SDL_MOUSEBUTTONUP)
+    {
+        RMB_hold = false;
+        LMB_hold = false;
+        MMB_hold = false;
+    }
+    //--------------------------------------[Nothing]
+    nowMouseLocation_X = event.motion.x;
+} //end of ProcessInput scope

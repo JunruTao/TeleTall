@@ -67,24 +67,35 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
 * #### DAY 4 { <ins>7/12/2020</ins> } : Experiments
 
 
-
+**[5:13 AM] Update:** 
+* Finished UI test.
+* Interatively drawing and changing the size of 2 viewpanels (`TelePad` & `Tallwindow`)
+* Added changing cursor. (double arrow and cross)
+> - Diagram of Program Structure:
+    >  <img src=".markdown.images/20200712_teletall_ui_slider_test.gif"/>
 
 
 | | Other Findings with SDL |
 | ---- | ---|
-|**1.**| The `SDL_LoadBMP` or `IMG_Load`  works from the executable's directory, therefore if I have a `${ProjectDir}/bitmaps/icon_001.bmp` all I need is move the executable file to the directory level. The code will be much simpler `hSurface = SDL_LoadBMP("bitmaps/icon_001.bmp");` done!
+|**1.**| The `SDL_LoadBMP` or `IMG_Load`  works from the executable's directory, therefore if I have a `${ProjectDir}/bitmaps/icon_001.bmp` all I need is move the executable file to the directory level. The code will be much simpler `hSurface = SDL_LoadBMP("bitmaps/icon_001.bmp");` done! |
+|**2.**| Creating the viewports are quite tricky, basically you have to draw it first then clip the render viewport, however the commands are `set clip rectangle` &rarr;`set color` &rarr; `draw something` &rarr; `disable the clipping`&rarr;`draw on the top without mask`...|
+|**3.**| In order to get the proper mouse controls, you have to set a lot of locks(`boolean` toggles) to toggle on and off exitting the scope sort of stuff. quite complicate. because if you don't do that, the device inputs' changes are too fast eventurally generate a lot of random values.
 
 
 ---
 :radio_button: &larr;- - - - :bookmark_tabs: 
 * #### DAY 3 { <ins>7/11/2020</ins> } : Design of Structure
+
 **[4:50 PM]** Program Structure Concept:
-  > - Build Test: 
+  > - Diagram of Program Structure:
     >  <img src=".markdown.images/20200711_structure_diagram1.png"/>
 
-In the main entry, the program should stay very clean, context initiation following a common running while loop: `process device input` &rarr; `Update(Tele-Graph Panel & Tall-viewport2D)` &rarr; `render viewports`. The key concept in terms of displaying and interacting with the viewport2D and node-graph panel(`TeleGraph`) is setting a local-world space which has it own (0,0) origin and panning will be applied on top of that translating it into view(pixel) space of the screen.
+In the main entry, the program should stay very clean, context initiation following a common running while loop: `process device input` &rarr; `Update(Tele-pad & Tall-viewport2D-window)` &rarr; `render viewports`. The key concept in terms of displaying and interacting with the viewport2D and node-graph panel(`TelePad`) is setting a local-world space which has it own (0,0) origin and panning will be applied on top of that translating it into view(pixel) space of the screen.
 
 In terms of the `TeleNodes`, the hierarchy is shown in the diagram above. the key functionalities are `storing data` `pass data` `recieve data` `process data` and nodes will be drawn on the screen and the data that stored on the current seleted node will be send to Viewport2D(`Tall`) to display.
+
+
+
 
 ---
 :radio_button: &larr;- - - - :bookmark_tabs: 

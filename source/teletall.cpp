@@ -4,7 +4,7 @@
 #define WINDOW_NAME "TeleTall - SDL2 Version - v.01"
 
 //[CONSTRUCTOR]-------------------------------------------------------------------------------------
-TeleTall::TeleTall(const size_t& tltl_Window_Width, const size_t& tltl_Window_Height)
+TeleTall::TeleTall(const size_t &tltl_Window_Width, const size_t &tltl_Window_Height)
 {
     //[1] SDL initialisation:
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -12,12 +12,12 @@ TeleTall::TeleTall(const size_t& tltl_Window_Width, const size_t& tltl_Window_He
 
     //[2] Creating SDL_Window:
     hwnd_main = SDL_CreateWindow(
-        WINDOW_NAME, //--Window title
-        SDL_WINDOWPOS_CENTERED,  //--Place window in the center of the screen
-        SDL_WINDOWPOS_CENTERED,  //--Place window in the center of the screen
-        tltl_Window_Width,       //--Main Window Width
-        tltl_Window_Height,      //--Main Window Height
-        SDL_WINDOW_SHOWN);       //--Show window command SDL
+        WINDOW_NAME,            //--Window title
+        SDL_WINDOWPOS_CENTERED, //--Place window in the center of the screen
+        SDL_WINDOWPOS_CENTERED, //--Place window in the center of the screen
+        tltl_Window_Width,      //--Main Window Width
+        tltl_Window_Height,     //--Main Window Height
+        SDL_WINDOW_SHOWN);      //--Show window command SDL
     if (hwnd_main == NULL)
         ErrorReporter("SDL window creation failed. "); //Test Success;
 
@@ -27,19 +27,19 @@ TeleTall::TeleTall(const size_t& tltl_Window_Width, const size_t& tltl_Window_He
         ErrorReporter("SDL Renderer creation failed. "); //Test Success;
 }
 
-//[DESTRUCTOR]-------------------------------------------------------------------------------------
+//[DESTRUCTOR]--------------
 TeleTall::~TeleTall()
 {
     SDL_DestroyWindow(hwnd_main);
     SDL_Quit();
 }
 
-//[RUN]-------------------------------------------------------------------------------------
+//[RUN]---------------------
 void TeleTall::Run(
-    size_t tltl_Frame_Rate, 
-    Telepad& telepad, 
-    Tallwindow& tallwindow,
-    const Telecontroller& controller)
+    size_t tltl_Frame_Rate,     //Frame rate designated ms per loop
+    Telepad &telepad,           //Telepad
+    Tallwindow &tallwindow,     //Tallwindow
+    Telecontroller &controller) //Telecontroller
 {
 
     //Field For time measuring
@@ -61,23 +61,38 @@ void TeleTall::Run(
 
         //handle inputs and events here:
         //..
-        SDL_Event e;
-        SDL_PollEvent(&e);
-        if (e.type == SDL_QUIT)
-           { running = false;}
-
-
+        controller.ProcessInput(running);
 
         //Update Function here:
         //..
-        Update();
-
-
-
+        telepad.Update(controller);
+        tallwindow.Update(controller);
 
         //Render here:
         //..
-        Render();
+        SDL_SetRenderDrawColor(hRenderer, 220, 220, 220, 255);
+        SDL_RenderClear(hRenderer);
+
+
+        //Some Sample gird---------------------------
+        SDL_SetRenderDrawColor(hRenderer, 200, 200, 200, 255);
+        
+        for (int i = 0; i < 5; i++)
+        {
+            int y = 120 *i+1;
+            SDL_RenderDrawLine(hRenderer,0,y,900,y );
+        }
+        for (int i = 0; i < 8; i++)
+        {
+            int x = 120 *i+1;
+            SDL_RenderDrawLine(hRenderer,x,0,x,600 );
+        }
+        //Some Sample gird---------------------------
+
+
+        telepad.Render(hRenderer);
+
+        SDL_RenderPresent(hRenderer);
         //.
         //.
 
@@ -89,14 +104,10 @@ void TeleTall::Run(
         if (frame_end - time_stamp >= 1000)
         {
             //...set tile every second
-            if (tltl_Frame_Rate)
+            if (true)
             {
                 std::string title{
-                    std::string(WINDOW_NAME)
-                    + "   -" 
-                    + "running status: " 
-                    + std::to_string(frame_count)
-                    + " fps"};
+                    std::string(WINDOW_NAME) + "   -" + "running status: " + std::to_string(frame_count) + " fps"};
 
                 SDL_SetWindowTitle(hwnd_main, title.c_str());
             }
@@ -110,27 +121,9 @@ void TeleTall::Run(
             //using this to stablise the machine
             SDL_Delay(MsPerFrame - frame_duration);
         }
+
         //------------------------TIME---------------------------
     }
-}
-//[Update]---------------------------------------------------------------------------------
-void TeleTall::Update()
-{
-}
-
-
-//[Render]---------------------------------------------------------------------------------
-void TeleTall::Render()
-{
-    SDL_SetRenderDrawColor(hRenderer, 255, 200, 200, 255);
-    SDL_RenderClear(hRenderer);
-    SDL_Rect rect;
-    rect.x = 100;
-    rect.y = 100;
-    rect.w = 200;
-    rect.h = 200;
-    SDL_RenderFillRect(hRenderer, &rect);
-    SDL_RenderPresent(hRenderer);
 }
 
 //[Utility] for reporting errors------------------------------------------------------------

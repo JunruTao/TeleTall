@@ -9,13 +9,19 @@ class Tallwindow
 public:
     Tallwindow(
         const size_t &master_width,
-        const size_t &master_height,
-        const Telecontroller &controller);
+        const size_t &master_height);
     ~Tallwindow();
+
+    void Update(const Telecontroller &controller);
+
+    void Render(SDL_Renderer *renderer);
 
 private:
     size_t tlwd_Width;
     size_t tlwd_Height;
+    size_t start_pt;
+
+    SDL_Rect tallViewport;
 };
 
 #endif
