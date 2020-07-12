@@ -15,6 +15,8 @@ namespace JUTA_Math
             value = max_bound;
         }
     }
+
+
 } // namespace JUTA_Math
 
 #endif

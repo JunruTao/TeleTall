@@ -1,10 +1,10 @@
 #include "teletall_control.h"
 #include "SDL2/SDL.h"
 
-size_t Telecontroller::lastMouseLocation_X = 0;
-size_t Telecontroller::lastMouseLocation_Y = 0;
-size_t Telecontroller::nowMouseLocation_X = 0;
-size_t Telecontroller::nowMouseLocation_Y = 0;
+int Telecontroller::lastMouseLocation_X = 0;
+int Telecontroller::lastMouseLocation_Y = 0;
+int Telecontroller::nowMouseLocation_X = 0;
+int Telecontroller::nowMouseLocation_Y = 0;
 
 bool Telecontroller::RMB_hold = false;
 bool Telecontroller::LMB_hold = false;
@@ -12,11 +12,16 @@ bool Telecontroller::MMB_hold = false;
 
 Telecontroller::Telecontroller()
 {
-    _tltlvertprop = 0;
+    key_FRAME = false;
+    key_HOME = false;
 }
 
-Telecontroller::~Telecontroller()
+Telecontroller::~Telecontroller() {}
+
+void Telecontroller::Synchoronise()
 {
+    lastMouseLocation_X = nowMouseLocation_Y;
+    lastMouseLocation_X = nowMouseLocation_Y;
 }
 
 void Telecontroller::ProcessInput(bool &running)
@@ -34,6 +39,7 @@ void Telecontroller::ProcessInput(bool &running)
     //--------------------------------------[Mouse press]
     else if (event.type == SDL_MOUSEBUTTONDOWN)
     {
+        SDL_GetMouseState(&nowMouseLocation_X, &nowMouseLocation_Y);
         switch (event.button.button)
         {
         case SDL_BUTTON_LEFT:
@@ -60,6 +66,25 @@ void Telecontroller::ProcessInput(bool &running)
         LMB_hold = false;
         MMB_hold = false;
     }
+    else if (event.type == SDL_KEYDOWN)
+    {
+        switch (event.key.keysym.sym)
+        {
+        case SDLK_h:
+            key_HOME = true;
+            break;
+        case SDLK_f:
+            key_FRAME = true;
+            break;
+
+        default:
+            break;
+        }
+    }
+    else if (event.type == SDL_KEYUP)
+    {
+        key_HOME = false;
+        key_FRAME = false;
+    }
     //--------------------------------------[Nothing]
-    nowMouseLocation_X = event.motion.x;
 } //end of ProcessInput scope

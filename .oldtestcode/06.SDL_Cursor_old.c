@@ -24,7 +24,7 @@ static const char *doublearrow[] = {
     "                                ", //08
     "                                ", //09
     "                                ", //10
-    "                                ", //11
+    "     X                    X     ", //11
     "    XX                    XX    ", //12
     "   X.X                    X.X   ", //13
     "  X..X                    X..X"  , //14
@@ -32,20 +32,64 @@ static const char *doublearrow[] = {
     "X.............X  X.............X", //16
     " X...XXXXXXXXXX  XXXXXXXXXX...X ", //17
     "  X..X                    X..X  ", //18
-    "   X.X                    X.X   ",
-    "    XX                    XX    ",
-    "                                ",
-    "                                ",
-    "                                ",
-    "                                ",
-    "                                ",
-    "                                ",
-    "                                ",
-    "                                ",
-    "                                ",
-    "                                ",
-    "                                ",
-    "                                ",
+    "   X.X                    X.X   ", //19
+    "    XX                    XX    ", //20
+    "     X                    X     ", //21
+    "                                ", //22
+    "                                ", //23
+    "                                ", //24
+    "                                ", //25
+    "                                ", //26
+    "                                ", //27
+    "                                ", //28
+    "                                ", //29
+    "                                ", //30
+    "                                ", //31
+    "                                ", //32
+    "0,0"};
+
+
+ 
+/* XPM */
+static const char *crossx[] = {
+    /* width height num_colors chars_per_pixel */
+    "    32    32        3            1",
+    /* colors */
+    "X c #000000",
+    ". c #ffffff",
+    "  c None",
+    /* pixels */
+    "               X                ", //01
+    "              X.X               ", //02
+    "             X...X              ", //03
+    "            X.....X             ", //04
+    "           X.......X            ", //05
+    "          XXXXX.XXXXX           ", //06
+    "              X.X               ", //07
+    "              X.X               ", //08
+    "              X.X               ", //09
+    "              X.X               ", //10
+    "     X        X.X         X     ", //11
+    "    XX        X.X         XX    ", //12
+    "   X.X        XXX         X.X   ", //13
+    "  X..X                    X..X"  , //14
+    " X...XXXXXXXXXX  XXXXXXXXXX...X ", //15
+    "X.............X  X.............X", //16
+    " X...XXXXXXXXXX  XXXXXXXXXX...X ", //17
+    "  X..X                    X..X  ", //18
+    "   X.X        XXX         X.X   ", //19
+    "    XX        X.X         XX    ", //20
+    "     X        X.X         X     ", //21
+    "              X.X               ", //22
+    "              X.X               ", //23
+    "              X.X               ", //24
+    "              X.X               ", //25
+    "          XXXXX.XXXXX           ", //26
+    "           X.......X            ", //27
+    "            X.....X             ", //28
+    "             X...X              ", //29
+    "              X.X               ", //31
+    "               X                ", //32
     "0,0"};
 
 
@@ -92,8 +136,6 @@ static const char *cross[] = {
     "              X.X               ",
     "              XXX               ",
     "0,0"};
-
-
 
 
 

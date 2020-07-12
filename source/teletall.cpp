@@ -58,7 +58,6 @@ void TeleTall::Run(
     while (running)
     {
         frame_start = SDL_GetTicks();
-
         //handle inputs and events here:
         //..
         controller.ProcessInput(running);
@@ -71,23 +70,8 @@ void TeleTall::Run(
         //Render here:
         //..
         SDL_SetRenderDrawColor(hRenderer, 220, 220, 220, 255);
-        SDL_RenderClear(hRenderer);
+        SDL_RenderClear(hRenderer); //this will be the back ground for tall
 
-
-        //Some Sample gird---------------------------
-        SDL_SetRenderDrawColor(hRenderer, 200, 200, 200, 255);
-        
-        for (int i = 0; i < 5; i++)
-        {
-            int y = 120 *i+1;
-            SDL_RenderDrawLine(hRenderer,0,y,900,y );
-        }
-        for (int i = 0; i < 8; i++)
-        {
-            int x = 120 *i+1;
-            SDL_RenderDrawLine(hRenderer,x,0,x,600 );
-        }
-        //Some Sample gird---------------------------
 
 
         telepad.Render(hRenderer);
@@ -107,7 +91,12 @@ void TeleTall::Run(
             if (true)
             {
                 std::string title{
-                    std::string(WINDOW_NAME) + "   -" + "running status: " + std::to_string(frame_count) + " fps"};
+                    std::string(WINDOW_NAME) 
+                    + "   -running status: " 
+                    + std::to_string(frame_count) 
+                    + " fps   telepad:" 
+                    +std::to_string(telepad.GetOrigin()->x) 
+                    + " " +std::to_string(telepad.GetOrigin()->y)};
 
                 SDL_SetWindowTitle(hwnd_main, title.c_str());
             }
@@ -123,6 +112,7 @@ void TeleTall::Run(
         }
 
         //------------------------TIME---------------------------
+        controller.Synchoronise();
     }
 }
 

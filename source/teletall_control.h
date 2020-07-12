@@ -10,21 +10,21 @@ public:
     ~Telecontroller();
 
     void ProcessInput(bool& running);
+    void Synchoronise();
     
     int GetSplitLocation()const;
 
-    static size_t lastMouseLocation_X;
-    static size_t lastMouseLocation_Y;
-    static size_t nowMouseLocation_X;
-    static size_t nowMouseLocation_Y;
+    static int lastMouseLocation_X;
+    static int lastMouseLocation_Y;
+    static int nowMouseLocation_X;
+    static int nowMouseLocation_Y;
     static bool RMB_hold;
     static bool LMB_hold;
     static bool MMB_hold;
-    //static bool MOUSE_move;
-    int _tltlvertprop;
-private:
-    
-    
+
+    bool key_HOME;
+    bool key_FRAME;
+
 };
 
 #endif
