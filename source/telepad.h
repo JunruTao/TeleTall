@@ -7,6 +7,7 @@
 #include "JUTA/JUTA_math.h"
 #include "JUTA/JUTA_geometry_core.h"
 #include "ui/teletall_graphics.h"
+#include "ui/teletall_button.h"
 
 class Telepad
 {
@@ -27,15 +28,17 @@ private:
     SDL_Rect slidebar;
     bool slidebarSelected;
     bool gridSelected;
-
+    
+    std::vector<Point2D<int>> mouse_trail;
+    
     //The grid
     Point2D<int> origin;
-    std::vector<Point2D<int>> mouse_trail; 
     int grid_size;
-
     void DrawSlideBar(SDL_Renderer *renderer);
     void MoveGrid(Telecontroller &controller, const int &x, const int &y);
     void Resize(Telecontroller &controller, const int &x, const int &y);
+
+    Button* button;
 };
 
 #endif

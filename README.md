@@ -93,10 +93,23 @@ The viewport on the left is called `TelePad` which is the context for holding an
 > build test:
 > <img src=".markdown.images/20200713_teletall_viewport.gif"/>
 
-| | Other Updates:  |
-|---|---|
-| 1.| included SDL_image - linked successfully|
-|2.| included SDL_ttf - linked successfully|
+|<sub>_topics_</sub> | _Other Updates:_  |
+|:---:|---|
+|<sub>00:50AM</sub>||
+| **SDL2**| included SDL_image - linked successfully|
+|| included SDL_ttf - linked successfully, added file under `'${ProjectDir}/cmake/'`a cmake file `FindSDL2_ttf.cmake` for find package function. |
+|<sub>4:30PM</sub>||
+|**CMake**| Update `CMakeLists.txt` using a foreach loop to **search all the sub-directories to find all `.cpp` and `.h`** as follow:   |
+|-| `file(GLOB_RECURSE TELETALL_PROJECT_SOURCES "source/*.cpp")`|
+|-|`file(GLOB_RECURSE TELETALL_PROJECT_HEADERS "source/*.h")`|
+|-|`set(TELETALL_INCLUDE_DIRS "")`|
+|-|`foreach(_headerFile ${TELETALL_PROJECT_HEADERS})`|
+|-|- - - `get_filename_component(_dir ${_headerFile} PATH)`|
+|-|- - - `list (APPEND TELETALL_INCLUDE_DIRS ${_dir})`|
+|-|`endforeach(_headerFile ${TELETALL_PROJECT_HEADERS})`|
+|-|`list(REMOVE_DUPLICATES TELETALL_INCLUDE_DIRS)`|
+|-|`add_executable(teletall ${TELETALL_PROJECT_SOURCES})`|
+|-|`target_include_directories(teletall PRIVATE ${TELETALL_INCLUDE_DIRS})`|
 
 
 

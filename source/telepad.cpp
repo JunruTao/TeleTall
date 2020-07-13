@@ -38,13 +38,18 @@ Telepad::Telepad(
     origin.x = pad_width / 2;
     origin.y = pad_height / 2;
     grid_size = TELEPAD_GRID_SIZE;
+
+    button = new Button();
 }
 /*
 #[[[[[[[[[[[]]]]]]]]]]]
 #[[[[[[[[[[[]]]]]]]]]]]
 */
 //--------------------------------------------------------------------------------------
-Telepad::~Telepad() {}
+Telepad::~Telepad()
+{
+    delete button;
+}
 /*
 #[[[[[[[[[[[]]]]]]]]]]]
 #[[[[[[[[[[[]]]]]]]]]]]

@@ -8,9 +8,17 @@
 //[CONSTRUCTOR]-------------------------------------------------------------------------------------
 TeleTall::TeleTall(const size_t &tltl_Window_Width, const size_t &tltl_Window_Height)
 {
-    //[1] SDL initialisation:
+    //[1] SDL initialisations:
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
         ErrorReporter("SDL initialisation failed."); //Test Success;
+    if(TTF_Init()==-1) 
+        ErrorReporter("SDL_ttf initialisation failed");
+        // load support for the JPG and PNG image formats
+    int flags = IMG_INIT_JPG | IMG_INIT_PNG;
+    int initted = IMG_Init(flags);
+    if ((initted & flags) != flags)
+        ErrorReporter("SDL_image initialisation failed");
+
 
     //[2] Creating SDL_Window:
     hwnd_main = SDL_CreateWindow(
