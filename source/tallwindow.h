@@ -16,7 +16,7 @@ public:
         const size_t &master_height);
     ~Tallwindow();
 
-    void Update(const Telecontroller &controller);
+    void Update(Telecontroller &controller);
 
     void Render(SDL_Renderer *renderer);
     Point2D<int>* GetOrigin();
@@ -24,8 +24,6 @@ public:
 private:
     size_t win_width;
     size_t win_height;
-    size_t pad_width;
-    size_t pad_height;
 
     bool gridSelected;
 

@@ -1,6 +1,6 @@
 #include "tallwindow.h"
 
-#define TALL_GRID_SIZE 200
+#define TALL_GRID_SIZE 20
 
 Tallwindow::Tallwindow(
     const size_t &master_width,
@@ -9,15 +9,13 @@ Tallwindow::Tallwindow(
     //Setting up dimension local varible
     win_width = master_width;
     win_height = master_height;
-    pad_width = master_width;
-    pad_height = master_height;
 
     //Slide bar seletion init
     gridSelected = false;
 
     //world grid Starting Point;
-    origin.x = pad_width / 4 * 3;
-    origin.y = pad_height / 2;
+    origin.x = win_width / 4 * 3;
+    origin.y = win_height / 2;
     grid_size = TALL_GRID_SIZE;
 }
 
@@ -32,19 +30,31 @@ void Tallwindow::Render(SDL_Renderer *renderer)
     SDL_SetRenderDrawColor(renderer, 220, 220, 220, 255);
     SDL_RenderClear(renderer); //this will be the back ground for tall
     DrawGrid(renderer, origin, grid_size, win_width, win_height, 200);
+    DrawGrid(renderer, origin, grid_size*10, win_width, win_height, 150);
     int cross_size = 5;
-    if (
-        origin.x > -cross_size && 
-        origin.x < pad_width + cross_size && 
-        origin.y > -cross_size && 
-        origin.y < pad_height + cross_size)
+    if (origin.InBound(0,0,win_width,win_height))
     {
-        DrawCross(renderer,origin,cross_size,220,0,0);
+        DrawCross_D(renderer,origin,cross_size,220,0,0);
     }
 }
 
-void Tallwindow::Update(const Telecontroller &controller)
+void Tallwindow::Update(Telecontroller &controller)
 {
+    if (controller.eWinUpdate)
+    {
+        SDL_Window *hhwnd = controller.GetHWND();
+        int wsX, wsY;
+
+        SDL_GetWindowSize(hhwnd, &wsX, &wsY);
+
+        double propxc =((double)wsX) / ((double)win_width);
+        double propyc = ((double)wsY) / ((double)win_height);
+        origin.x = (int)((double)origin.x*propxc);
+        origin.y = (int)((double)origin.y*propyc);
+
+        win_width = wsX;
+        win_height = wsY;
+    }
     int x, y;
     SDL_GetMouseState(&x, &y);
     MoveGrid(controller, x, y);
@@ -90,8 +100,8 @@ void Tallwindow::MoveGrid(const Telecontroller &controller, const int &x, const 
     }
     else if (controller.current_panel == PanelID::ON_TALL && controller.key_HOME)
     { //HOMING here>>>
-        origin.x = controller.GetSplitLocation()+(pad_width-controller.GetSplitLocation())/2;
-        origin.y = pad_height / 2;
+        origin.x = controller.GetSplitLocation()+(win_width-controller.GetSplitLocation())/2;
+        origin.y = win_height / 2;
     }
     else
     {

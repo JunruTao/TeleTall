@@ -19,7 +19,7 @@ TeleTall::TeleTall(const size_t &tltl_Window_Width, const size_t &tltl_Window_He
         SDL_WINDOWPOS_CENTERED, //--Place window in the center of the screen
         tltl_Window_Width,      //--Main Window Width
         tltl_Window_Height,     //--Main Window Height
-        SDL_WINDOW_SHOWN);      //--Show window command SDL
+        SDL_WINDOW_RESIZABLE);      //--Show window command SDL
     if (hwnd_main == NULL)
         ErrorReporter("SDL window creation failed. "); //Test Success;
 
@@ -43,6 +43,7 @@ void TeleTall::Run(
     Tallwindow &tallwindow,     //Tallwindow
     Telecontroller &controller) //Telecontroller
 {
+    controller.StoreHWND(&hwnd_main);
 
     //Field For time measuring
     Uint32 time_stamp = SDL_GetTicks();
@@ -94,9 +95,7 @@ void TeleTall::Run(
                     std::string(WINDOW_NAME) 
                     + "   -running status: " 
                     + std::to_string(frame_count) 
-                    + " fps   telepad:" 
-                    +std::to_string(telepad.GetOrigin()->x) 
-                    + " " +std::to_string(telepad.GetOrigin()->y)};
+                    + " fps"};
 
                 SDL_SetWindowTitle(hwnd_main, title.c_str());
             }

@@ -63,7 +63,7 @@ static void DrawGrid(
     //---------------------------------
     //Draw Horizontal
     distance = 0;
-    if (origin.y > 0)
+    if (origin.y > 0 && pad_height > grid_size)
     {
         if (origin.y <= pad_height)
         {
@@ -94,7 +94,7 @@ static void DrawGrid(
             }
         }
     }
-    else
+    else if(pad_height > grid_size)
     {
         distance = origin.y;
         while (distance < 0)
@@ -125,6 +125,26 @@ static void DrawCross
     SDL_SetRenderDrawColor(renderer, r_255, g_255, b_255, 255);
     SDL_RenderDrawLine(renderer, origin.x + cross_size, origin.y, origin.x - cross_size, origin.y);
     SDL_RenderDrawLine(renderer, origin.x, origin.y + cross_size, origin.x, origin.y - cross_size);
+}
+
+static void DrawCross_D
+(
+    SDL_Renderer *renderer,
+    Point2D<int> &origin,
+    const int& cross_size,
+    const int& r_255,
+    const int& g_255,
+    const int& b_255
+)
+{
+    SDL_SetRenderDrawColor(renderer, r_255, g_255, b_255, 255);
+    SDL_RenderDrawLine(renderer, origin.x + cross_size, origin.y, origin.x - cross_size, origin.y);
+    SDL_RenderDrawLine(renderer, origin.x, origin.y + cross_size, origin.x, origin.y - cross_size);
+    
+    SDL_RenderDrawLine(renderer, origin.x + cross_size, origin.y+1, origin.x - cross_size, origin.y+1);
+    SDL_RenderDrawLine(renderer, origin.x+1, origin.y + cross_size, origin.x+1, origin.y - cross_size);
+    SDL_RenderDrawLine(renderer, origin.x + cross_size, origin.y-1, origin.x - cross_size, origin.y-1);
+    SDL_RenderDrawLine(renderer, origin.x-1, origin.y + cross_size, origin.x-1, origin.y - cross_size);
 }
 
 #endif

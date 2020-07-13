@@ -1,6 +1,7 @@
 # :radio_button: TeleTall 
 
 This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](https://www.udacity.com/course/c-plus-plus-nanodegree--nd213). The Capstone Project is a chance to integrate what I've learned throughout this program. 
+<img src=".markdown.images/20200713_teletall_viewport.gif"/>
 ***
 
 ### :red_circle: Dependencies for Running Locally
@@ -63,6 +64,29 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
 *****************************************************************
 ## :black_circle:Production Logs:
 #### :pushpin: Latest: :arrow_down: :arrow_down: :arrow_down:
+
+
+
+:radio_button: &larr;- - - - :bookmark_tabs:
+* #### DAY 4 { <ins>7/12/2020</ins> } : Fully functional 2 viewports
+**[00:52 AM] Update:** 
+| | Achivements  |
+|---|---|
+|1.| mid-slider drawing update, added some graphic character
+|2.| introducing JUTA(from another repo of mine) `JUTA_math.h` and basic geometry definitions `JUTA_geometry.h`. Only `Point2D` type but with function such as `GetLenght` `Translate` and operator overloading.|
+|3.|Fully functional panning, each viewports has it own origin. using `Point2D` struct, and transformed by the mouse hold and drag events. test it out: 🖱️`Left mouse button` you can drag the view-split-slider, and 🖱️`Right mouse button` to pan around both viewports. finally, hit `H`key you can `"home"`the viewport back to origin.| 
+|4.|Moved basic drawing functions to `teletall_graphics.h` header file such as creating a cross and drawing the grid. The draw grid function basically takes an origin and view bound and only draws the lines in the viewport no matter how far way the origin is.
+|5. | Resizable window, the viewport will maintain its original scale and the origin does the same!!! The ui elements will automatically fit.
+|6.| Bump up the frame rate to 60fps is a lot more better interativity. 
+
+> build test:
+> <img src=".markdown.images/20200713_teletall_viewport.gif"/>
+
+
+
+
+
+
 :radio_button: &larr;- - - - :bookmark_tabs: 
 * #### DAY 4 { <ins>7/12/2020</ins> } : Experiments
 

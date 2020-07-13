@@ -13,6 +13,7 @@ Telecontroller::Telecontroller()
 {
     key_FRAME = false;
     key_HOME = false;
+    eWinUpdate = false;
 }
 
 Telecontroller::~Telecontroller() {}
@@ -24,8 +25,25 @@ void Telecontroller::ProcessInput(bool &running)
     SDL_Event event;
     SDL_PollEvent(&event);
 
+    if (event.type == SDL_WINDOWEVENT)
+    {
+        switch (event.window.event)
+        {
+        case SDL_WINDOWEVENT_RESIZED:
+            eWinUpdate = true;
+            break;
+        case SDL_WINDOWEVENT_SIZE_CHANGED:
+            eWinUpdate = true;
+            break;
+
+        default:
+            eWinUpdate = false;
+            break;
+        }
+    }
+
     //-------------------------------------[Quit Only]
-    if (event.type == SDL_QUIT)
+    else if (event.type == SDL_QUIT)
     {
         running = false;
     }

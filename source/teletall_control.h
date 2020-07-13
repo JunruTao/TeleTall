@@ -14,6 +14,8 @@ public:
 
     void ProcessInput(bool& running);
     void SendToConcole();
+    void StoreHWND(SDL_Window** hhwnd){_hhwnd = hhwnd;}
+    SDL_Window* GetHWND()const{return *_hhwnd;};
     
     //for these 2 panels
     int GetSplitLocation()const;
@@ -30,11 +32,14 @@ public:
     bool key_HOME;
     bool key_FRAME;
     PanelID current_panel;
+
+    bool eWinUpdate;
     
     
 private:
     int _split_location; 
     std::vector<std::string> _msg;
+    SDL_Window** _hhwnd;
 
 };
 

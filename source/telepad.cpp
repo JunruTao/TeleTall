@@ -60,6 +60,7 @@ Point2D<int> *Telepad::GetOrigin()
 //--------------------------------------------------------------------------------------
 void Telepad::Update(Telecontroller &controller)
 {
+    
     //current mouse location
     int x, y;
     SDL_GetMouseState(&x, &y);
@@ -105,6 +106,9 @@ void Telepad::Render(SDL_Renderer *renderer)
 //------------------------------------------------------------------------------------
 void Telepad::DrawSlideBar(SDL_Renderer *renderer)
 {
+    slidebar.x = pad_width - HALF_SLIDEBAR;
+    slidebar.h = pad_height;
+
     SDL_RenderSetClipRect(renderer, NULL);
     SDL_SetRenderDrawColor(renderer, 130, 130, 130, 255);
     SDL_RenderFillRect(renderer, &slidebar);
@@ -139,6 +143,28 @@ void Telepad::DrawSlideBar(SDL_Renderer *renderer)
 //--------------------------------------------------------------------------------------
 void Telepad::Resize(Telecontroller &controller, const int &x, const int &y)
 {
+    if (controller.eWinUpdate)
+    {
+        double proportion = ((double)pad_width) / ((double)win_width);
+        SDL_Window *hhwnd = controller.GetHWND();
+        int wsX, wsY;
+        SDL_GetWindowSize(hhwnd, &wsX, &wsY);
+
+        double propxc =((double)wsX) / ((double)win_width);
+        double propyc = ((double)wsY) / ((double)win_height);
+        origin.x = (int)((double)origin.x*propxc);
+        origin.y = (int)((double)origin.y*propyc);
+
+        win_width = wsX;
+        win_height = wsY;
+
+        pad_width = (int)((double)wsX) * proportion;
+
+        pad_height = wsY;
+        padViewport.w = pad_width;
+        padViewport.h = pad_height;
+    }
+
     SDL_Cursor *cursor = NULL;
     bool onBar = (x > slidebar.x - SLIDEBAR_SEL_BLEED) && (x < slidebar.x + slidebar.w + SLIDEBAR_SEL_BLEED);
     bool onTall = (x > slidebar.x + slidebar.w + SLIDEBAR_SEL_BLEED) && (x < win_width);
