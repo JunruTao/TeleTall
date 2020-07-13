@@ -14,6 +14,12 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
 * **SDL2** >= 2.0
   * All installation instructions can be found [here](https://wiki.libsdl.org/Installation)
   * Note that for Linux, an `apt` or `apt-get` installation is preferred to building from source.
+* **SDL2_image** >= 2.0
+  * All installation instructions can be found [here](https://www.libsdl.org/projects/SDL_image/)
+  * Note that for Linux, an `apt` or `apt-get` installation is preferred to building from source.
+* **SDL2_ttf** >= 2.0
+  * All installation instructions can be found [here](https://www.libsdl.org/projects/SDL_ttf/)
+  * Note that for Linux, an `apt` or `apt-get` installation is preferred to building from source.
 * **gcc/g++** >= 5.4
   * Linux: gcc / g++ is installed by default on most Linux distros
   * Mac: same deal as make - [install Xcode command line tools](https://developer.apple.com/xcode/features/)
@@ -34,9 +40,9 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
 
   | list |     Code Needed to Adjust              |    to  | Changed           |
   | :---  | ------------------------------------- | ---    | ----              |
-  |  1.  | Change all the `#include <SDL2/SDL.h>`| &rarr; | `#include <SDL.h>`|
+  |  1.  | Change all the `#include <SDL2/...>`| &rarr; | `#include <SDL.h>` or so|
   | 2.*  | You might have to change `#include <pthread.h>` | &rarr; | `#include <thread>` |
-  |  3.  | In<ins>`CMakeLists.txt`</ins> delete last few **-flags** in the last line | &rarr; | <s>`-lmingw32 -lSDL2main -lSDL2...`</s> | 
+  |  3.*  | In<ins>`CMakeLists.txt`</ins> might need to delete last few **-flags** in the last line | &rarr; | <s>`-lmingw32 -lSDL2main -lSDL2...`</s> | 
 * **Windows:**
   1. Clone this repo.
   2. Make a build directory in the top level directory: `mkdir build` then `cd build`, two commands
@@ -68,7 +74,7 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
 
 
 :radio_button: &larr;- - - - :bookmark_tabs:
-* #### DAY 4 { <ins>7/12/2020</ins> } : Fully functional 2 viewports
+* #### DAY 5 { <ins>7/13/2020</ins> } : Fully functional 2 viewports
 **[00:52 AM] Update:** 
 | | Achivements  |
 |---|---|
@@ -82,6 +88,10 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
 > build test:
 > <img src=".markdown.images/20200713_teletall_viewport.gif"/>
 
+| | Other Updates:  |
+|---|---|
+| 1.| included SDL_image - linked successfully|
+|2.| included SDL_ttf - linked successfully|
 
 
 

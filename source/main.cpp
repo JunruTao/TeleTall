@@ -2,10 +2,12 @@
 #include "telepad.h"
 #include "tallwindow.h"
 #include "teletall_control.h"
-
+#include "SDL2/SDL_ttf.h"
 
 int main(int argc, char *argv[])
 {
+
+    TTF_Init();
     /*BASIC PROPERTIES*/
     //Width and Height of the window
     constexpr size_t tltl_Window_Width{900};
