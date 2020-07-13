@@ -52,7 +52,13 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
 ***
 ### :white_circle:Program Guide
 
-...
+* ##### 1.Start: Viewport and Window
+
+The viewport on the left is called `TelePad` which is the context for holding and creating `Tele-Nodes` and their connections; the one on the right is `Tall v1.0` viewport2D, rendering the geometries. Once OpenGL is introduced, a GL-3D viewport will replace `Tall v1.0`.
+  * 🖱️`Left mouse button`: click and drag to move assets and UI elements.
+  * 🖱️`Right mouse button`: click and drag to nevigate around the viewport space; 
+  * ⌨️`"H"` key, to 'home' the viewport grid back to its origin (0,0).
+    * >  they all works for both viewport: `TelePad` (node viewport) and `Tall` (geometry viewport).
 
 ***
 ### :white_circle:License
@@ -61,12 +67,11 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
 
 ***
 
-### :white_circle:Release
+### :white_circle:Releases
 
-...
+* [TeleTall-SDL2 Version -v0.1](https://github.com/JunruTao/Udacity.Cpp.Capstone.Project/releases/tag/v0.1)
 
 
-*****************************************************************
 *****************************************************************
 ## :black_circle:Production Logs:
 #### :pushpin: Latest: :arrow_down: :arrow_down: :arrow_down:
