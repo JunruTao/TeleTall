@@ -193,7 +193,7 @@ class ScreenText
 {
 public:
     //constructor/deconstructor
-    ScreenText(int textsize);
+    ScreenText();
     ~ScreenText();
     
     void loadFromRenderedText(
@@ -205,11 +205,12 @@ public:
         );
 
     void Draw(SDL_Renderer* renderer,int x, int y);
+    static void InitLoadMedia(int textsize);
     
 
 private:
     void Free();
-    void LoadMedia(int textsize);
+    
     //The actual hardware texture
     SDL_Texture *mTexture;
     //Image dimensions

@@ -7,20 +7,19 @@ TTF_Font *ScreenText::gFont = NULL;
 int ScreenText::counter = 0;
 
 
-void ScreenText::LoadMedia(int textsize)
+void ScreenText::InitLoadMedia(int textsize)
 {
-    gFont = TTF_OpenFont("tltl_fonts/arial.ttf", textsize);
+    gFont = TTF_OpenFont("tltl_fonts/arial.ttf",textsize);
     if (gFont == NULL)
     {
         //SDL_ShowSimpleMessageBox(0, "TTF Error", "Font open failed", NULL);
     }
+    SDL_Delay(10);
 }
 
 
-ScreenText::ScreenText(int textsize)
+ScreenText::ScreenText()
 {
-
-    LoadMedia(textsize); //will only be loaded once
     mTexture = NULL;
     mWidth = 0;
     mHeight = 0;

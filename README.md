@@ -65,7 +65,7 @@ The viewport on the left is called `TelePad` which is the context for holding an
 
 ...
 
-***
+----------------------------------------------------------------
 
 ### :white_circle:Releases
 
@@ -74,7 +74,24 @@ The viewport on the left is called `TelePad` which is the context for holding an
 
 *****************************************************************
 ## :black_circle:Production Logs:
-#### :pushpin: Latest: :arrow_down: :arrow_down: :arrow_down:
+#### :pushpin: Latest!!!: :arrow_down: :arrow_down: :arrow_down:
+
+:radio_button: &larr;- - - - :bookmark_tabs:
+* #### DAY 6 { <ins>7/14/2020</ins> } : Fixing TTF Loading Problem
+**[7:12 PM] Update:** 
+
+1. About fixing the font file loading problem.
+
+In terms of this update, mainly focusing on load and using text fonts in the program, so the font loading is very slow, as I have done it before it will crash when there is a lot of updating events for texts. After reading throught the tutorial on ["Lazy Foo's Tutorial 33"](https://lazyfoo.net/tutorials/SDL/33_file_reading_and_writing/index.php), I realised there should be a fixed pipe line for this: Load the font with a **fixed font size** and **once only**, then you can create many instances of Text container objects as you want.
+
+To avoid passing `TTF_Font*` pointer around the glob,  I made a font pointer a **static variable** and a **static function** called `InitLoadMedia(int font_size)`, and then this function will be called in the `main.cpp` only once right after the construction of `teletall` object and right before it calls `Run()`. So inside this `InitLoadMedia` function, a `SDL_Delay` funtion is called to give a file loading some buffer time.
+
+2. Updates in features
+
+Beause the text feature is introduced and set up, I added a coordinate displayer right next to the mouse, and coordinates are **relative** to the **world grid** instead of the screen space. The transfer is done simply subtract the coordinates of their screen coordinates and divided by the grid size.
+
+
+
 
 
 

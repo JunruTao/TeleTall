@@ -1,6 +1,9 @@
 #ifndef JUTA_MATH_H
 #define JUTA_MATH_H
 
+#include <sstream>
+
+
 namespace JUTA_Math
 {
     template <class var>
@@ -16,6 +19,14 @@ namespace JUTA_Math
         }
     }
 
+    template <typename var>
+    std::string Num_To_String_Percision(const var value, const int n = 4)//n is size
+    {
+        std::ostringstream out;
+        out.precision(n);
+        out << std::fixed << value;
+        return out.str();
+    }
 
 } // namespace JUTA_Math
 

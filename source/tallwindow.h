@@ -8,6 +8,9 @@
 #include "ui/teletall_graphics.h"
 #include <vector>
 
+
+
+
 class Tallwindow
 {
 public:

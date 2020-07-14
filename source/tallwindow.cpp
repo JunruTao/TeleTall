@@ -1,4 +1,5 @@
 #include "tallwindow.h"
+#include "JUTA/JUTA_math.h"
 
 #define TALL_GRID_SIZE 20
 
@@ -27,7 +28,7 @@ Tallwindow::Tallwindow(
 
     //mouse_reference;
     mouseLocation_ptptr = new Point2D<int>();
-    cordText = new ScreenText(6);
+    cordText = new ScreenText();
     text_color = {255,255,255,200};
 }
 
@@ -48,18 +49,25 @@ Point2D<int> *Tallwindow::GetOrigin()
 
 void Tallwindow::Render(SDL_Renderer *renderer)
 {
-    SDL_SetRenderDrawColor(renderer, 220, 220, 220, 255);
+    SDL_SetRenderDrawColor(renderer, 190, 190, 190, 255);//<|==================={Background color}
     SDL_RenderClear(renderer); //this will be the back ground for tall
-    DrawGrid(renderer, origin, grid_size, win_width, win_height, 200);
-    DrawGrid(renderer, origin, grid_size*10, win_width, win_height, 150);
+
+    
+    pthread_t t1;
+    pthread_t t2;
+
+    
+    DrawGrid(renderer, origin, grid_size, win_width, win_height, 170);//<|==================={Small Grid color color}
+    DrawGrid(renderer, origin, grid_size*10, win_width, win_height, 120);//<|==================={Times-x10 Grid color}
     
     int cross_size = 15;
     if (origin.InBound(0,0,win_width,win_height))
     {
-        DrawCross_D(renderer,origin,cross_size,175,175,175);
+        DrawCross_D(renderer,origin,cross_size,100,100,100);
     }
 
 
+    //std::thread
     
     if(onTall) // Window Graphics: inrange rec and mouse cross
     {
@@ -67,18 +75,21 @@ void Tallwindow::Render(SDL_Renderer *renderer)
         SDL_SetRenderDrawColor(renderer, 0, 153, 153, 210);
         SDL_RenderDrawRect(renderer,&tallviewport_RECT);
 
+        
 
         //SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_ADD);
 
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 200);
-        DrawLineExtendToBound(renderer,mouseLocation_ptptr,&tallviewport_RECT,1);
-        DrawLineExtendToBound(renderer,mouseLocation_ptptr,&tallviewport_RECT,0);
+
+        DrawLineExtendToBound(renderer,mouseLocation_ptptr,&tallviewport_RECT,1);//draw the mouse extended line -y
+        DrawLineExtendToBound(renderer,mouseLocation_ptptr,&tallviewport_RECT,0);//draw the mouse extended line -x
+
         DrawCross_D(renderer,*mouseLocation_ptptr,20, 255, 255, 255);
         SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_NONE);
 
         //send mouse cords to screen
-        Point2D temp = CalcLocalCord(origin,*mouseLocation_ptptr);
-        std::string cortostring = "[" + std::to_string(temp.x) +"," + std::to_string(temp.y)+ "]";
+        Point2D<float> temp = CalcLocalCord(origin,*mouseLocation_ptptr);
+        std::string cortostring = "[x=" + JUTA_Math::Num_To_String_Percision<float>(temp.x,2) +", y=" + JUTA_Math::Num_To_String_Percision<float>(temp.y,2)+ "]";
         
         cordText->loadFromRenderedText(cortostring,text_color,text_color,renderer,0);
         cordText->Draw(renderer,mouseLocation_ptptr->x +3,mouseLocation_ptptr->y+3);

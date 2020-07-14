@@ -88,7 +88,7 @@ void TeleTall::Run(
     bool tltl_showframerate = true;
 
     /*Somehow a text must be loaded here so that it won't crash at object init*/
-    ScreenText text1(15);
+    ScreenText text1;
     SDL_Color color = {255,255,255,60};
     SDL_Color bcolor = {0,0,0,255};
     //text1.loadFromRenderedText("hello",color,hRenderer);
