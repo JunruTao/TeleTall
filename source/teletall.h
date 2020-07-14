@@ -8,6 +8,7 @@
 #include "telepad.h"
 #include "tallwindow.h"
 #include "teletall_control.h"
+#include "ui/teletall_graphics.h"
 
 class TeleTall
 {

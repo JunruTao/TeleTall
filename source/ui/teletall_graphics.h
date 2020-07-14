@@ -2,6 +2,9 @@
 #define TELETALL_MENU_H
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_image.h>
+
 #include <JUTA/JUTA_geometry_core.h>
 #include <JUTA/JUTA_math.h>
 
@@ -140,11 +143,82 @@ static void DrawCross_D
     SDL_SetRenderDrawColor(renderer, r_255, g_255, b_255, 255);
     SDL_RenderDrawLine(renderer, origin.x + cross_size, origin.y, origin.x - cross_size, origin.y);
     SDL_RenderDrawLine(renderer, origin.x, origin.y + cross_size, origin.x, origin.y - cross_size);
-    
+
     SDL_RenderDrawLine(renderer, origin.x + cross_size, origin.y+1, origin.x - cross_size, origin.y+1);
     SDL_RenderDrawLine(renderer, origin.x+1, origin.y + cross_size, origin.x+1, origin.y - cross_size);
     SDL_RenderDrawLine(renderer, origin.x + cross_size, origin.y-1, origin.x - cross_size, origin.y-1);
     SDL_RenderDrawLine(renderer, origin.x-1, origin.y + cross_size, origin.x-1, origin.y - cross_size);
 }
+
+static void DrawCross_B
+(
+    SDL_Renderer *renderer,
+    Point2D<int> &origin,
+    const int& cross_size,
+    const int& r_255,
+    const int& g_255,
+    const int& b_255
+)
+{
+    SDL_SetRenderDrawColor(renderer, 180, 180, 180, 255);
+    SDL_RenderDrawLine(renderer, origin.x + cross_size, origin.y + 1, origin.x - cross_size, origin.y + 1);
+    SDL_RenderDrawLine(renderer, origin.x + 1, origin.y + cross_size, origin.x + 1, origin.y - cross_size);
+    SDL_RenderDrawLine(renderer, origin.x + cross_size, origin.y - 1, origin.x - cross_size, origin.y - 1);
+    SDL_RenderDrawLine(renderer, origin.x - 1, origin.y + cross_size, origin.x - 1, origin.y - cross_size);
+
+    SDL_SetRenderDrawColor(renderer, r_255, g_255, b_255, 255);
+    SDL_RenderDrawLine(renderer, origin.x + cross_size, origin.y, origin.x - cross_size, origin.y);
+    SDL_RenderDrawLine(renderer, origin.x, origin.y + cross_size, origin.x, origin.y - cross_size);
+}
+
+static void DrawLineExtendToBound(
+    SDL_Renderer *renderer,
+    const Point2D<int>* origin,
+    const SDL_Rect *rectangle,
+    int &&axis)
+{
+    if (axis == 1)
+    {
+        SDL_RenderDrawLine(renderer, origin->x, rectangle->y, origin->x, rectangle->h + rectangle->y);
+    }else if(axis == 0)
+    {
+        SDL_RenderDrawLine(renderer, rectangle->x, origin->y, rectangle->w + rectangle->x, origin->y);
+    }
+}
+
+
+
+//inplemented in screen space
+class ScreenText
+{
+public:
+    //constructor/deconstructor
+    ScreenText(int textsize);
+    ~ScreenText();
+    
+    void loadFromRenderedText(
+        std::string textureText, 
+        SDL_Color textColor,
+        SDL_Color backgroundColor,
+        SDL_Renderer* renderer,
+        int mode //0=solid, 1=shaded, 3=blend
+        );
+
+    void Draw(SDL_Renderer* renderer,int x, int y);
+    
+
+private:
+    void Free();
+    void LoadMedia(int textsize);
+    //The actual hardware texture
+    SDL_Texture *mTexture;
+    //Image dimensions
+    int mWidth;
+    int mHeight;
+    static TTF_Font* gFont;
+    static int counter;
+};
+
+
 
 #endif

@@ -21,7 +21,7 @@ Telepad::Telepad(
     //viewport size init
     padViewport.x = 0;
     padViewport.y = 0;
-    padViewport.w = pad_width;
+    padViewport.w = pad_width- HALF_SLIDEBAR;
     padViewport.h = pad_height;
 
     //Slide bar size init
@@ -34,12 +34,17 @@ Telepad::Telepad(
     slidebarSelected = false;
     gridSelected = false;
 
+    //panel value
+    onPad = false;
+    onBar = false;
+    onTall = false;
+
     //world grid Starting Point;
     origin.x = pad_width / 2;
     origin.y = pad_height / 2;
     grid_size = TELEPAD_GRID_SIZE;
 
-    button = new Button();
+    button = new MenuButton();
 }
 /*
 #[[[[[[[[[[[]]]]]]]]]]]
@@ -99,6 +104,24 @@ void Telepad::Render(SDL_Renderer *renderer)
 
     //Draw slider---------------------------
     DrawSlideBar(renderer);
+
+
+    //************************************
+    //This is drawing all the selection fucntions here;
+    //Draw regin---------------
+    SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_BLEND);
+    if(onPad)
+    {
+        SDL_SetRenderDrawColor(renderer, 90, 143, 222, 255);
+        SDL_RenderDrawRect(renderer,&padViewport);
+    }else if(onBar)
+    {
+        SDL_SetRenderDrawColor(renderer, 90, 143, 222, 150);
+        SDL_RenderDrawRect(renderer,&slidebar);
+    }
+    SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_NONE);
+
+    
 }
 /*
 #
@@ -166,34 +189,35 @@ void Telepad::Resize(Telecontroller &controller, const int &x, const int &y)
         pad_width = (int)((double)wsX) * proportion;
 
         pad_height = wsY;
-        padViewport.w = pad_width;
+
+        //Updating Viewport Here
+        padViewport.w = pad_width -HALF_SLIDEBAR;
         padViewport.h = pad_height;
     }
 
     SDL_Cursor *cursor = NULL;
-    bool onBar = (x > slidebar.x - SLIDEBAR_SEL_BLEED) && (x < slidebar.x + slidebar.w + SLIDEBAR_SEL_BLEED);
-    bool onTall = (x > slidebar.x + slidebar.w + SLIDEBAR_SEL_BLEED) && (x < win_width);
+    onBar = (x > slidebar.x - SLIDEBAR_SEL_BLEED) && (x < slidebar.x + slidebar.w + SLIDEBAR_SEL_BLEED);
+    onTall = (x > slidebar.x + slidebar.w + SLIDEBAR_SEL_BLEED) && (x < win_width);
 
- 
 
     if (onBar) //Mouse passing the slide bar
     {
+        
         cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZEWE);
         SDL_SetCursor(cursor);
+        SDL_ShowCursor(1);
         controller.current_panel = PanelID::ON_BAR;
         //changing cursor
+
     }
 
-    else if (onTall) //Mouse passing rest of the area
-    {
-        cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_CROSSHAIR);
-        SDL_SetCursor(cursor);
-    }
+    
 
     if (controller.LMB_hold) //Mouse clicked down
     {
         if (onBar || slidebarSelected) //Hold or Grag
         {
+            SDL_ShowCursor(1);
             controller.current_panel = PanelID::ON_BAR;
             cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZEALL);
             SDL_SetCursor(cursor);
@@ -201,7 +225,7 @@ void Telepad::Resize(Telecontroller &controller, const int &x, const int &y)
             pad_width = x;
             JUTA_Math::Clamp<size_t>(pad_width, 20, win_width - 20);
 
-            padViewport.w = pad_width;              //Updating viewport's location
+            padViewport.w = pad_width -HALF_SLIDEBAR;              //Updating viewport's location
             slidebar.x = pad_width - HALF_SLIDEBAR; //updating slidebar's location
         }
     }
@@ -209,8 +233,12 @@ void Telepad::Resize(Telecontroller &controller, const int &x, const int &y)
     {
         slidebarSelected = false; //Set seleted state to false
     }
-
-    if(onTall) controller.current_panel = PanelID::ON_TALL;
+    
+    if (onTall) //Mouse passing rest of the area
+    {
+        controller.current_panel = PanelID::ON_TALL;
+        SDL_ShowCursor(0);
+    }
 }
 /*
 #
@@ -228,7 +256,7 @@ void Telepad::Resize(Telecontroller &controller, const int &x, const int &y)
 void Telepad::MoveGrid(Telecontroller &controller, const int &x, const int &y)
 {
     SDL_Cursor *cursor = NULL;
-    bool onPad = (x > 0) && (x < pad_width - HALF_SLIDEBAR);
+    onPad = (x > 0) && (x < pad_width - HALF_SLIDEBAR);
     if (controller.RMB_hold)
     {
         if (onPad)
@@ -276,8 +304,9 @@ void Telepad::MoveGrid(Telecontroller &controller, const int &x, const int &y)
         if (onPad)
         {
             controller.current_panel = PanelID::ON_PAD;
-            cursor = SDL_GetDefaultCursor();
+            cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
             SDL_SetCursor(cursor);
+            SDL_ShowCursor(1);
         }
 
         //after release set gimble location

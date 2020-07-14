@@ -28,6 +28,9 @@ private:
     SDL_Rect slidebar;
     bool slidebarSelected;
     bool gridSelected;
+    bool onPad;
+    bool onBar;
+    bool onTall;
     
     std::vector<Point2D<int>> mouse_trail;
     

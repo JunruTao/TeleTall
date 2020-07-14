@@ -1,6 +1,5 @@
 #include "teletall.h"
-
-
+#include "ui/teletall_graphics.h"
 #include <string>
 
 #define WINDOW_NAME "TeleTall - SDL2 Version - v.01"
@@ -8,13 +7,18 @@
 //[CONSTRUCTOR]-------------------------------------------------------------------------------------
 TeleTall::TeleTall(const size_t &tltl_Window_Width, const size_t &tltl_Window_Height)
 {
-    //[1] SDL initialisations:
+    //[1.1] SDL initiation:
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
         ErrorReporter("SDL initialisation failed."); //Test Success;
+    if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"))
+        ErrorReporter("SDL Warning: Linear texture filtering not enabled!"); //Test Success;
+
+    //[1.2] SDL_ttf initiation
     if(TTF_Init()==-1) 
         ErrorReporter("SDL_ttf initialisation failed");
-        // load support for the JPG and PNG image formats
-    int flags = IMG_INIT_JPG | IMG_INIT_PNG;
+        
+    //[1.3] SDL_image initiation
+    int flags = IMG_INIT_JPG | IMG_INIT_PNG;// load support for the JPG and PNG image formats
     int initted = IMG_Init(flags);
     if ((initted & flags) != flags)
         ErrorReporter("SDL_image initialisation failed");
@@ -32,17 +36,28 @@ TeleTall::TeleTall(const size_t &tltl_Window_Width, const size_t &tltl_Window_He
         ErrorReporter("SDL window creation failed. "); //Test Success;
 
     //[3] Create the renderer:
-    hRenderer = SDL_CreateRenderer(hwnd_main, -1, SDL_RENDERER_ACCELERATED);
+    hRenderer = SDL_CreateRenderer(hwnd_main, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (hRenderer == NULL)
         ErrorReporter("SDL Renderer creation failed. "); //Test Success;
 }
+
+
+
+
+
 
 //[DESTRUCTOR]--------------
 TeleTall::~TeleTall()
 {
     SDL_DestroyWindow(hwnd_main);
+    TTF_Quit();
+    IMG_Quit();
     SDL_Quit();
 }
+
+
+
+
 
 //[RUN]---------------------
 void TeleTall::Run(
@@ -51,7 +66,11 @@ void TeleTall::Run(
     Tallwindow &tallwindow,     //Tallwindow
     Telecontroller &controller) //Telecontroller
 {
+
+
     controller.StoreHWND(&hwnd_main);
+
+
 
     //Field For time measuring
     Uint32 time_stamp = SDL_GetTicks();
@@ -61,9 +80,19 @@ void TeleTall::Run(
     unsigned int frame_count = 0;
     unsigned int MsPerFrame = 1000 / tltl_Frame_Rate;
 
+
+
+
     //Field for toggles
     bool running = true;
     bool tltl_showframerate = true;
+
+    /*Somehow a text must be loaded here so that it won't crash at object init*/
+    ScreenText text1(15);
+    SDL_Color color = {255,255,255,60};
+    SDL_Color bcolor = {0,0,0,255};
+    //text1.loadFromRenderedText("hello",color,hRenderer);
+
 
     /*The Feedback Loop*/
     while (running)
@@ -85,9 +114,16 @@ void TeleTall::Run(
         tallwindow.Render(hRenderer);
         telepad.Render(hRenderer);
 
+        text1.loadFromRenderedText("TeleTall beta v0.1",color,bcolor,hRenderer,3);
+        text1.Draw(hRenderer, 10,10);
+
+
+
+        //Render before this line
         SDL_RenderPresent(hRenderer);
         //.
         //.
+
 
         //------------------------TIME---------------------------
         //Time Frame Section(calculate current framerate and stablise)
@@ -117,9 +153,12 @@ void TeleTall::Run(
             //using this to stablise the machine
             SDL_Delay(MsPerFrame - frame_duration);
         }
+        
 
         //------------------------TIME---------------------------
-    }
+    }//end while
+
+
 }
 
 //[Utility] for reporting errors------------------------------------------------------------

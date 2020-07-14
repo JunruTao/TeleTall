@@ -3,6 +3,7 @@
 #include <SDL2/SDL.h>
 #include <string>
 #include <vector>
+#include "JUTA/JUTA_geometry_core.h"
 
 enum class PanelID {ON_PAD,ON_BAR,ON_MENU,ON_TALL};
 
@@ -15,16 +16,13 @@ public:
     void ProcessInput(bool& running);
     void SendToConcole();
     void StoreHWND(SDL_Window** hhwnd){_hhwnd = hhwnd;}
+    Point2D<int>* GetMousePoint();
     SDL_Window* GetHWND()const{return *_hhwnd;};
     
     //for these 2 panels
     int GetSplitLocation()const;
     void UpdateSplitLocation(int new_split);
 
-    static int lastMouseLocation_X;
-    static int lastMouseLocation_Y;
-    static int nowMouseLocation_X;
-    static int nowMouseLocation_Y;
     static bool RMB_hold;
     static bool LMB_hold;
     static bool MMB_hold;
@@ -40,6 +38,7 @@ private:
     int _split_location; 
     std::vector<std::string> _msg;
     SDL_Window** _hhwnd;
+    Point2D<int> _mouseLocation;
 
 };
 

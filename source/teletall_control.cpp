@@ -1,10 +1,5 @@
 #include "teletall_control.h"
 
-int Telecontroller::lastMouseLocation_X = 0;
-int Telecontroller::lastMouseLocation_Y = 0;
-int Telecontroller::nowMouseLocation_X = 0;
-int Telecontroller::nowMouseLocation_Y = 0;
-
 bool Telecontroller::RMB_hold = false;
 bool Telecontroller::LMB_hold = false;
 bool Telecontroller::MMB_hold = false;
@@ -14,6 +9,7 @@ Telecontroller::Telecontroller()
     key_FRAME = false;
     key_HOME = false;
     eWinUpdate = false;
+    _mouseLocation.New(0,0);
 }
 
 Telecontroller::~Telecontroller() {}
@@ -51,7 +47,6 @@ void Telecontroller::ProcessInput(bool &running)
     //--------------------------------------[Mouse press]
     else if (event.type == SDL_MOUSEBUTTONDOWN)
     {
-        SDL_GetMouseState(&nowMouseLocation_X, &nowMouseLocation_Y);
         switch (event.button.button)
         {
         case SDL_BUTTON_LEFT:
@@ -99,6 +94,9 @@ void Telecontroller::ProcessInput(bool &running)
         key_FRAME = false;
     }
     //--------------------------------------[Nothing]
+    int _x, _y;
+    SDL_GetMouseState(&_x,&_y);
+    _mouseLocation.New(_x,_y);
 } //end of ProcessInput scope
 
 
@@ -111,4 +109,10 @@ int Telecontroller::GetSplitLocation()const
 void Telecontroller::UpdateSplitLocation(int new_split)
 {
     _split_location = new_split;
+}
+
+
+Point2D<int>* Telecontroller::GetMousePoint()
+{
+    return &_mouseLocation;
 }

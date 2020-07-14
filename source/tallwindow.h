@@ -26,13 +26,20 @@ private:
     size_t win_height;
 
     bool gridSelected;
+    bool onTall;
 
     //The grid
     Point2D<int> origin;
+    Point2D<int>* mouseLocation_ptptr; //Pointer here!! delete after please
     std::vector<Point2D<int>> mouse_trail; 
+    SDL_Rect tallviewport_RECT;
     int grid_size;
+    Point2D<float> CalcLocalCord(const Point2D<int>& origin, const Point2D<int>& target);
 
     void MoveGrid(const Telecontroller &controller, const int &x, const int &y);
+
+    ScreenText* cordText;
+    SDL_Color text_color;
 
 };
 
