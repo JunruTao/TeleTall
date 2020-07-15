@@ -8,7 +8,13 @@
 #include "ui/teletall_graphics.h"
 #include <vector>
 
+#if _WINUSER_ == 1
+#include "mingw.thread.h"
+#endif
 
+#if _WINUSER_ == 0
+#include <thread>
+#endif
 
 
 class Tallwindow

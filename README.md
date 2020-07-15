@@ -41,8 +41,8 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
   | list |     Code Needed to Adjust              |    to  | Changed           |
   | :---  | ------------------------------------- | ---    | ----              |
   |  1.  | Change all the `#include <SDL2/...>`| &rarr; | `#include <SDL.h>` or so|
-  | 2.*  | You might have to change `#include <pthread.h>` | &rarr; | `#include <thread>` |
-  |  3.*  | In<ins>`CMakeLists.txt`</ins> might need to delete last few **-flags** in the last line | &rarr; | <s>`-lmingw32 -lSDL2main -lSDL2...`</s> | 
+  | 2.  | in `main.cpp` change line 1 : `#define _WINUSER_ `<s>`1`</s> | &rarr; | `#define _WINUSER_ 0` |
+
 * **Windows:**
   1. Clone this repo.
   2. Make a build directory in the top level directory: `mkdir build` then `cd build`, two commands
@@ -77,6 +77,36 @@ The viewport on the left is called `TelePad` which is the context for holding an
 #### :pushpin: Latest!!!: :arrow_down: :arrow_down: :arrow_down:
 
 :radio_button: &larr;- - - - :bookmark_tabs:
+* #### DAY 7 { <ins>7/15/2020</ins> } : Fixing Thread Header Loading if using MinGW
+**[2:35 PM] Update:** 
+This was a long journey finding a solution fixing loading `<thread>` into my project using Cmake and MinGW-gcc. Apperantly, the header files are not built in in gcc of Mingw32, I've updated my MinGW to the latest version however only thing I can use is `<pthread.h>` and its functions are like &rarr; `pthread_t`, `pthread_create()`(which I have no idea how to use?) and `Sleep()` for `std::this_thread::sleep_for(...)` for only in milliseconds. Not good. Also I've check out `<SDL_threads.h>` and the structure is exacly how `pthread` is(using stuff like `(void*)variable`for passing the function arguments). Not good.
+
+luckly, I found this [meganz/mingw-std-threads](https://github.com/meganz/mingw-std-threads) basically solved my problem. The usage much easier then I thought. The instructions are this:
+1. Update your cmake list: 
+    * `set(CMAKE_CXX_FLAGS, "${CXX_FLAGS} -std=c++0x -pthread")` 
+    * `set(CMAKE_THREAD_PREFER_PTHREAD TRUE)`
+    * `set(THREADS_PREFER_PTHREAD_FLAG TRUE)`
+    * `find_package(Threads REQUIRED)`
+    * `target_include_directories(${ExecutableName} PRIVATE ${TELETALL_INCLUDE_DIRS} Threads::Threads)`
+    * `TARGET_LINK_LIBRARIES(..... -lpthread....)`
+2. include **mingw-std-threads** folder in your sub directory. 
+3. add `#define _WIN32_WINNT 0x0601 #define _WINUSER_` there macros depends on you windows version. you can put Vista or higher, doesnt matter really
+4. instread of `#include <thread>` , include `<mingw.thread.h>`!
+5. I used some macros to help me build on different systems, like this:
+<img src=".markdown.images/20200715thread_solve2.png"> 
+**so the first 4 lines should be and only be in main.cpp.**
+
+That's it. I recompiled and added a thread sleep function. It worked!!
+
+
+
+
+
+
+
+
+---
+:radio_button: &larr;- - - - :bookmark_tabs:
 * #### DAY 6 { <ins>7/14/2020</ins> } : Fixing TTF Loading Problem
 **[7:12 PM] Update:** 
 
@@ -92,7 +122,7 @@ Beause the text feature is introduced and set up, I added a coordinate displayer
 
 
 
-
+---
 
 
 :radio_button: &larr;- - - - :bookmark_tabs:
@@ -130,7 +160,7 @@ Beause the text feature is introduced and set up, I added a coordinate displayer
 
 
 
-
+---
 
 :radio_button: &larr;- - - - :bookmark_tabs: 
 * #### DAY 4 { <ins>7/12/2020</ins> } : Experiments
