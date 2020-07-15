@@ -5,6 +5,7 @@
 
 TTF_Font *ScreenText::gFont = NULL;
 int ScreenText::counter = 0;
+int ScreenText::uniHeight = 10;
 
 
 void ScreenText::InitLoadMedia(int textsize)
@@ -14,6 +15,7 @@ void ScreenText::InitLoadMedia(int textsize)
     {
         //SDL_ShowSimpleMessageBox(0, "TTF Error", "Font open failed", NULL);
     }
+    uniHeight = textsize;
     SDL_Delay(10);
 }
 

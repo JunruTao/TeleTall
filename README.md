@@ -1,7 +1,7 @@
 # :radio_button: TeleTall 
 
 This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](https://www.udacity.com/course/c-plus-plus-nanodegree--nd213). The Capstone Project is a chance to integrate what I've learned throughout this program. 
-<img src=".markdown.images/20200713_teletall_viewport.gif"/>
+<img src=".markdown.images/20200715_2added_menu_and_text.png"/>
 ***
 
 ### :red_circle: Dependencies for Running Locally
@@ -78,7 +78,21 @@ The viewport on the left is called `TelePad` which is the context for holding an
 #### :pushpin: Latest!!!: :arrow_down: :arrow_down: :arrow_down:
 
 :radio_button: &larr;- - - - :bookmark_tabs:
-* #### DAY 7 { <ins>7/15/2020</ins> } : Fixing Thread Header Loading if using MinGW
+* #### DAY 7 { <ins>7/15/2020</ins> } : Fixing Thread Header/Added Button Class
+**[2:35 PM] Update:** New Feature: **"Button"**, **"CAD like Cursor cross"**
+> Build Test:
+> <img src=".markdown.images/20200715_2added_menu_and_text.png"/>
+
+This task seems answered my previous doubts with `Telecontroller`object's necessity. It is very necessary. The controller parses all the events and pass around and got accessed to all units! easy to read. 
+
+For the logic sake, the hierarchy is like this:
+* `Menu Object`<sup>&larr;Events reciever &darr;</sup>
+  * `"Sub Menu if any"` <sup>&larr;Events reciever &darr;</sup>
+    * `MenuButton Object`  <sup>&larr;Events reciever</sup>
+      * `ScreenText Object`
+
+
+
 **[2:35 PM] Update:** 
 This was a long journey finding a solution fixing loading `<thread>` into my project using Cmake and MinGW-gcc. Apperantly, the header files are not built in in gcc of Mingw32, I've updated my MinGW to the latest version however only thing I can use is `<pthread.h>` and its functions are like &rarr; `pthread_t`, `pthread_create()`(which I have no idea how to use?) and `Sleep()` for `std::this_thread::sleep_for(...)` for only in milliseconds. Not good. Also I've check out `<SDL_threads.h>` and the structure is exacly how `pthread` is(using stuff like `(void*)variable`for passing the function arguments). Not good.
 

@@ -8,12 +8,10 @@
 #include <chrono>
 
 
+#define SCREEN_TEXTSIZE 15
 
 int main(int argc, char *argv[])
 {
-    std::mutex m;
-    std::condition_variable con;
-    std::lock_guard<std::mutex> ulock(m);
     /*BASIC PROPERTIES*/
     //Width and Height of the window
     constexpr size_t tltl_Window_Width{900};
@@ -21,16 +19,17 @@ int main(int argc, char *argv[])
     //Frame rate this program supposed to run at
     constexpr size_t tltl_Frame_Rate{60};
     
+    //creating the app;
+    TeleTall tltlApp(tltl_Window_Width, tltl_Window_Height);
+    //{required}Loading Textfont data here.
+    ScreenText::InitLoadMedia(SCREEN_TEXTSIZE);
+
     /*CREATE THE PROGRAM CORE*/
     Telecontroller controller;
     Telepad myTelePad(tltl_Window_Width, tltl_Window_Height);
     Tallwindow myTallwindow(tltl_Window_Width, tltl_Window_Height);
 
-    TeleTall tltlApp(tltl_Window_Width, tltl_Window_Height);
-
-    //{required}Loading Textfont data here.
-    ScreenText::InitLoadMedia(15);
-
+    
 
     /*RUN THE PROGRAM*/
     tltlApp.Run(tltl_Frame_Rate, myTelePad, myTallwindow, controller);

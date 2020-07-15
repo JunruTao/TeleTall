@@ -44,7 +44,7 @@ Telepad::Telepad(
     origin.y = pad_height / 2;
     grid_size = TELEPAD_GRID_SIZE;
 
-    button = new MenuButton();
+    button = new MenuButton(100,100,60,"button");
 }
 /*
 #[[[[[[[[[[[]]]]]]]]]]]
@@ -76,6 +76,7 @@ void Telepad::Update(Telecontroller &controller)
     SDL_GetMouseState(&x, &y);
     Resize(controller, x, y);
     MoveGrid(controller, x, y);
+
 
     controller.UpdateSplitLocation(pad_width + HALF_SLIDEBAR + SLIDEBAR_SEL_BLEED);
 }
@@ -121,7 +122,7 @@ void Telepad::Render(SDL_Renderer *renderer)
     }
     SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_NONE);
 
-    
+
 }
 /*
 #

@@ -1,8 +1,10 @@
 #include "teletall.h"
 #include "ui/teletall_graphics.h"
+#include "ui/teletall_button.h"
 #include <string>
 
-#define WINDOW_NAME "TeleTall - SDL2 Version - v.01"
+#define WINDOW_NAME "TeleTall - SDL2 Version - v.02"
+#define WATERMARK "TeleTall Beta - v.02"
 
 //[CONSTRUCTOR]-------------------------------------------------------------------------------------
 TeleTall::TeleTall(const size_t &tltl_Window_Width, const size_t &tltl_Window_Height)
@@ -82,16 +84,21 @@ void TeleTall::Run(
 
 
 
-
     //Field for toggles
     bool running = true;
     bool tltl_showframerate = true;
 
-    /*Somehow a text must be loaded here so that it won't crash at object init*/
+    //Title bar text
     ScreenText text1;
     SDL_Color color = {255,255,255,60};
     SDL_Color bcolor = {0,0,0,255};
-    //text1.loadFromRenderedText("hello",color,hRenderer);
+
+    //Testbutton
+    MenuButton mb(40,40,70,"File");
+    MenuButton mb2(112,40,70,"Edit");
+    MenuButton mb3(184,40,70,"Node");
+    MenuButton mb4(256,40,70,"About");
+
 
 
     /*The Feedback Loop*/
@@ -107,6 +114,12 @@ void TeleTall::Run(
         telepad.Update(controller);
         tallwindow.Update(controller);
 
+        
+        mb.Update(&controller);
+        mb2.Update(&controller);
+        mb3.Update(&controller);
+        mb4.Update(&controller);
+
         //Render here:
         //..
 
@@ -114,8 +127,14 @@ void TeleTall::Run(
         tallwindow.Render(hRenderer);
         telepad.Render(hRenderer);
 
-        text1.loadFromRenderedText("TeleTall beta v0.1",color,bcolor,hRenderer,3);
+        text1.loadFromRenderedText(WATERMARK,color,bcolor,hRenderer,3);
         text1.Draw(hRenderer, 10,10);
+
+        
+        mb.Draw(hRenderer);
+        mb2.Draw(hRenderer);
+        mb3.Draw(hRenderer);
+        mb4.Draw(hRenderer);
 
 
 

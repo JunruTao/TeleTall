@@ -41,7 +41,7 @@ private:
     void MoveGrid(Telecontroller &controller, const int &x, const int &y);
     void Resize(Telecontroller &controller, const int &x, const int &y);
 
-    Button* button;
+    MenuButton* button;
 };
 
 #endif

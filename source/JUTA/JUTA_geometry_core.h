@@ -49,6 +49,11 @@ struct Point2D
         return (this->x > minx) && (this->x < maxx) && (this->y > miny) && (this->y < maxy);
     }
 
+    bool InBoundWH(const var &minx, const var &miny, const var &width, const var &height)
+    {
+        return (this->x > minx) && (this->x < minx+width) && (this->y > miny) && (this->y < miny+height);
+    }
+
     void New(const var &_x, const var &_y)
     {
         this->x = _x;

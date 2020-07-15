@@ -206,6 +206,8 @@ public:
 
     void Draw(SDL_Renderer* renderer,int x, int y);
     static void InitLoadMedia(int textsize);
+    int GetHeight(){return uniHeight;}
+    int GetWidth(){return mWidth;}
     
 
 private:
@@ -218,6 +220,7 @@ private:
     int mHeight;
     static TTF_Font* gFont;
     static int counter;
+    static int uniHeight;
 };
 
 
