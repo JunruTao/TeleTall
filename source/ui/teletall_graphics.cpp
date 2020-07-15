@@ -1,7 +1,7 @@
 #include "teletall_graphics.h"
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_image.h>
+#include <SDL.h>
+#include <SDL_ttf.h>
+#include <SDL_image.h>
 
 TTF_Font *ScreenText::gFont = NULL;
 int ScreenText::counter = 0;

@@ -40,7 +40,7 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
 
   | list |     Code Needed to Adjust              |    to  | Changed           |
   | :---  | ------------------------------------- | ---    | ----              |
-  |  1.  | Change all the `#include <SDL2/...>`| &rarr; | `#include <SDL.h>` or so|
+  |  1.  | Change all the `#include <...>`| &rarr; | `#include <SDL.h>` or so|
   | 2.  | in `threadheaders.h`, change all  `#define _WINUSER_ `<s>`1`</s> | &rarr; | `#define _WINUSER_ 0` |
 
 * **Windows:**

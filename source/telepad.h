@@ -1,7 +1,7 @@
 #ifndef TELEPAD_H
 #define TELEPAD_H
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <vector>
 #include "teletall_control.h"
 #include "JUTA/JUTA_math.h"

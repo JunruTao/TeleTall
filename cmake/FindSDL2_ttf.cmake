@@ -34,7 +34,7 @@
 #
 # Note that the header path has changed from SDL2/SDL.h to just SDL.h
 # This needed to change because "proper" SDL2 convention
-# is #include "SDL.h", not <SDL2/SDL.h>. This is done for portability
+# is #include "SDL.h", not <SDL.h>. This is done for portability
 # reasons because not all systems place things in SDL2/ (see FreeBSD).
 #
 # Ported by Johnny Patterson. This is a literal port for SDL2 of the FindSDL.cmake

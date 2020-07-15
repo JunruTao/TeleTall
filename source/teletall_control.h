@@ -1,6 +1,6 @@
 #ifndef TELETALL_CONTROL_H
 #define TELETALL_CONTROL_H
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <string>
 #include <vector>
 #include "JUTA/JUTA_geometry_core.h"

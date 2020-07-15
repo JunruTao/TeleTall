@@ -1,9 +1,9 @@
 #ifndef TELETALL_MENU_H
 #define TELETALL_MENU_H
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_image.h>
+#include <SDL.h>
+#include <SDL_ttf.h>
+#include <SDL_image.h>
 
 #include <JUTA/JUTA_geometry_core.h>
 #include <JUTA/JUTA_math.h>

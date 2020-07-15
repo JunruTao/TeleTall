@@ -1,8 +1,8 @@
 #ifndef TELETALL_BUTTON_H
 #define TELETALL_BUTTON_H
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
+#include <SDL.h>
+#include <SDL_ttf.h>
 #include <string>
 #include "ui/teletall_graphics.h"
 #include "JUTA/JUTA_geometry_core.h"

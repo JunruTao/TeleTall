@@ -3,7 +3,7 @@
 
 
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include "teletall_control.h"
 #include "JUTA/JUTA_geometry_core.h"
 #include "JUTA/JUTA_math.h"
