@@ -52,6 +52,7 @@ void Tallwindow::Render(SDL_Renderer *renderer)
     SDL_SetRenderDrawColor(renderer, 190, 190, 190, 255);//<|==================={Background color}
     SDL_RenderClear(renderer); //this will be the back ground for tall
 
+ 
     DrawGrid(renderer, origin, grid_size, win_width, win_height, 170);//<|==================={Small Grid color color}
     DrawGrid(renderer, origin, grid_size*10, win_width, win_height, 120);//<|==================={Times-x10 Grid color}
     
@@ -62,7 +63,7 @@ void Tallwindow::Render(SDL_Renderer *renderer)
     }
 
 
-    //std::thread
+    
     
     if(onTall) // Window Graphics: inrange rec and mouse cross
     {

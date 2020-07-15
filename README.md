@@ -41,7 +41,7 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
   | list |     Code Needed to Adjust              |    to  | Changed           |
   | :---  | ------------------------------------- | ---    | ----              |
   |  1.  | Change all the `#include <SDL2/...>`| &rarr; | `#include <SDL.h>` or so|
-  | 2.  | in `main.cpp` change line 1 : `#define _WINUSER_ `<s>`1`</s> | &rarr; | `#define _WINUSER_ 0` |
+  | 2.  | in `threadheaders.h`, change all  `#define _WINUSER_ `<s>`1`</s> | &rarr; | `#define _WINUSER_ 0` |
 
 * **Windows:**
   1. Clone this repo.
@@ -95,7 +95,7 @@ luckly, I found this [meganz/mingw-std-threads](https://github.com/meganz/mingw-
 4. instread of `#include <thread>` , include `<mingw.thread.h>`!
 5. I used some macros to help me build on different systems, like this:
 <img src=".markdown.images/20200715thread_solve2.png"> 
-**so the first 4 lines should be and only be in main.cpp.**
+**define winuser macros should change to 0**
 
 That's it. I recompiled and added a thread sleep function. It worked!!
 

@@ -1,20 +1,14 @@
 #ifndef TALLWINDOW_H
 #define TALLWINDOW_H
 
+
+
 #include <SDL2/SDL.h>
 #include "teletall_control.h"
 #include "JUTA/JUTA_geometry_core.h"
 #include "JUTA/JUTA_math.h"
 #include "ui/teletall_graphics.h"
 #include <vector>
-
-#if _WINUSER_ == 1
-#include "mingw.thread.h"
-#endif
-
-#if _WINUSER_ == 0
-#include <thread>
-#endif
 
 
 class Tallwindow

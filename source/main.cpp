@@ -1,19 +1,4 @@
-/////////////////////////////TELETALL 2020///////////////////////////
-////IF Building on Linux, please change this to _WINUSER_ to 0///////
-/////////////////////////////////////////////////////////////////////
-#define _WINUSER_ 1
-
-#if _WINUSER_ == 1
-#define _WIN32_WINNT  0x0601 
-#endif
-
-#if _WINUSER_ == 1
-#include "mingw.thread.h"
-#endif
-#if _WINUSER_ == 0
-#include <thread>
-#endif
-
+#include "threadheaders.h"
 #include "teletall.h"
 #include "telepad.h"
 #include "tallwindow.h"
@@ -23,8 +8,12 @@
 #include <chrono>
 
 
+
 int main(int argc, char *argv[])
 {
+    std::mutex m;
+    std::condition_variable con;
+    std::lock_guard<std::mutex> ulock(m);
     /*BASIC PROPERTIES*/
     //Width and Height of the window
     constexpr size_t tltl_Window_Width{900};
