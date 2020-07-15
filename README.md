@@ -63,7 +63,8 @@ The viewport on the left is called `TelePad` which is the context for holding an
 ***
 ### :white_circle:License
 
-...
+|:key: _[Copyright ©Junru Tao 2020 License ](https://github.com/JunruTao/Udacity.Cpp.Capstone.Project/blob/master/LICENSE)_|
+| ---|
 
 ----------------------------------------------------------------
 
