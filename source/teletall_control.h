@@ -37,6 +37,9 @@ public:
 
     void LinkPadRect(SDL_Rect* in_PadRect, SDL_Rect* in_MSlidRec);
     void LinkTallRec(SDL_Rect* in_TallRect);
+    void LinkMenuRec(SDL_Rect* in_Menu);
+    SDL_Rect* GetPadRect(){ return &r_PadRect;}
+    SDL_Rect* GetTallRect(){return &r_TallRect;}
 
     bool MouseL_hold;
     bool MouseR_hold;
@@ -56,6 +59,8 @@ private:
     SDL_Rect r_PadRect;
     SDL_Rect r_TallRect;
     SDL_Rect r_MSliderRect;
+    SDL_Rect r_MenuRect;
+    SDL_Rect r_ConsoleRect;
 };
 
 #endif

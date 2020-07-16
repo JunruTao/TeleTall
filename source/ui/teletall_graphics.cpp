@@ -101,6 +101,6 @@ void ScreenText::Draw(SDL_Renderer* renderer, int x, int y, double scale)
     mHeight = (int)(mHeight*scale);
     SDL_Rect renderrecs = {x,y,mWidth,mHeight};
     SDL_Point pt = {x, y};
-    SDL_RendererFlip flip;
+    SDL_RendererFlip flip = SDL_FLIP_NONE;
     SDL_RenderCopyEx(renderer,mTexture, NULL, &renderrecs,0,&pt,flip);
 }

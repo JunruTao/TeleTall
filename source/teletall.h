@@ -2,12 +2,13 @@
 #define TELETALL_H
 
 #include "x_sdl2headers.h"
-
+#include "x_threadheaders.h"
 #include "telepad.h"
 #include "tallwindow.h"
 #include "teletall_control.h"
 #include "ui/teletall_graphics.h"
 #include "teletall_menu.h"
+
 
 class TeleTall
 {
@@ -29,6 +30,7 @@ private:
     std::string win_title;
     SDL_Window *hwnd_main;
     SDL_Renderer *hRenderer;
+    BarMenu* topmenu;
 };
 
 #endif

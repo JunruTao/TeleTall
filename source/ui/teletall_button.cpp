@@ -31,10 +31,10 @@ void MenuButton::InitButtonColors()
     _state = ButtonStates::NORMAL;
     _have_child = false;
     _have_function = false;
-    _nor_color =   {200,200,200,255};
-    _pass_color =  {230,230,230,255};
+    _nor_color =   {66,66,66,255};
+    _pass_color =  {80,80,80,80};
     _click_color = {100,100,100,255};
-    _text_color =  {0,  0,  0,  255};
+    _text_color =  {200,  200,  200,  255};
     _text = new ScreenText;
 }
 
@@ -47,7 +47,7 @@ MenuButton::MenuButton(Point2D<int> screenLocation, int width, std::string in_te
     this->_buttonrec.x = screenLocation.x;
     this->_buttonrec.y = screenLocation.y;
     this->_buttonrec.w = width;
-    this->_buttonrec.h = _text->GetHeight()+4;
+    this->_buttonrec.h = ScreenText::GetUniversalTextHeight()+4;
     _if_centered = centered;
     InitButtonColors();
     _buttom_cmd = cmd;
@@ -60,7 +60,7 @@ MenuButton::MenuButton(int x, int y, int width, std::string in_text, bool center
     this->_buttonrec.x = x;
     this->_buttonrec.y = y;
     this->_buttonrec.w = width;
-    this->_buttonrec.h = _text->GetHeight()+4;
+    this->_buttonrec.h = _text->ScreenText::GetUniversalTextHeight()+4;
     _if_centered = centered;
     InitButtonColors();
 }
@@ -83,9 +83,10 @@ void MenuButton::Update(Telecontroller* controller)
 }
 
 
-void MenuButton::Draw(SDL_Renderer* renderer)const
+void MenuButton::Draw(SDL_Renderer* renderer)
 {
     _text->loadFromRenderedText(_name,renderer,_text_color,_text_color,3);
+    //if(true)_buttonrec.w = _text->GetWidth() + 10;
     switch (_state)
     {
     case ButtonStates::PASSING :
@@ -101,9 +102,14 @@ void MenuButton::Draw(SDL_Renderer* renderer)const
     default:
         SDL_SetRenderDrawColor(renderer,_nor_color.r,_nor_color.g,_nor_color.b,_nor_color.a);
         SDL_RenderFillRect(renderer,&_buttonrec);
-        SDL_SetRenderDrawColor(renderer,_pass_color.r+10,_pass_color.g+10,_pass_color.b+10,_pass_color.a);
-        SDL_RenderDrawRect(renderer,&_buttonrec);
         break;
     }
-    _text->Draw(renderer,_buttonrec.x+((_buttonrec.w - _text->GetWidth())/2),_buttonrec.y+2);
+    if (_if_centered)
+    {
+        _text->Draw(renderer, _buttonrec.x + ((_buttonrec.w - _text->GetWidth()) / 2 + 2), _buttonrec.y + ((_buttonrec.h - _text->GetHeight()) / 2), 0.87);
+    }
+    else
+    {
+        _text->Draw(renderer, _buttonrec.x + 2, _buttonrec.y + ((_buttonrec.h - _text->GetHeight()) / 2),0.94);
+    }
 }

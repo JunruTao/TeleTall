@@ -8,6 +8,7 @@
 
 #if _WINUSER_ == 1
 #define _WIN32_WINNT  0x0501
+
 #include "mingw.thread.h"
 #include "mingw.future.h"
 #include "mingw.condition_variable.h"

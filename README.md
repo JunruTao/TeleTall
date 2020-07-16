@@ -1,7 +1,7 @@
 # :radio_button: TeleTall 
 
 This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](https://www.udacity.com/course/c-plus-plus-nanodegree--nd213). The Capstone Project is a chance to integrate what I've learned throughout this program. 
-<img src=".markdown.images/20200715_2added_menu_and_text.png"/>
+<img src=".markdown.images/20200716Menu_and_Console2.png"/>
 ***
 
 ### :red_circle: Dependencies for Running Locally
@@ -58,8 +58,9 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
 The viewport on the left is called `TelePad` which is the context for holding and creating `Tele-Nodes` and their connections; the one on the right is `Tall v1.0` viewport2D, rendering the geometries. Once OpenGL is introduced, a GL-3D viewport will replace `Tall v1.0`.
   * 🖱️`Left mouse button`: click and drag to move assets and UI elements.
   * 🖱️`Right mouse button`: click and drag to nevigate around the viewport space; 
-  * ⌨️`"H"` key, to 'home' the viewport grid back to its origin (0,0).
+  * ⌨️"`H`" key, to 'home' the viewport grid back to its origin (0,0).
     * >  they all works for both viewport: `TelePad` (node viewport) and `Tall` (geometry viewport).
+  * ⌨️"`ctrl`+ `;`" to show and hide the console;
 
 ***
 ### :white_circle:License
@@ -83,10 +84,14 @@ The viewport on the left is called `TelePad` which is the context for holding an
 #### :pushpin: Latest!!!: :arrow_down: :arrow_down: :arrow_down:
 
 :radio_button: &larr;- - - - :bookmark_tabs:
-* #### DAY 8 { <ins>7/16/2020</ins> } : 
+* #### DAY 8 { <ins>7/16/2020</ins> } : Menu and Console
+  * Console is working taking and displaying commands, you can show and hide the console by `ctrl` + ` ; ` key
+  * Top bar menu is appendable
+  * still working on column menu, currently just a static display. <ins>Haven't figured out how to properly parent, showing hiding and process commands.</ins>
 
 
-
+> Build Test:
+> <img src=".markdown.images/20200716Menu_and_Console2.png"/>
 
 
 

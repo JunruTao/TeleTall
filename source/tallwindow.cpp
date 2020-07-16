@@ -126,9 +126,18 @@ void Tallwindow::Update(Telecontroller &controller)
 
 void Tallwindow::MoveGrid(Telecontroller &controller, const int &x, const int &y)
 {
-    onTall = (controller.current_panel == PanelID::ON_TALL);
-
-    SDL_Cursor *cursor = NULL;
+    Point2D tempP(x,y);
+    onTall = tempP.InBoundWH(controller.GetTallRect()->x,controller.GetTallRect()->y,controller.GetTallRect()->w,controller.GetTallRect()->h );
+    
+    if (onTall)
+    {
+        controller.current_panel = PanelID::ON_TALL;
+        SDL_ShowCursor(0);
+    }
+    else
+    {
+        SDL_ShowCursor(1);
+    }
     if (controller.MouseR_hold)
     {
         if (mouse_trail.empty())
@@ -162,8 +171,8 @@ void Tallwindow::MoveGrid(Telecontroller &controller, const int &x, const int &y
     }
     else if (onTall && controller.GetCommand() == cmd_KEY::cmd_HOME)
     { //HOMING here>>>
-        origin.x = controller.GetSplitLocation()+(win_width-controller.GetSplitLocation())/2;
-        origin.y = win_height / 2;
+        origin.x = controller.GetTallRect()->w / 2 + controller.GetTallRect()->x;
+        origin.y = controller.GetTallRect()->h / 2 + controller.GetTallRect()->y;
     }
     else
     {

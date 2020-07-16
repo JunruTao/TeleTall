@@ -52,6 +52,10 @@ TeleTall::TeleTall(const size_t &tltl_Window_Width, const size_t &tltl_Window_He
 //[DESTRUCTOR]--------------
 TeleTall::~TeleTall()
 {
+    if (topmenu != nullptr)
+    {
+        delete topmenu;
+    }
     SDL_DestroyWindow(hwnd_main);
     TTF_Quit();
     IMG_Quit();
@@ -88,7 +92,22 @@ void TeleTall::Run(
     bool running = true;
     bool tltl_showframerate = true;
 
-
+    //Menu Section:
+    std::vector<std::string> titles = {
+        "File",
+        "Edit",
+        "Node",
+        "View",
+        "Help"};
+    topmenu = new BarMenu(hwnd_main,titles,80);
+    
+    std::vector<std::string> title2 = {
+        "Selections          ",
+        "Preprocess from node",
+        "Copy                            Ctrl+C",
+        "Paste                           Ctrl+V",
+        "Clear Selection     "};
+    ColumnMenu sm(title2,200,NULL,"File");
 
 
     /*The Feedback Loop*/
@@ -103,14 +122,16 @@ void TeleTall::Run(
         //..
         telepad.Update(controller);
         tallwindow.Update(controller);
-
-        
+        topmenu->Update(&controller);
+        sm.Update(&controller);
         //Render here:
         //..
 
 
         tallwindow.Render(hRenderer);
         telepad.Render(hRenderer);
+        topmenu->Draw(hRenderer);
+        sm.Draw(hRenderer);
 
         controller.DrawSelectionRect(hRenderer);
 

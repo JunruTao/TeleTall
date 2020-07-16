@@ -24,7 +24,7 @@ public:
     std::string GetInfo() const;
     std::string GetID() const;
 
-    virtual void Draw(SDL_Renderer* renderer) const = 0;
+    virtual void Draw(SDL_Renderer* renderer) = 0;
 
     Point2D<int> screenPos;
 
@@ -46,7 +46,7 @@ public:
     MenuButton(int x, int y, int width, std::string in_text,bool centered);
     ~MenuButton(){delete _text;};
 
-    void Draw(SDL_Renderer* renderer) const override;
+    void Draw(SDL_Renderer* renderer) override;
     void Update(Telecontroller* controller);
 
     ButtonStates GetState() const{ return _state; }

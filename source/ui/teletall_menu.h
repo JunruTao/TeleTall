@@ -3,6 +3,7 @@
 
 #include "teletall_button.h"
 #include "teletall_graphics.h"
+#include <map>
 
 class Menu
 {
@@ -16,10 +17,19 @@ class Menu
 class ColumnMenu : public Menu
 {
     public:
-    ColumnMenu();
+    ColumnMenu(std::vector<std::string> options, int button_w, void* parent, std::string parent_name);
     ~ColumnMenu();
+    void Update(Telecontroller* controller)override;
+    void Draw(SDL_Renderer* renderer) const override;
+    
+    void Show(){};
+
     private:
+    void* hParent;
     std::vector<MenuButton*> MenuItem;
+    std::map<std::string, Menu*> Menu_Map;
+    SDL_Rect _menurec;
+    int _Height;
 
 };
 
@@ -31,8 +41,13 @@ class BarMenu : public Menu
     BarMenu(SDL_Window* hwnd ,std::vector<std::string> options, int button_w);
     ~BarMenu();
 
+    void Update(Telecontroller* controller)override;
+    void Draw(SDL_Renderer* renderer) const override;
+    void AddedSubMenu(std::string, Menu*);
+
     private:
     std::vector<MenuButton*> MenuItem;
+    std::map<std::string, Menu*> Menu_Map;
     SDL_Rect _menurec;
     int _unitwidth;
 };

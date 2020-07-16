@@ -184,12 +184,17 @@ void Telecontroller::LinkTallRec(SDL_Rect *in_TallRect)
     r_TallRect.h = in_TallRect->h;
 }
 
+void Telecontroller::LinkMenuRec(SDL_Rect* in_Menu)
+{
+    r_MenuRect = *in_Menu;
+}
+
 
 
 //Drawing the selection rectangles
 void Telecontroller::DrawSelectionRect(SDL_Renderer* renderer)
 {
-    SDL_Rect consolerect;
+
     if (console->IsShown())
     {
         int ch = console->GetHeight();
@@ -203,9 +208,16 @@ void Telecontroller::DrawSelectionRect(SDL_Renderer* renderer)
         if (_mouseLocation.InBound(0, y - ch, x, y))
         {
             current_panel = PanelID::ON_CONSOLE;
-            consolerect = {0, y - ch, x, ch};
+            r_ConsoleRect = {0, y - ch, x, ch};
         }
     }
+    r_PadRect.h -= r_MenuRect.h;
+    r_TallRect.h -= r_MenuRect.h;
+    r_MSliderRect.h -= r_MenuRect.h;
+    r_PadRect.y += r_MenuRect.h;
+    r_TallRect.y += r_MenuRect.h;
+    r_MSliderRect.y += r_MenuRect.h;
+
     console->Draw(_hhwnd, renderer);
 
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
@@ -226,7 +238,9 @@ void Telecontroller::DrawSelectionRect(SDL_Renderer* renderer)
         break;
     case PanelID::ON_CONSOLE:
         SDL_SetRenderDrawColor(renderer, 90, 143, 222, 255);
-        SDL_RenderDrawRect(renderer, &consolerect);
+        SDL_RenderDrawRect(renderer, &r_ConsoleRect);
+    case PanelID::ON_MENU:
+        break;
     default:
         break;
     }
