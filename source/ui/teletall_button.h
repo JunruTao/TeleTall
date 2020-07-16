@@ -9,7 +9,7 @@
 #include "teletall_control.h"
 
 
-enum class ButtonStates{NORMAL, PASSING, CLICKED};
+enum class ButtonStates{NORMAL, PASSING, CLICKED, OPENED};
 
 
 class Button
@@ -42,12 +42,15 @@ protected:
 class MenuButton : public Button
 {
 public:
-    MenuButton(Point2D<int> screenLocation, int width, std::string in_text, bool centered);
+    MenuButton(Point2D<int> screenLocation, int width, std::string in_text, bool centered, cmd_KEY cmd);
     MenuButton(int x, int y, int width, std::string in_text,bool centered);
     ~MenuButton(){delete _text;};
 
     void Draw(SDL_Renderer* renderer) const override;
     void Update(Telecontroller* controller);
+
+    ButtonStates GetState() const{ return _state; }
+    void ReleaseState() {_state = ButtonStates::NORMAL;}
 
 private:
     ScreenText* _text;
@@ -58,7 +61,10 @@ private:
     SDL_Color _click_color;
     SDL_Color _text_color;
     bool _if_centered;
+    bool _have_child;
+    bool _have_function;
     void InitButtonColors();
+    cmd_KEY _buttom_cmd;
 };
 
 #endif

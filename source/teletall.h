@@ -7,6 +7,7 @@
 #include "tallwindow.h"
 #include "teletall_control.h"
 #include "ui/teletall_graphics.h"
+#include "teletall_menu.h"
 
 class TeleTall
 {
@@ -25,7 +26,7 @@ public:
 
 private:
     void ErrorReporter(const char *errorMessage);
-
+    std::string win_title;
     SDL_Window *hwnd_main;
     SDL_Renderer *hRenderer;
 };

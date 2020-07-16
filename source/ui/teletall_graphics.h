@@ -1,5 +1,5 @@
-#ifndef TELETALL_MENU_H
-#define TELETALL_MENU_H
+#ifndef TELETALL_GRAPHICS_H
+#define TELETALL_GRAPHICS_H
 
 #include "x_sdl2headers.h"
 
@@ -202,8 +202,9 @@ public:
         int mode = 0 //0=solid, 1=shaded, 3=blend
         );
 
-    void Draw(SDL_Renderer* renderer,int x, int y);
+    void Draw(SDL_Renderer* renderer,int x, int y, double scale = 1);
     static void InitLoadMedia(int textsize);
+    static int GetUniversalTextHeight();
     int GetHeight(){return uniHeight;}
     int GetWidth(){return mWidth;}
     

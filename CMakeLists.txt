@@ -25,6 +25,7 @@ else()
     find_package(SDL2_TTF REQUIRED)
 endif()
 
+
 file(GLOB_RECURSE TELETALL_PROJECT_SOURCES "source/*.cpp")
 file(GLOB_RECURSE TELETALL_PROJECT_HEADERS "source/*.h")
 set(TELETALL_INCLUDE_DIRS "")
@@ -33,6 +34,7 @@ foreach(_headerFile ${TELETALL_PROJECT_HEADERS})
     list (APPEND TELETALL_INCLUDE_DIRS ${_dir})
 endforeach(_headerFile ${TELETALL_PROJECT_HEADERS})
 list(REMOVE_DUPLICATES TELETALL_INCLUDE_DIRS)
+
 
 include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIR} ${SDL2_TTF_INCLUDE_DIR} source ui JUTA mingw_std_threads)
 add_executable(teletall ${TELETALL_PROJECT_SOURCES} teletall.o)

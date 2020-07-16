@@ -3,8 +3,8 @@
 #include "ui/teletall_button.h"
 #include <string>
 
-#define WINDOW_NAME "TeleTall - SDL2 Version - v.02"
-#define WATERMARK "TeleTall Beta - v.02"
+#define VERSION "v0.2.1"
+#define WINDOW_NAME "TeleTall - Beta - "
 
 //[CONSTRUCTOR]-------------------------------------------------------------------------------------
 TeleTall::TeleTall(const size_t &tltl_Window_Width, const size_t &tltl_Window_Height)
@@ -27,8 +27,9 @@ TeleTall::TeleTall(const size_t &tltl_Window_Width, const size_t &tltl_Window_He
 
 
     //[2] Creating SDL_Window:
+    win_title = {std::string(WINDOW_NAME) + std::string(VERSION)};
     hwnd_main = SDL_CreateWindow(
-        WINDOW_NAME,            //--Window title
+        win_title.c_str(),            //--Window title
         SDL_WINDOWPOS_CENTERED, //--Place window in the center of the screen
         SDL_WINDOWPOS_CENTERED, //--Place window in the center of the screen
         tltl_Window_Width,      //--Main Window Width
@@ -69,10 +70,9 @@ void TeleTall::Run(
     Telecontroller &controller) //Telecontroller
 {
 
-
     controller.StoreHWND(&hwnd_main);
-
-
+    controller.SendCommandEx(cmd_KEY::cmd_STARTUP, " * version number " + std::string(VERSION));
+    controller.SendCommandEx(cmd_KEY::cmd_STARTUP, "program running...");
 
     //Field For time measuring
     Uint32 time_stamp = SDL_GetTicks();
@@ -131,7 +131,7 @@ void TeleTall::Run(
             if (true)
             {
                 std::string title{
-                    std::string(WINDOW_NAME) 
+                    win_title 
                     + "   -running status: " 
                     + std::to_string(frame_count) 
                     + " fps"};

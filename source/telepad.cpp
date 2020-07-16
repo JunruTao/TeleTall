@@ -156,7 +156,7 @@ void Telepad::DrawSlideBar(SDL_Renderer *renderer)
 //--------------------------------------------------------------------------------------
 void Telepad::Resize(Telecontroller &controller, const int &x, const int &y)
 {
-    if (controller.eWinUpdate)
+    if (controller.GetCommand() == cmd_KEY::cmd_WINDOWSIZE)
     {
         double proportion = ((double)pad_width) / ((double)win_width);
         SDL_Window *hhwnd = controller.GetHWND();
@@ -198,7 +198,7 @@ void Telepad::Resize(Telecontroller &controller, const int &x, const int &y)
 
     
 
-    if (controller.LMB_hold) //Mouse clicked down
+    if (controller.MouseL_hold) //Mouse clicked down
     {
         if (onBar || slidebarSelected) //Hold or Grag
         {
@@ -242,7 +242,7 @@ void Telepad::MoveGrid(Telecontroller &controller, const int &x, const int &y)
 {
     SDL_Cursor *cursor = NULL;
     onPad = (x > 0) && (x < pad_width - HALF_SLIDEBAR);
-    if (controller.RMB_hold && (controller.Shared_Nevigation_Lock == MouseLockID::TELE_LOCKED || controller.Shared_Nevigation_Lock == MouseLockID::FREE))
+    if ((controller.MouseR_hold) && (controller.Shared_Nevigation_Lock == MouseLockID::TELE_LOCKED || controller.Shared_Nevigation_Lock == MouseLockID::FREE))
     {
         if (onPad)
         {
@@ -280,7 +280,7 @@ void Telepad::MoveGrid(Telecontroller &controller, const int &x, const int &y)
             controller.Shared_Nevigation_Lock = MouseLockID::TELE_LOCKED;
         }
     }
-    else if (onPad && controller.key_HOME)
+    else if (onPad && controller.GetCommand() == cmd_KEY::cmd_HOME)
     {
         origin.x = pad_width / 2;
         origin.y = pad_height / 2;

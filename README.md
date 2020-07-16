@@ -13,13 +13,13 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
   * Windows: [Click here for installation instructions](http://gnuwin32.sourceforge.net/packages/make.htm)
 * **SDL2** >= 2.0
   * All installation instructions can be found [here](https://wiki.libsdl.org/Installation)
-  * Note that for Linux, an `apt` or `apt-get` installation is preferred to building from source.
+  * Note that for Linux, an `apt` or `apt-get` installation is preferred to building from source. [Linux-tutorial: SDL2](https://lazyfoo.net/tutorials/SDL/01_hello_SDL/linux/index.php)
 * **SDL2_image** >= 2.0
   * All installation instructions can be found [here](https://www.libsdl.org/projects/SDL_image/)
-  * Note that for Linux, an `apt` or `apt-get` installation is preferred to building from source.
+  * Note that for Linux, an `apt` or `apt-get` installation is preferred to building from source. [Linux-tutorial: SDL_image](https://lazyfoo.net/tutorials/SDL/06_extension_libraries_and_loading_other_image_formats/linux/index.php)
 * **SDL2_ttf** >= 2.0
   * All installation instructions can be found [here](https://www.libsdl.org/projects/SDL_ttf/)
-  * Note that for Linux, an `apt` or `apt-get` installation is preferred to building from source.
+  * Note that for Linux, an `apt` or `apt-get` installation is preferred to building from source. [Linux-tutorial: SDL_ttf](https://stackoverflow.com/questions/40368368/sdl2-ttf-error-on-ubuntu)
 * **gcc/g++** >= 5.4
   * Linux: gcc / g++ is installed by default on most Linux distros
   * Mac: same deal as make - [install Xcode command line tools](https://developer.apple.com/xcode/features/)
@@ -81,6 +81,17 @@ The viewport on the left is called `TelePad` which is the context for holding an
 *****************************************************************
 ## :black_circle:Production Logs:
 #### :pushpin: Latest!!!: :arrow_down: :arrow_down: :arrow_down:
+
+:radio_button: &larr;- - - - :bookmark_tabs:
+* #### DAY 8 { <ins>7/16/2020</ins> } : 
+
+
+
+
+
+
+
+----
 
 :radio_button: &larr;- - - - :bookmark_tabs:
 * #### DAY 7 { <ins>7/15/2020</ins> } : Fixing Thread Header/Added Button Class

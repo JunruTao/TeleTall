@@ -29,6 +29,8 @@ void Button::SetInfo(std::string info) { _info = info; }
 void MenuButton::InitButtonColors()
 {
     _state = ButtonStates::NORMAL;
+    _have_child = false;
+    _have_function = false;
     _nor_color =   {200,200,200,255};
     _pass_color =  {230,230,230,255};
     _click_color = {100,100,100,255};
@@ -39,7 +41,7 @@ void MenuButton::InitButtonColors()
 
 
 
-MenuButton::MenuButton(Point2D<int> screenLocation, int width, std::string in_text, bool centered)
+MenuButton::MenuButton(Point2D<int> screenLocation, int width, std::string in_text, bool centered, cmd_KEY cmd)
 {
     _name = in_text;
     this->_buttonrec.x = screenLocation.x;
@@ -48,6 +50,7 @@ MenuButton::MenuButton(Point2D<int> screenLocation, int width, std::string in_te
     this->_buttonrec.h = _text->GetHeight()+4;
     _if_centered = centered;
     InitButtonColors();
+    _buttom_cmd = cmd;
 }
 
 
@@ -69,7 +72,7 @@ void MenuButton::Update(Telecontroller* controller)
     if (controller->GetMousePoint()->InBoundWH(_buttonrec.x, _buttonrec.y, _buttonrec.w, _buttonrec.h))
     {
         _state = ButtonStates::PASSING;
-        if (controller->LMB_hold)
+        if (controller->GetCommand() == cmd_KEY::cmd_RMB)
         {
             _state = ButtonStates::CLICKED;
         }

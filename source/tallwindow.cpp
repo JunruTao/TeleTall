@@ -92,7 +92,7 @@ void Tallwindow::Render(SDL_Renderer *renderer)
 void Tallwindow::Update(Telecontroller &controller)
 {
     //Handling Window Resizing Events
-    if (controller.eWinUpdate)
+    if (controller.GetCommand() == cmd_KEY::cmd_WINDOWSIZE)
     {
         SDL_Window *hhwnd = controller.GetHWND();
         int wsX, wsY;
@@ -129,7 +129,7 @@ void Tallwindow::MoveGrid(Telecontroller &controller, const int &x, const int &y
     onTall = (controller.current_panel == PanelID::ON_TALL);
 
     SDL_Cursor *cursor = NULL;
-    if (controller.RMB_hold)
+    if (controller.MouseR_hold)
     {
         if (mouse_trail.empty())
         {
@@ -160,7 +160,7 @@ void Tallwindow::MoveGrid(Telecontroller &controller, const int &x, const int &y
             controller.Shared_Nevigation_Lock = MouseLockID::TALL_LOCKED;
         }
     }
-    else if (onTall && controller.key_HOME)
+    else if (onTall && controller.GetCommand() == cmd_KEY::cmd_HOME)
     { //HOMING here>>>
         origin.x = controller.GetSplitLocation()+(win_width-controller.GetSplitLocation())/2;
         origin.y = win_height / 2;

@@ -16,7 +16,10 @@ void ScreenText::InitLoadMedia(int textsize)
     uniHeight = textsize;
     SDL_Delay(10);
 }
-
+int ScreenText::GetUniversalTextHeight()
+{
+    return uniHeight;
+}
 
 ScreenText::ScreenText()
 {
@@ -92,8 +95,12 @@ void ScreenText::loadFromRenderedText(
 }
 
 
-void ScreenText::Draw(SDL_Renderer* renderer, int x, int y)
+void ScreenText::Draw(SDL_Renderer* renderer, int x, int y, double scale)
 {
-    SDL_Rect renderrec = {x,y,mWidth,mHeight};
-    SDL_RenderCopy(renderer,mTexture,NULL,&renderrec);
+    mWidth = (int)(mWidth*scale);
+    mHeight = (int)(mHeight*scale);
+    SDL_Rect renderrecs = {x,y,mWidth,mHeight};
+    SDL_Point pt = {x, y};
+    SDL_RendererFlip flip;
+    SDL_RenderCopyEx(renderer,mTexture, NULL, &renderrecs,0,&pt,flip);
 }
