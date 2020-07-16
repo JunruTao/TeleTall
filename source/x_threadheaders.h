@@ -1,5 +1,5 @@
-#ifndef THREADHEADERS_H
-#define THREADHEADERS_H
+#ifndef X_THREADHEADERS_H
+#define X_THREADHEADERS_H
 
 /////////////////////////////TELETALL 2020///////////////////////////
 ////IF Building on Linux, please change this to _WINUSER_ to 0///////

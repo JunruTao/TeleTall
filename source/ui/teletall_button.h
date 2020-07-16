@@ -1,8 +1,7 @@
 #ifndef TELETALL_BUTTON_H
 #define TELETALL_BUTTON_H
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
+#include "x_sdl2headers.h"
 #include <string>
 #include "ui/teletall_graphics.h"
 #include "JUTA/JUTA_geometry_core.h"
@@ -43,8 +42,8 @@ protected:
 class MenuButton : public Button
 {
 public:
-    MenuButton(Point2D<int> screenLocation, int width, std::string in_text);
-    MenuButton(int x, int y, int width, std::string in_text);
+    MenuButton(Point2D<int> screenLocation, int width, std::string in_text, bool centered);
+    MenuButton(int x, int y, int width, std::string in_text,bool centered);
     ~MenuButton(){delete _text;};
 
     void Draw(SDL_Renderer* renderer) const override;
@@ -58,6 +57,8 @@ private:
     SDL_Color _pass_color;
     SDL_Color _click_color;
     SDL_Color _text_color;
+    bool _if_centered;
+    void InitButtonColors();
 };
 
 #endif

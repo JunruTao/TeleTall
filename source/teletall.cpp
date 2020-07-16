@@ -88,16 +88,6 @@ void TeleTall::Run(
     bool running = true;
     bool tltl_showframerate = true;
 
-    //Title bar text
-    ScreenText text1;
-    SDL_Color color = {255,255,255,60};
-    SDL_Color bcolor = {0,0,0,255};
-
-    //Testbutton
-    MenuButton mb(40,40,70,"File");
-    MenuButton mb2(112,40,70,"Edit");
-    MenuButton mb3(184,40,70,"Node");
-    MenuButton mb4(256,40,70,"About");
 
 
 
@@ -115,11 +105,6 @@ void TeleTall::Run(
         tallwindow.Update(controller);
 
         
-        mb.Update(&controller);
-        mb2.Update(&controller);
-        mb3.Update(&controller);
-        mb4.Update(&controller);
-
         //Render here:
         //..
 
@@ -127,16 +112,7 @@ void TeleTall::Run(
         tallwindow.Render(hRenderer);
         telepad.Render(hRenderer);
 
-        text1.loadFromRenderedText(WATERMARK,color,bcolor,hRenderer,3);
-        text1.Draw(hRenderer, 10,10);
-
-        
-        mb.Draw(hRenderer);
-        mb2.Draw(hRenderer);
-        mb3.Draw(hRenderer);
-        mb4.Draw(hRenderer);
-
-
+        controller.DrawSelectionRect(hRenderer);
 
         //Render before this line
         SDL_RenderPresent(hRenderer);

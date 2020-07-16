@@ -1,7 +1,7 @@
 #ifndef TELEPAD_H
 #define TELEPAD_H
 
-#include <SDL2/SDL.h>
+#include "x_sdl2headers.h"
 #include <vector>
 #include "teletall_control.h"
 #include "JUTA/JUTA_math.h"
@@ -40,8 +40,6 @@ private:
     void DrawSlideBar(SDL_Renderer *renderer);
     void MoveGrid(Telecontroller &controller, const int &x, const int &y);
     void Resize(Telecontroller &controller, const int &x, const int &y);
-
-    MenuButton* button;
 };
 
 #endif

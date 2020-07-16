@@ -1,9 +1,7 @@
 #ifndef TELETALL_MENU_H
 #define TELETALL_MENU_H
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_image.h>
+#include "x_sdl2headers.h"
 
 #include <JUTA/JUTA_geometry_core.h>
 #include <JUTA/JUTA_math.h>
@@ -19,18 +17,18 @@ static void DrawGrid(
     //Draw -Vertical
     int distance = 0;
     SDL_SetRenderDrawColor(renderer, grayness, grayness, grayness, 255);
-    if (origin.x > 0 && pad_width > grid_size)
+    if (origin.x >= 0 && pad_width >= grid_size)
     {
         if (origin.x <= pad_width)
         {
             distance = origin.x;
-            while (distance > 0 && distance < pad_width)
+            while (distance >= 0 && distance <= pad_width)
             {
                 SDL_RenderDrawLine(renderer, distance, 0, distance, pad_height);
                 distance -= grid_size;
             }
             distance = origin.x;
-            while (distance < pad_width)
+            while (distance <= pad_width)
             {
                 SDL_RenderDrawLine(renderer, distance, 0, distance, pad_height);
                 distance += grid_size;
@@ -39,25 +37,25 @@ static void DrawGrid(
         else
         {
             distance = origin.x;
-            while (distance > pad_width)
+            while (distance >= pad_width)
             {
                 distance -= grid_size;
             }
-            while (distance > 0 && distance < pad_width)
+            while (distance >= 0 && distance <= pad_width)
             {
                 SDL_RenderDrawLine(renderer, distance, 0, distance, pad_height);
                 distance -= grid_size;
             }
         }
     }
-    else if (pad_width > grid_size)
+    else if (pad_width >= grid_size)
     {
         distance = origin.x;
-        while (distance < 0)
+        while (distance <= 0)
         {
             distance += grid_size;
         }
-        while (distance < pad_width)
+        while (distance <= pad_width)
         {
             SDL_RenderDrawLine(renderer, distance, 0, distance, pad_height);
             distance += grid_size;
@@ -66,18 +64,18 @@ static void DrawGrid(
     //---------------------------------
     //Draw Horizontal
     distance = 0;
-    if (origin.y > 0 && pad_height > grid_size)
+    if (origin.y >= 0 && pad_height >= grid_size)
     {
         if (origin.y <= pad_height)
         {
             distance = origin.y;
-            while (distance > 0 && distance < pad_height)
+            while (distance >= 0 && distance <= pad_height)
             {
                 SDL_RenderDrawLine(renderer, 0, distance, pad_width, distance);
                 distance -= grid_size;
             }
             distance = origin.y;
-            while (distance < pad_height)
+            while (distance <= pad_height)
             {
                 SDL_RenderDrawLine(renderer, 0, distance, pad_width, distance);
                 distance += grid_size;
@@ -86,25 +84,25 @@ static void DrawGrid(
         else
         {
             distance = origin.y;
-            while (distance > pad_height)
+            while (distance >= pad_height)
             {
                 distance -= grid_size;
             }
-            while (distance > 0 && distance < pad_height)
+            while (distance > 0 && distance <= pad_height)
             {
                 SDL_RenderDrawLine(renderer, 0, distance, pad_width, distance);
                 distance -= grid_size;
             }
         }
     }
-    else if(pad_height > grid_size)
+    else if(pad_height >= grid_size)
     {
         distance = origin.y;
-        while (distance < 0)
+        while (distance <= 0)
         {
             distance += grid_size;
         }
-        while (distance < pad_height)
+        while (distance <= pad_height)
         {
             SDL_RenderDrawLine(renderer, 0, distance, pad_width, distance);
             distance += grid_size;
@@ -198,10 +196,10 @@ public:
     
     void loadFromRenderedText(
         std::string textureText, 
-        SDL_Color textColor,
-        SDL_Color backgroundColor,
         SDL_Renderer* renderer,
-        int mode //0=solid, 1=shaded, 3=blend
+        SDL_Color textColor,
+        SDL_Color backgroundColor = {(Uint8)255,(Uint8)255,(Uint8)255},
+        int mode = 0 //0=solid, 1=shaded, 3=blend
         );
 
     void Draw(SDL_Renderer* renderer,int x, int y);

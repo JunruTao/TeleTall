@@ -3,9 +3,37 @@
 
 #include "teletall_button.h"
 
-struct Menu
+class Menu
 {
+public:
+    Menu();
+    ~Menu();
 
+protected:
+    Menu* _parent;
+    std::string _name;
+};
+
+
+
+class ColumnMenu : public Menu
+{
+    public:
+    ColumnMenu();
+    ~ColumnMenu();
+
+    private:
+
+};
+
+class BarMenu : public Menu
+{
+    public:
+    BarMenu();
+    ~BarMenu();
+
+    private:
+    
 };
 
 

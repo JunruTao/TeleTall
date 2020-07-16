@@ -25,41 +25,41 @@ void Button::SetInfo(std::string info) { _info = info; }
 
 
 
-//----------------------------------------------------------
-
-MenuButton::MenuButton(Point2D<int> screenLocation, int width, std::string in_text)
+//Set Colors here--------------------
+void MenuButton::InitButtonColors()
 {
+    _state = ButtonStates::NORMAL;
+    _nor_color =   {200,200,200,255};
+    _pass_color =  {230,230,230,255};
+    _click_color = {100,100,100,255};
+    _text_color =  {0,  0,  0,  255};
     _text = new ScreenText;
+}
+
+
+
+
+MenuButton::MenuButton(Point2D<int> screenLocation, int width, std::string in_text, bool centered)
+{
     _name = in_text;
     this->_buttonrec.x = screenLocation.x;
     this->_buttonrec.y = screenLocation.y;
     this->_buttonrec.w = width;
     this->_buttonrec.h = _text->GetHeight()+4;
-    
-    _state = ButtonStates::NORMAL;
-    _nor_color = {200,200,200,255};
-    _pass_color = {230,230,230,255};
-    _click_color = {100,100,100,255};
-    _text_color = {0,0,0,255};
-    
+    _if_centered = centered;
+    InitButtonColors();
 }
 
 
-MenuButton::MenuButton(int x, int y, int width, std::string in_text)
+MenuButton::MenuButton(int x, int y, int width, std::string in_text, bool centered)
 {
-    _text = new ScreenText;
     _name = in_text;
     this->_buttonrec.x = x;
     this->_buttonrec.y = y;
     this->_buttonrec.w = width;
     this->_buttonrec.h = _text->GetHeight()+4;
-    
-    _state = ButtonStates::NORMAL;
-    _nor_color = {200,200,200,255};
-    _pass_color = {230,230,230,255};
-    _click_color = {100,100,100,255};
-    _text_color = {0,0,0,255};
-    
+    _if_centered = centered;
+    InitButtonColors();
 }
 
 
@@ -82,7 +82,7 @@ void MenuButton::Update(Telecontroller* controller)
 
 void MenuButton::Draw(SDL_Renderer* renderer)const
 {
-    _text->loadFromRenderedText(_name,_text_color,_text_color,renderer,3);
+    _text->loadFromRenderedText(_name,renderer,_text_color,_text_color,3);
     switch (_state)
     {
     case ButtonStates::PASSING :

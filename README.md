@@ -41,7 +41,8 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
   | list |     Code Needed to Adjust              |    to  | Changed           |
   | :---  | ------------------------------------- | ---    | ----              |
   |  1.  | Change all the `#include <SDL2/...>`| &rarr; | `#include <SDL.h>` or so|
-  | 2.  | in `threadheaders.h`, change all  `#define _WINUSER_ `<s>`1`</s> | &rarr; | `#define _WINUSER_ 0` |
+  | 2.  | under`source/` in `x_sld2headers` and `x_threadheaders.h`, change all  **`#define _WINUSER_ `<s>`1`</s>** | &rarr; | `#define _WINUSER_ 0` |
+  | 3. | in `CMakeLists.txt`'s `TARGET_LINK_LIBRARIES(teletall...` , **remove** | &rarr;|<s> `-lmingw32`</s> |
 
 * **Windows:**
   1. Clone this repo.
@@ -69,8 +70,12 @@ The viewport on the left is called `TelePad` which is the context for holding an
 ----------------------------------------------------------------
 
 ### :white_circle:Releases
+* [32bit win TeleTall Beta Version -v0.2.0](https://github.com/JunruTao/Udacity.Cpp.Capstone.Project/releases/tag/v0.2)
+* [32bit win TeleTall Beta Version -v0.1.0](https://github.com/JunruTao/Udacity.Cpp.Capstone.Project/releases/tag/v0.1)
 
-* [TeleTall-SDL2 Version -v0.1](https://github.com/JunruTao/Udacity.Cpp.Capstone.Project/releases/tag/v0.1)
+
+
+
 
 
 *****************************************************************
@@ -79,7 +84,33 @@ The viewport on the left is called `TelePad` which is the context for holding an
 
 :radio_button: &larr;- - - - :bookmark_tabs:
 * #### DAY 7 { <ins>7/15/2020</ins> } : Fixing Thread Header/Added Button Class
-**[2:35 PM] Update:** New Feature: **"Button"**, **"CAD like Cursor cross"**
+
+**[7:02 PM] Built on Ubuntu**
+Successfully built on Linux, by chaning few things 
+  1. `<SDL2/...h>` &rarr; `<...h>`  all files (not good)
+  2. In `CMakeList.txt` &rarr; using `INCLUDE(FindPkgConfig)` instead of find_package, **solution:**
+  * `if(LINUX)`
+    * `message(STATUS ">>> Building system: Linux")`
+    * `INCLUDE(FindPkgConfig)`
+    *  `PKG_SEARCH_MODULE(SDL2 REQUIRED sdl2)`
+    *  `PKG_SEARCH_MODULE(SDL2IMAGE REQUIRED SDL2_image>=2.0.0)`
+    *  `PKG_SEARCH_MODULE(SDL2TTF REQUIRED SDL2_ttf>=2.0.0)`
+  * `else()`
+    *  `message(STATUS ">>> Building system: Windows")`
+    *  `find_package(SDL2 REQUIRED)`
+    *  `find_package(SDL2_image REQUIRED)`
+    *  `find_package(SDL2_TTF REQUIRED)`
+  * `endif()`
+
+
+  3. remove flag <s>`-lmingw32`</s>
+
+
+**[10:14 AM] Fixed Small bug on grid drawing** 
+The draw grid conditions should all be `>=` and `<=`.
+
+
+**[2:35 AM] Update:** New Feature: **"Button"**, **"CAD like Cursor cross"**
 > Build Test:
 > <img src=".markdown.images/20200715_2added_menu_and_text.png"/>
 
@@ -90,6 +121,7 @@ For the logic sake, the hierarchy is like this:
   * `"Sub Menu if any"` <sup>&larr;Events reciever &darr;</sup>
     * `MenuButton Object`  <sup>&larr;Events reciever</sup>
       * `ScreenText Object`
+
 
 
 

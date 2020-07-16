@@ -6,6 +6,7 @@
 #define HALF_SLIDEBAR 6
 #define SLIDEBAR_SEL_BLEED 5
 #define TELEPAD_GRID_SIZE 60
+
 //--------------------------------------------------------------------------------------
 Telepad::Telepad(
     const size_t &master_width,
@@ -44,7 +45,7 @@ Telepad::Telepad(
     origin.y = pad_height / 2;
     grid_size = TELEPAD_GRID_SIZE;
 
-    button = new MenuButton(100,100,60,"button");
+
 }
 /*
 #[[[[[[[[[[[]]]]]]]]]]]
@@ -53,7 +54,6 @@ Telepad::Telepad(
 //--------------------------------------------------------------------------------------
 Telepad::~Telepad()
 {
-    delete button;
 }
 /*
 #[[[[[[[[[[[]]]]]]]]]]]
@@ -79,6 +79,7 @@ void Telepad::Update(Telecontroller &controller)
 
 
     controller.UpdateSplitLocation(pad_width + HALF_SLIDEBAR + SLIDEBAR_SEL_BLEED);
+    controller.LinkPadRect(&padViewport, &slidebar);
 }
 /*
 #
@@ -105,23 +106,6 @@ void Telepad::Render(SDL_Renderer *renderer)
 
     //Draw slider---------------------------
     DrawSlideBar(renderer);
-
-
-    //************************************
-    //This is drawing all the selection fucntions here;
-    //Draw regin---------------
-    SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_BLEND);
-    if(onPad)
-    {
-        SDL_SetRenderDrawColor(renderer, 90, 143, 222, 255);
-        SDL_RenderDrawRect(renderer,&padViewport);
-    }else if(onBar)
-    {
-        SDL_SetRenderDrawColor(renderer, 90, 143, 222, 150);
-        SDL_RenderDrawRect(renderer,&slidebar);
-    }
-    SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_NONE);
-
 
 }
 /*
@@ -258,7 +242,7 @@ void Telepad::MoveGrid(Telecontroller &controller, const int &x, const int &y)
 {
     SDL_Cursor *cursor = NULL;
     onPad = (x > 0) && (x < pad_width - HALF_SLIDEBAR);
-    if (controller.RMB_hold)
+    if (controller.RMB_hold && (controller.Shared_Nevigation_Lock == MouseLockID::TELE_LOCKED || controller.Shared_Nevigation_Lock == MouseLockID::FREE))
     {
         if (onPad)
         {
@@ -293,6 +277,7 @@ void Telepad::MoveGrid(Telecontroller &controller, const int &x, const int &y)
 
             //locking the dragging mode
             gridSelected = true;
+            controller.Shared_Nevigation_Lock = MouseLockID::TELE_LOCKED;
         }
     }
     else if (onPad && controller.key_HOME)
@@ -316,5 +301,6 @@ void Telepad::MoveGrid(Telecontroller &controller, const int &x, const int &y)
             mouse_trail.pop_back();
         }
         gridSelected = false;
+        controller.Shared_Nevigation_Lock = MouseLockID::FREE;
     }
 }

@@ -1,7 +1,5 @@
 #include "teletall_graphics.h"
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_image.h>
+#include "x_sdl2headers.h"
 
 TTF_Font *ScreenText::gFont = NULL;
 int ScreenText::counter = 0;
@@ -49,9 +47,9 @@ void ScreenText::Free()
 
 void ScreenText::loadFromRenderedText(
     std::string textureText,
+    SDL_Renderer *renderer,
     SDL_Color textColor,
     SDL_Color backgroundColor,
-    SDL_Renderer *renderer,
     int mode
     )
 {

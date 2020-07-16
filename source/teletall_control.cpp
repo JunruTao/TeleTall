@@ -9,6 +9,7 @@ Telecontroller::Telecontroller()
     key_FRAME = false;
     key_HOME = false;
     eWinUpdate = false;
+    Shared_Nevigation_Lock = MouseLockID::FREE;
     _mouseLocation.New(0,0);
 }
 
@@ -19,8 +20,7 @@ void Telecontroller::ProcessInput(bool &running)
 {
 
     SDL_Event event;
-    while (SDL_PollEvent(&event))
-    {
+    SDL_PollEvent(&event);
 
         if (event.type == SDL_WINDOWEVENT)
         {
@@ -98,7 +98,7 @@ void Telecontroller::ProcessInput(bool &running)
         int _x, _y;
         SDL_GetMouseState(&_x, &_y);
         _mouseLocation.New(_x, _y);
-    }
+    
 
 } //end of ProcessInput scope
 
@@ -118,4 +118,28 @@ void Telecontroller::UpdateSplitLocation(int new_split)
 Point2D<int>* Telecontroller::GetMousePoint()
 {
     return &_mouseLocation;
+}
+
+void Telecontroller::DrawSelectionRect(SDL_Renderer* renderer)
+{
+    SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_BLEND);
+    SDL_SetRenderDrawColor(renderer,0,0,0,255);
+    switch (current_panel)
+    {
+    case PanelID::ON_PAD :
+        SDL_SetRenderDrawColor(renderer, 90, 143, 222, 255);
+        SDL_RenderDrawRect(renderer,&r_PadRect);
+        break;
+    case PanelID::ON_BAR:
+        SDL_SetRenderDrawColor(renderer, 90, 143, 222, 150);
+        SDL_RenderDrawRect(renderer,&r_MSliderRect);
+        break;
+    case PanelID::ON_TALL :
+        SDL_SetRenderDrawColor(renderer, 0, 153, 153, 210);
+        SDL_RenderDrawRect(renderer,&r_TallRect);
+        break;
+    default:
+        break;
+    }
+    SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_NONE);
 }

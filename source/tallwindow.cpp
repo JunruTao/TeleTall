@@ -67,14 +67,6 @@ void Tallwindow::Render(SDL_Renderer *renderer)
     
     if(onTall) // Window Graphics: inrange rec and mouse cross
     {
-        SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_BLEND);
-        SDL_SetRenderDrawColor(renderer, 0, 153, 153, 210);
-        SDL_RenderDrawRect(renderer,&tallviewport_RECT);
-
-        
-
-        //SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_ADD);
-
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 200);
 
         DrawLineExtendToBound(renderer,mouseLocation_ptptr,&tallviewport_RECT,1);//draw the mouse extended line -y
@@ -87,7 +79,8 @@ void Tallwindow::Render(SDL_Renderer *renderer)
         Point2D<float> temp = CalcLocalCord(origin,*mouseLocation_ptptr);
         std::string cortostring = "[x=" + JUTA_Math::Num_To_String_Percision<float>(temp.x,2) +", y=" + JUTA_Math::Num_To_String_Percision<float>(temp.y,2)+ "]";
         
-        cordText->loadFromRenderedText(cortostring,text_color,text_color,renderer,0);
+        //Drawing the world coordinates on tall mouse
+        cordText->loadFromRenderedText(cortostring,renderer,text_color);
         cordText->Draw(renderer,mouseLocation_ptptr->x +3,mouseLocation_ptptr->y+3);
     }
     
@@ -127,11 +120,11 @@ void Tallwindow::Update(Telecontroller &controller)
     tallviewport_RECT.w = win_width-controller.GetSplitLocation()+4;
     tallviewport_RECT.h = win_height;
 
-    
+    controller.LinkTallRec(&tallviewport_RECT);
 
 }
 
-void Tallwindow::MoveGrid(const Telecontroller &controller, const int &x, const int &y)
+void Tallwindow::MoveGrid(Telecontroller &controller, const int &x, const int &y)
 {
     onTall = (controller.current_panel == PanelID::ON_TALL);
 
@@ -144,7 +137,7 @@ void Tallwindow::MoveGrid(const Telecontroller &controller, const int &x, const 
             mouse_trail.emplace_back(std::move(temp));
         }
 
-        if (onTall || gridSelected)
+        if ((controller.Shared_Nevigation_Lock == MouseLockID::TALL_LOCKED || controller.Shared_Nevigation_Lock == MouseLockID::FREE) && (onTall || gridSelected))
         {
             
             if (mouse_trail.size() > 1)
@@ -164,6 +157,7 @@ void Tallwindow::MoveGrid(const Telecontroller &controller, const int &x, const 
 
             //locking the dragging mode
             gridSelected = true;
+            controller.Shared_Nevigation_Lock = MouseLockID::TALL_LOCKED;
         }
     }
     else if (onTall && controller.key_HOME)
@@ -179,6 +173,7 @@ void Tallwindow::MoveGrid(const Telecontroller &controller, const int &x, const 
             mouse_trail.pop_back();
         }
         gridSelected = false;
+        controller.Shared_Nevigation_Lock = MouseLockID::FREE;
     }
 }
 

@@ -2,6 +2,8 @@
 build/*
 .markdown.plannings/*
 
+!.package.extra.merge/*
+
 
 ### C++ ###
 # Prerequisites

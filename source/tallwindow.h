@@ -3,7 +3,7 @@
 
 
 
-#include <SDL2/SDL.h>
+#include "x_sdl2headers.h"
 #include "teletall_control.h"
 #include "JUTA/JUTA_geometry_core.h"
 #include "JUTA/JUTA_math.h"
@@ -39,7 +39,7 @@ private:
     int grid_size;
     Point2D<float> CalcLocalCord(const Point2D<int>& origin, const Point2D<int>& target);
 
-    void MoveGrid(const Telecontroller &controller, const int &x, const int &y);
+    void MoveGrid(Telecontroller &controller, const int &x, const int &y);
 
     ScreenText* cordText;
     SDL_Color text_color;
