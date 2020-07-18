@@ -17,7 +17,7 @@ class Menu
 class ColumnMenu : public Menu
 {
     public:
-    ColumnMenu(std::vector<std::string> options, int button_w, void* parent, std::string parent_name);
+    ColumnMenu(std::vector<std::string> options, int button_w, std::string parent_name);
     ~ColumnMenu();
     void Update(Telecontroller* controller)override;
     void Draw(SDL_Renderer* renderer) const override;
@@ -25,7 +25,6 @@ class ColumnMenu : public Menu
     void Show(){};
 
     private:
-    void* hParent;
     std::vector<MenuButton*> MenuItem;
     std::map<std::string, Menu*> Menu_Map;
     SDL_Rect _menurec;

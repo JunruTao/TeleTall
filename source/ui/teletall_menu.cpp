@@ -69,7 +69,7 @@ ColumnMenu::~ColumnMenu()
     }
 }
 
-ColumnMenu::ColumnMenu(std::vector<std::string> options, int button_w, void* parent, std::string parent_name)
+ColumnMenu::ColumnMenu(std::vector<std::string> options, int button_w, std::string parent_name)
 {
     int h = 16;
     int x = 30;
@@ -79,7 +79,6 @@ ColumnMenu::ColumnMenu(std::vector<std::string> options, int button_w, void* par
     {
         MenuItem.emplace_back(new MenuButton( x+3 , 3+y + i*(h+4), button_w-6, options[i],false));
     }
-    hParent = parent;
 }
 
 
@@ -90,10 +89,10 @@ void ColumnMenu::Update(Telecontroller* controller)
         b->Update(controller);
     }
 
-    //if(controller->GetMousePoint()->InBound(0,0,_menurec.w,_menurec.h))
-    //{
+    if(controller->GetMousePoint()->InBound(_menurec.x,_menurec.y,_menurec.w,_menurec.h))
+    {
         controller->current_panel = PanelID::ON_MENU;
-    //}
+    }
 }
 
 void ColumnMenu::Draw(SDL_Renderer* renderer)const

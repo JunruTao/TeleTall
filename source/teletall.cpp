@@ -107,12 +107,14 @@ void TeleTall::Run(
         "Copy                            Ctrl+C",
         "Paste                           Ctrl+V",
         "Clear Selection     "};
-    ColumnMenu sm(title2,200,NULL,"File");
+    ColumnMenu sm(title2,200,"File");
 
-
+    SDL_Event event;
+    SDL_PollEvent(&event);
     /*The Feedback Loop*/
     while (running)
     {
+        
         frame_start = SDL_GetTicks();
         //handle inputs and events here:
         //..
