@@ -53,3 +53,4 @@ else()
     message(STATUS ">>> TARGET_LINK_LIBRARIES Building system: Windows MinGW32")
     TARGET_LINK_LIBRARIES(teletall ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES} ${SDL2_TTF_LIBRARIES}  -lmingw32 -lpthread -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf)
 endif()
+

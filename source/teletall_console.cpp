@@ -5,6 +5,8 @@
 void Console::Init()
 {
     cmd_dictionary[cmd_KEY::cmd_HOME] = "> [H] Viewport: center viewport";
+    cmd_dictionary[cmd_KEY::cmd_HOME_Pad] = "> [H] Viewport: center TelePad-viewport";
+    cmd_dictionary[cmd_KEY::cmd_HOME_Tall] = "> [H] Viewport: center Tall-viewport";
     cmd_dictionary[cmd_KEY::cmd_FRAME] = "> [F] Viewport: Framing Selection";
     cmd_dictionary[cmd_KEY::cmd_WINDOWSIZE] = "> WINDOW: changed size";
     cmd_dictionary[cmd_KEY::cmd_LMB] = "> Mouse: left mouse clicked";

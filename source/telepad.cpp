@@ -237,7 +237,7 @@ void Telepad::Resize(Telecontroller &controller, const int &x, const int &y)
 void Telepad::MoveGrid(Telecontroller &controller, const int &x, const int &y)
 {
     SDL_Cursor *cursor = NULL;
-    onPad = ((x > 0) && (x < pad_width - HALF_SLIDEBAR))&&(y>controller.GetPadRect()->y && y<controller.GetPadRect()->h);
+    onPad = ((x > 0) && (x < pad_width - HALF_SLIDEBAR))&&(y>controller.GetPadRect()->y && y<controller.GetPadRect()->h)&&controller.current_panel!=PanelID::ON_MENU;
     if ((controller.MouseR_hold) && (controller.Shared_Nevigation_Lock == MouseLockID::TELE_LOCKED || controller.Shared_Nevigation_Lock == MouseLockID::FREE))
     {
         if (onPad)
@@ -276,7 +276,7 @@ void Telepad::MoveGrid(Telecontroller &controller, const int &x, const int &y)
             controller.Shared_Nevigation_Lock = MouseLockID::TELE_LOCKED;
         }
     }
-    else if (onPad && controller.GetCommand() == cmd_KEY::cmd_HOME)
+    else if ((onPad && controller.GetCommand() == cmd_KEY::cmd_HOME)|| controller.GetCommand() == cmd_KEY::cmd_HOME_Pad)
     {
         origin.x = controller.GetPadRect()->w / 2 + controller.GetPadRect()->x;
         origin.y = controller.GetPadRect()->h / 2 + controller.GetPadRect()->y;

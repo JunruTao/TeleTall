@@ -17,7 +17,6 @@ BarMenu::BarMenu(SDL_Window* hwnd, std::vector<std::string> options, int button_
         MenuItem.emplace_back(new MenuButton( 3 + ((button_w + 2) * i) , 3, button_w, options[i],true));
         Menu_Map[options[i]] = new ColumnMenu();
     }
-    number_opened = 0;
     active = "null";
 }
 //_____________________________
@@ -61,6 +60,18 @@ void BarMenu::AddedSubMenu(std::string name, ColumnMenu* sub_menu)
 
 }
 
+//_____________________________
+//=============>>>  Add Commands to buttons.
+void BarMenu::AddCommand(std::vector<cmd_KEY> cmd_list)
+{
+    if (!MenuItem.empty() && !cmd_list.empty())
+    {
+        for(size_t i = 0; i<MenuItem.size(); i++)
+        {
+            MenuItem[i]->SetCommand(cmd_list[i]);
+        }
+    }
+}
 
 
 
@@ -73,102 +84,112 @@ void BarMenu::Update(Telecontroller* controller)
     int h;
     SDL_GetWindowSize(controller->GetHWND(), &_menurec.w, &h);
 
-    if(controller->GetMousePoint()->InBound(0,0,_menurec.w,_menurec.h))
+    if (controller->GetMousePoint()->InBound(0, 0, _menurec.w, _menurec.h))
     {
         controller->current_panel = PanelID::ON_MENU;
     }
 
+
+
     
-
-
-    for(auto &b: MenuItem)
-    {
-        
-        std::string name = b->GetName();
-        std::map<std::string, ColumnMenu *>::iterator itr = Menu_Map.find(name);
-
-        if (itr != Menu_Map.end())
+    
+        for (auto &b : MenuItem)
         {
-            ButtonStates state =  b->GetState();
-            if (active == "null")
+            std::string name = b->GetName();
+            std::map<std::string, ColumnMenu *>::iterator itr = Menu_Map.find(name);
+            if (itr != Menu_Map.end())
             {
-                if (state == ButtonStates::CLICKED)
-                {
-                    b->SetOpenState();
-                    Menu_Map[name]->Update(controller, b->GetButtonX(), _menurec.h, true);
-                    active = name;
-                }
-                else
-                {
-                    Menu_Map[name]->Update(controller, b->GetButtonX(), _menurec.h, false);
-                    b->ReleaseState();
-                }
-            }
 
-            else if(active != name)
-            {  
-                if((state == ButtonStates::CLICKED))
+                ButtonStates state = b->GetState();
+
+                if (active == "null")
                 {
-                    for (auto &b2 : MenuItem)
+                    if (state == ButtonStates::CLICKED)
                     {
-                        if (b2->GetName() == active)
-                        {
-                            b2->ShouldRest();
-                            break;
-                        }
+                        b->SetOpenState();
+                        Menu_Map[name]->Update(controller, b->GetButtonX(), _menurec.h, true);
+                        active = name;
                     }
-                    Menu_Map[active]->Update(controller, b->GetButtonX(), _menurec.h, false);
-                    Menu_Map[name]->Update(controller, b->GetButtonX(), _menurec.h, true);
-                    active = name;
-                    
+                    else
+                    {
+                        Menu_Map[name]->Update(controller, b->GetButtonX(), _menurec.h, false);
+                        b->ReleaseState();
+                    }
+                }
+
+                else if (active != name)
+                {
+                    if ((state == ButtonStates::CLICKED))
+                    {
+                        for (auto &b2 : MenuItem)
+                        {
+                            if (b2->GetName() == active)
+                            {
+                                b2->ShouldRest();
+                                break;
+                            }
+                        }
+                        Menu_Map[active]->Update(controller, b->GetButtonX(), _menurec.h, false);
+                        Menu_Map[name]->Update(controller, b->GetButtonX(), _menurec.h, true);
+                        active = name;
+                    }
+                    else
+                    {
+                        Menu_Map[name]->Update(controller, b->GetButtonX(), _menurec.h, false);
+                        b->ReleaseState();
+                    }
+                }
+
+                else if (active == name)
+                {
+                    if (state == ButtonStates::CLICKED)
+                    {
+                        Menu_Map[name]->Update(controller, b->GetButtonX(), _menurec.h, false);
+                        active = "null";
+                        b->ReleaseState();
+                    }
+                    if (state == ButtonStates::OPENED)
+                    {
+                        Menu_Map[name]->Update(controller, b->GetButtonX(), _menurec.h, true);
+                    }
+                    else
+                    {
+                        Menu_Map[name]->Update(controller, b->GetButtonX(), _menurec.h, false);
+                        active = "null";
+                        b->ReleaseState();
+                    }
                 }
                 else
                 {
                     Menu_Map[name]->Update(controller, b->GetButtonX(), _menurec.h, false);
-                    b->ReleaseState();
-                }
-            }
-            
-            else if(active == name)
-            {
-                if(state == ButtonStates::CLICKED)
-                {
-                    Menu_Map[name]->Update(controller, b->GetButtonX(), _menurec.h, false);
                     active = "null";
                     b->ReleaseState();
                 }
-                if(state == ButtonStates::OPENED)
-                {
-                    Menu_Map[name]->Update(controller, b->GetButtonX(), _menurec.h, true);
-                }else
-                {
-                    Menu_Map[name]->Update(controller, b->GetButtonX(), _menurec.h, false);
-                    active = "null";
-                    b->ReleaseState();
-                }
-                
-            }else
-            {
-                Menu_Map[name]->Update(controller, b->GetButtonX(), _menurec.h, false);
-                active = "null";
-                b->ReleaseState();
+
+                //if (state == ButtonStates::CLICKED){controller->SendCommandEx(b->GetCommand(),"");}
+
+                b->Update(controller);
             }
-
-    
-
-            b->Update(controller);
-
         }
+
+        if (controller->ShouldCloseMenu())
+        {
+            for (auto &b : MenuItem)
+            {
+                std::string name = b->GetName();
+                std::map<std::string, ColumnMenu *>::iterator itr = Menu_Map.find(name);
+                if (itr != Menu_Map.end())
+                {
+                    Menu_Map[name]->Update(controller, b->GetButtonX(), _menurec.h, false);
+                    active = "null";
+                    b->ReleaseState();
+                }
+                b->Update(controller);
+            }
+        }
+
+        controller->LinkMenuRec(&_menurec);
     }
-
-    
-    
-    
-
-    controller->LinkMenuRec(&_menurec);
-}
-
-
 
 //_____________________________
 //=============>>>  Draw.
@@ -194,6 +215,9 @@ void BarMenu::Draw(SDL_Renderer* renderer)const
 //|==================================================================================================|
 //| * * * * * * * * * * * * * * * * * * * [O B J E C T]* * * * * * * * * * * * * * * * * * * * * * * |
 //|CLASS:---------------------------------[Column Menu]
+
+std::vector<SDL_Rect*> ColumnMenu::_opened_range_rect = {};
+
 
 //_____________________________
 //=============>>>  Destructor.
@@ -251,7 +275,18 @@ void ColumnMenu::AddedSubMenu(std::string name, ColumnMenu* sub_menu)
     }
 }
 
-
+//_____________________________
+//=============>>>  Add Commands to buttons.
+void ColumnMenu::AddCommand(std::vector<cmd_KEY> cmd_list)
+{
+    if (!MenuItem.empty() && !cmd_list.empty())
+    {
+        for(size_t i = 0; i<MenuItem.size(); i++)
+        {
+            MenuItem[i]->SetCommand(cmd_list[i]);
+        }
+    }
+}
 
 //_____________________________
 //=============>>>  Update.
@@ -264,101 +299,115 @@ void ColumnMenu::Update(Telecontroller* controller, int x, int y, bool show)
 
     if (_ifshown)
     {
-        if (controller->GetMousePoint()->InBoundWH(_menurec.x, _menurec.y, _menurec.w, _menurec.h))
+        _opened_range_rect.push_back(&_menurec);
+        int inbound = 0;
+        for (size_t i = 0; i < _opened_range_rect.size(); i++)
         {
-            controller->current_panel = PanelID::ON_MENU;
-        }
-    }
-    
-    for(auto &b: MenuItem)
-    {
-        b->PositionOffset(x,y);
-        //b->Update(controller);
-
-        std::string name = b->GetName();
-        std::map<std::string, ColumnMenu *>::iterator itr = Menu_Map.find(name);
-        if (itr != Menu_Map.end())
-        {
-            ButtonStates state =  b->GetState();
-            if (active == "null")
+            if (controller->GetMousePoint()->InBoundWH(_opened_range_rect[i]->x, _opened_range_rect[i]->y,_opened_range_rect[i]->w,_opened_range_rect[i]->h))
             {
-                if (state == ButtonStates::CLICKED)
-                {
-                    b->SetOpenState();
-                    Menu_Map[name]->Update(controller, b->GetButtonX() + _menurec.w, b->GetButtonY(), true);
-                    active = name;
-                }
-                else
-                {
-                    Menu_Map[name]->Update(controller, b->GetButtonX() + _menurec.w, b->GetButtonY(), false);
-                    b->ReleaseState();
-                }
-            }
-
-            else if(active != name)
-            {  
-                if((state == ButtonStates::CLICKED))
-                {
-                     for (auto &b2 : MenuItem)
-                     {
-                         if (b2->GetName() == active)
-                         {
-                             b2->ShouldRest();
-                            break;
-                         }
-                    }
-                    Menu_Map[active]->Update(controller, b->GetButtonX() + _menurec.w, b->GetButtonY(), false);
-                    Menu_Map[name]->Update(controller, b->GetButtonX() + _menurec.w, b->GetButtonY(), true);
-                    active = name;
-                    
-                }
-                else
-                {
-                    Menu_Map[name]->Update(controller, b->GetButtonX() + _menurec.w, b->GetButtonY(), false);
-                    b->ReleaseState();
-                }
+                inbound ++;
             }
             
-            else if(active == name)
-            {
-                if(state == ButtonStates::CLICKED)
-                {
-                    Menu_Map[name]->Update(controller, b->GetButtonX() + _menurec.w, b->GetButtonY(), false);
-                    active = "null";
-                    b->ReleaseState();
-                }
-                if(state == ButtonStates::OPENED)
-                {
-                    Menu_Map[name]->Update(controller, b->GetButtonX() + _menurec.w, b->GetButtonY(), true);
-                }else
-                {
-                    Menu_Map[name]->Update(controller, b->GetButtonX() + _menurec.w, b->GetButtonY(), false);
-                    active = "null";
-                    b->ReleaseState();
-                }
-                
-            }else
-            {
-                Menu_Map[name]->Update(controller, b->GetButtonX() + _menurec.w, b->GetButtonY(), false);
-                active = "null";
-                b->ReleaseState();
-            }
-
-            b->Update(controller);
-
         }
-        
-    }
-    if (_ifshown)
-    {
-        if (controller->GetMousePoint()->InBoundWH(_menurec.x, _menurec.y, _menurec.w, _menurec.h))
+        if (inbound > 0)
         {
             controller->current_panel = PanelID::ON_MENU;
         }
+        else
+        {
+            controller->current_panel = PanelID::NONE;
+        }
     }
-    
-    
-    
+    else
+    {
+        if(_opened_range_rect.size()>1)
+        {
+            _opened_range_rect.pop_back();
+        }
+    }
+
+    if (_ifshown)
+    {
+        
+        for (auto &b : MenuItem)
+        {
+            b->PositionOffset(x, y);
+
+            std::string name = b->GetName();
+            std::map<std::string, ColumnMenu *>::iterator itr = Menu_Map.find(name);
+
+        
+            if (itr != Menu_Map.end())
+            {
+                ButtonStates state = b->GetState();
+                if (active == "null")
+                {
+                    if (state == ButtonStates::CLICKED)
+                    {
+                        b->SetOpenState();
+                        Menu_Map[name]->Update(controller, b->GetButtonX() + _menurec.w, b->GetButtonY(), true);
+                        active = name;
+                    }
+                    else
+                    {
+                        Menu_Map[name]->Update(controller, b->GetButtonX() + _menurec.w, b->GetButtonY(), false);
+                        b->ReleaseState();
+                    }
+                }
+
+                else if (active != name)
+                {
+                    if ((state == ButtonStates::CLICKED))
+                    {
+                        for (auto &b2 : MenuItem)
+                        {
+                            if (b2->GetName() == active)
+                            {
+                                b2->ShouldRest();
+                                break;
+                            }
+                        }
+                        Menu_Map[active]->Update(controller, b->GetButtonX() + _menurec.w, b->GetButtonY(), false);
+                        Menu_Map[name]->Update(controller, b->GetButtonX() + _menurec.w, b->GetButtonY(), true);
+                        active = name;
+                    }
+                    else
+                    {
+                        Menu_Map[name]->Update(controller, b->GetButtonX() + _menurec.w, b->GetButtonY(), false);
+                        b->ReleaseState();
+                    }
+                }
+
+                else if (active == name)
+                {
+                    if (state == ButtonStates::CLICKED)
+                    {
+                        Menu_Map[name]->Update(controller, b->GetButtonX() + _menurec.w, b->GetButtonY(), false);
+                        active = "null";
+                        b->ReleaseState();
+                    }
+                    if (state == ButtonStates::OPENED)
+                    {
+                        Menu_Map[name]->Update(controller, b->GetButtonX() + _menurec.w, b->GetButtonY(), true);
+                    }
+                    else
+                    {
+                        Menu_Map[name]->Update(controller, b->GetButtonX() + _menurec.w, b->GetButtonY(), false);
+                        active = "null";
+                        b->ReleaseState();
+                    }
+                }
+                else
+                {
+                    Menu_Map[name]->Update(controller, b->GetButtonX() + _menurec.w, b->GetButtonY(), false);
+                    active = "null";
+                    b->ReleaseState();
+                }
+
+                b->Update(controller);
+            }
+        }
+    }
 }
 
 
@@ -377,7 +426,21 @@ void ColumnMenu::Draw(SDL_Renderer* renderer)const
         {
             b->Draw(renderer);
             Menu_Map.find(b->GetName())->second->Draw(renderer);
+            if(b->HaveChild())
+            {
+                SDL_SetRenderDrawColor(renderer, 52, 52, 52, 255);
+                Point2D<int> pt(b->GetButtonX()+b->GetButtonWidth()-5,b->GetButtonY()+(b->GetButtonHeight()/2));
+                SDL_RenderDrawLine(renderer,pt.x-6,b->GetButtonY()+3,pt.x,pt.y);
+                SDL_RenderDrawLine(renderer,pt.x-6,b->GetButtonY()+b->GetButtonHeight()-4,pt.x,pt.y);
+                SDL_SetRenderDrawColor(renderer, 58, 58, 58, 255);
+                SDL_RenderDrawLine(renderer,pt.x-7,b->GetButtonY()+3,pt.x-1,pt.y);
+                SDL_RenderDrawLine(renderer,pt.x-7,b->GetButtonY()+b->GetButtonHeight()-4,pt.x-1,pt.y);
+                SDL_RenderDrawLine(renderer,pt.x-5,b->GetButtonY()+3,pt.x+1,pt.y);
+                SDL_RenderDrawLine(renderer,pt.x-5,b->GetButtonY()+b->GetButtonHeight()-4,pt.x+1,pt.y);
+            }
         }
+
+        
         //drawing shadow lines
         SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
         SDL_SetRenderDrawColor(renderer, 20, 20, 20, 100);

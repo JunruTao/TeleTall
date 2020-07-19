@@ -1,8 +1,14 @@
 # :radio_button: TeleTall 
 
 This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](https://www.udacity.com/course/c-plus-plus-nanodegree--nd213). The Capstone Project is a chance to integrate what I've learned throughout this program. 
-<img src=".markdown.images/20200716Menu_and_Console2.png"/>
+<img src=".markdown.images/20200719_2SmartMenuandEvent.gif"/>
 ***
+
+
+
+
+
+
 
 ### :red_circle: Dependencies for Running Locally
 * **cmake** >= 3.7
@@ -84,6 +90,24 @@ The viewport on the left is called `TelePad` which is the context for holding an
 #### :pushpin: Latest!!!: :arrow_down: :arrow_down: :arrow_down:
 
 
+---
+
+:radio_button: &larr;- - - - :bookmark_tabs:
+* #### DAY 11 { <ins>7/19/2020</ins> } : Working on Menu / Events
+
+**[8:40 PM] Communication of Menu Events Finalised**
+  * Finally bridging the Menus and buttons to send cmds to controller. Spend a bit of time working around the menu popping and hiding when executing a command or clicked somewhere else in the application. 
+  <img src=".markdown.images/20200719_2SmartMenuandEvent.gif"/>
+
+**[3:02 PM] sub-menu**
+  * Added a drawing function in ColumnMenu class: drawing an arrow when it has a child menu, double drawing the lines making it look anti-aliased:
+  > build preview: 
+  > <img src=".markdown.images/20200719SmartMenu_Arrow.png"/>
+  
+
+
+
+----
 :radio_button: &larr;- - - - :bookmark_tabs:
 * #### DAY 10 { <ins>7/18/2020</ins> } : Smart Menu API done
 

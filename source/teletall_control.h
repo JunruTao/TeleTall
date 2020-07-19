@@ -6,7 +6,7 @@
 #include "teletall_console.h"
 
 
-enum class PanelID {ON_PAD,ON_BAR,ON_MENU,ON_TALL,ON_CONSOLE};
+enum class PanelID {ON_PAD,ON_BAR,ON_MENU,ON_TALL,ON_CONSOLE, NONE};
 enum class MouseLockID {FREE, TALL_LOCKED, TELE_LOCKED};
 
 
@@ -33,6 +33,8 @@ public:
 
     void SendCommand(const cmd_KEY& _cmd) {cmd = _cmd;};
     void SendCommandEx(const cmd_KEY& _cmd, std::string _msg);
+    void CloseAllMenusTrue(){_closeAllMenus = true;};
+    bool ShouldCloseMenu(){return _closeAllMenus;}
     cmd_KEY GetCommand(){return cmd;}
 
     void LinkPadRect(SDL_Rect* in_PadRect, SDL_Rect* in_MSlidRec);
@@ -55,6 +57,7 @@ private:
     bool key_ctrl;
     bool key_alt;
     bool key_shift;
+    bool _closeAllMenus;
     std::string _Msg;
     SDL_Rect r_PadRect;
     SDL_Rect r_TallRect;

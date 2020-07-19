@@ -169,7 +169,7 @@ void Tallwindow::MoveGrid(Telecontroller &controller, const int &x, const int &y
             controller.Shared_Nevigation_Lock = MouseLockID::TALL_LOCKED;
         }
     }
-    else if (onTall && controller.GetCommand() == cmd_KEY::cmd_HOME)
+    else if ((onTall && controller.GetCommand() == cmd_KEY::cmd_HOME) || controller.GetCommand() == cmd_KEY::cmd_HOME_Tall)
     { //HOMING here>>>
         origin.x = controller.GetTallRect()->w / 2 + controller.GetTallRect()->x;
         origin.y = controller.GetTallRect()->h / 2 + controller.GetTallRect()->y;

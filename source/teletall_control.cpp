@@ -14,6 +14,7 @@ Telecontroller::Telecontroller()
     MouseM_hold = false;
     MouseL_hold = false;
     MouseR_hold = false;
+    _closeAllMenus = false;
 }
 
 Telecontroller::~Telecontroller() 
@@ -32,6 +33,9 @@ void Telecontroller::SendCommandEx(const cmd_KEY& _cmd, std::string _msg)
 void Telecontroller::ProcessInput(bool &running)
 {
 
+    int _x, _y;
+    SDL_GetMouseState(&_x, &_y);
+     _mouseLocation.New(_x, _y);
     SDL_Event event;
     SDL_PollEvent(&event);
 
@@ -54,6 +58,7 @@ void Telecontroller::ProcessInput(bool &running)
         //-------------------------------------[Quit Only]
         else if (event.type == SDL_QUIT)
         {
+            _closeAllMenus = false;
             running = false;
         }
 
@@ -82,10 +87,12 @@ void Telecontroller::ProcessInput(bool &running)
         //--------------------------------------[Mouse Release]
         else if (event.type == SDL_MOUSEBUTTONUP)
         {
+            _closeAllMenus = false;
             MouseM_hold = false;
             MouseL_hold = false;
             MouseR_hold = false;
             cmd = cmd_KEY::cmd_EMPTY;
+            
         }
         else if (event.type == SDL_KEYDOWN)
         {
@@ -131,15 +138,16 @@ void Telecontroller::ProcessInput(bool &running)
             key_ctrl = false;
             key_alt = false;
             key_shift = false;
+            _closeAllMenus = false;
+            
         }else
         {
             cmd = cmd_KEY::cmd_EMPTY;
             _Msg.clear();
+            _closeAllMenus = false;
         }
         //--------------------------------------[Nothing]
-        int _x, _y;
-        SDL_GetMouseState(&_x, &_y);
-        _mouseLocation.New(_x, _y);
+        
         console->Update(cmd, _Msg);
         
 } //end of ProcessInput scope

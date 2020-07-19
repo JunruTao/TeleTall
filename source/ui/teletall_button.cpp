@@ -41,13 +41,14 @@ void MenuButton::InitButtonColors()
     _click_color = {10,10,10,255};
     _text_color =  {200,  200,  200,  255};
     _text = new ScreenText;
+    _buttom_cmd = cmd_KEY::cmd_EMPTY;
     
 }
 
 
 
 
-MenuButton::MenuButton(Point2D<int> screenLocation, int width, std::string in_text, bool centered, cmd_KEY cmd)
+MenuButton::MenuButton(Point2D<int> screenLocation, int width, std::string in_text, bool centered)
 {
     _name = in_text;
     this->_buttonrec.x = screenLocation.x;
@@ -56,7 +57,6 @@ MenuButton::MenuButton(Point2D<int> screenLocation, int width, std::string in_te
     this->_buttonrec.h = ScreenText::GetUniversalTextHeight()+4;
     _if_centered = centered;
     InitButtonColors();
-    _buttom_cmd = cmd;
     _initPos = screenLocation;
 }
 
@@ -81,6 +81,13 @@ void MenuButton::Update(Telecontroller* controller)
     {
         _state = ButtonStates::NORMAL;
         _opened = false;
+        goto skipping;
+    }
+    if(controller->ShouldCloseMenu())
+    {
+        _state = ButtonStates::NORMAL;
+        _opened = false;
+        controller->current_panel = PanelID::NONE;
         goto skipping;
     }
     if (controller->GetMousePoint()->InBoundWH(_buttonrec.x, _buttonrec.y, _buttonrec.w, _buttonrec.h))
@@ -108,7 +115,11 @@ void MenuButton::Update(Telecontroller* controller)
             if (controller->GetCommand() == cmd_KEY::cmd_LMB)
             {
                 _state = ButtonStates::CLICKED;
-                controller->SendCommand(_buttom_cmd);
+                if (_buttom_cmd != cmd_KEY::cmd_EMPTY)
+                {
+                    controller->SendCommandEx(_buttom_cmd, "");
+                    controller->CloseAllMenusTrue();
+                }
             }
         }
     }
@@ -129,22 +140,23 @@ void MenuButton::Update(Telecontroller* controller)
         if (controller->GetCommand() == cmd_KEY::cmd_LMB || controller->GetCommand() == cmd_KEY::cmd_RMB || controller->GetCommand() == cmd_KEY::cmd_MMB )
         {
             
-            if (_opened && _have_child && controller->current_panel == PanelID::ON_MENU)
+            if (_opened && _have_child && (controller->current_panel == PanelID::ON_MENU))
             {
                 _state = ButtonStates::OPENED;
                 _opened = true;
-                
             }
             else
             {
                 _state = ButtonStates::NORMAL;
                 _opened = false;
             }
-            skipping:
-            {
 
-            }
+
+            skipping:
+            {}
+
         }
+        
     }
     _shouldrest = false;
 }

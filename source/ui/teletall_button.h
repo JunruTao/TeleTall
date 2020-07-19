@@ -42,7 +42,7 @@ protected:
 class MenuButton : public Button
 {
 public:
-    MenuButton(Point2D<int> screenLocation, int width, std::string in_text, bool centered, cmd_KEY cmd);
+    MenuButton(Point2D<int> screenLocation, int width, std::string in_text, bool centered);
     MenuButton(int x, int y, int width, std::string in_text,bool centered);
     ~MenuButton(){delete _text;};
 
@@ -56,11 +56,13 @@ public:
     int GetButtonX(){return _buttonrec.x;}
     int GetButtonY(){return _buttonrec.y;}
     void SetCommand(cmd_KEY cmd){ _buttom_cmd = cmd;}
+    cmd_KEY GetCommand(){return _buttom_cmd;}
 
     int GetButtonWidth(){return _buttonrec.w;}
     int GetButtonHeight(){return _buttonrec.h;}
     void HaveFunctionTrue(){_have_function = true;}
     void HaveChildTrue(){_have_child = true;}
+    bool HaveChild(){return _have_child;}
     void ShouldRest(){_shouldrest = true;}
 
 private:

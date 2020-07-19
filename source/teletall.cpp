@@ -108,19 +108,20 @@ void TeleTall::Run(
 
         //Update Function here:
         //..
+        topmenu->Update(&controller);
         telepad.Update(controller);
         tallwindow.Update(controller);
+        
+        //controller.ProcessInput(running);
 
-        topmenu->Update(&controller);
         //Render here:
         //..
 
 
         tallwindow.Render(hRenderer);
         telepad.Render(hRenderer);
-        
-
         controller.DrawSelectionRect(hRenderer);
+
         topmenu->Draw(hRenderer);
 
         //Render before this line
@@ -172,9 +173,11 @@ void TeleTall::ErrorReporter(const char *errorMessage)
     SDL_ShowSimpleMessageBox(0, "TeleTall-SDL: Error", errorMessage, NULL);
 }
 
+
+
+//[Construct Menu]:
 void TeleTall::ConstructMenu()
 {
-
     //Menu Section:
     std::vector<std::string> titles = {
         "File",
@@ -182,7 +185,19 @@ void TeleTall::ConstructMenu()
         "View",
         "Nodes",
         "About"};
+
     topmenu = new BarMenu(hwnd_main, titles, 80);
+    std::vector<cmd_KEY> title_cmds = 
+    {
+        cmd_KEY::cmd_EMPTY,
+        cmd_KEY::cmd_EMPTY,
+        cmd_KEY::cmd_EMPTY,
+        cmd_KEY::cmd_EMPTY,
+        cmd_KEY::cmd_WIN_ABOUT
+    };
+    topmenu->AddCommand(title_cmds);
+
+
     std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
     std::vector<std::string> title2 = {
@@ -199,16 +214,20 @@ void TeleTall::ConstructMenu()
         "Very Much",
     };
     ColumnMenu *subm_Bella = new ColumnMenu(title_bella, 200);
+    ColumnMenu *subm_Bella2 = new ColumnMenu(title_bella, 200);
 
     std::vector<std::string> title_option = {
         "Option 1",
         "Option 2",
         "Bella",
     };
+    
     ColumnMenu *subm_option = new ColumnMenu(title_option, 200);
 
     subm_option->AddedSubMenu("Bella", subm_Bella);
     subm_file->AddedSubMenu("Options", subm_option);
+
+    subm_file->AddedSubMenu("Quit", subm_Bella2);
     topmenu->AddedSubMenu("File", subm_file);
 
     std::this_thread::sleep_for(std::chrono::milliseconds(1));
@@ -221,6 +240,7 @@ void TeleTall::ConstructMenu()
         "Undo                            Ctrl+Z",
         "Redo                            Ctrl+Y"};
     ColumnMenu *subm_Edit = new ColumnMenu(title3, 200);
+
     topmenu->AddedSubMenu("Edit", subm_Edit);
     std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
@@ -230,10 +250,17 @@ void TeleTall::ConstructMenu()
         "Show/Hide Console         Ctrl+;",
         "Clear Selection                       "};
     ColumnMenu *subm_View = new ColumnMenu(title4, 200);
+    std::vector<cmd_KEY> viewtab_cmds = 
+    {
+        cmd_KEY::cmd_HOME_Pad,
+        cmd_KEY::cmd_HOME_Tall,
+        cmd_KEY::cmd_CONSOLE_SHOW,
+        cmd_KEY::cmd_CLEAR_Sel
+    };
+    subm_View->AddCommand(viewtab_cmds);
+
+
+
     topmenu->AddedSubMenu("View", subm_View);
     std::this_thread::sleep_for(std::chrono::milliseconds(1));
-
-
-
-
 }

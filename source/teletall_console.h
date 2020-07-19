@@ -11,7 +11,10 @@ enum class cmd_KEY
 {
     cmd_STARTUP,cmd_RMB,cmd_LMB,cmd_MMB,cmd_EMPTY,
     cmd_HOME,cmd_FRAME,cmd_FILE,cmd_SAVE,cmd_NEW,
-    cmd_WINDOWSIZE,cmd_CONSOLE_SHOW
+    cmd_WINDOWSIZE,cmd_CONSOLE_SHOW, cmd_HOME_Pad, 
+    cmd_HOME_Tall, cmd_WIN_ABOUT, cmd_CREATE_NODE,
+    cmd_CLEAR_Sel
+
 };
 
 class Console
