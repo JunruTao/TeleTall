@@ -5,6 +5,7 @@
 //----------------------------------------------------------
 size_t Button::_count = 0;
 
+
 Button::Button()
 {
     screenPos.New(0,0);
@@ -25,17 +26,22 @@ void Button::SetInfo(std::string info) { _info = info; }
 
 
 
+
+
 //Set Colors here--------------------
 void MenuButton::InitButtonColors()
 {
     _state = ButtonStates::NORMAL;
     _have_child = false;
     _have_function = false;
+    _opened = false;
+    _shouldrest = false;
     _nor_color =   {66,66,66,255};
     _pass_color =  {80,80,80,80};
-    _click_color = {100,100,100,255};
+    _click_color = {10,10,10,255};
     _text_color =  {200,  200,  200,  255};
     _text = new ScreenText;
+    
 }
 
 
@@ -51,6 +57,7 @@ MenuButton::MenuButton(Point2D<int> screenLocation, int width, std::string in_te
     _if_centered = centered;
     InitButtonColors();
     _buttom_cmd = cmd;
+    _initPos = screenLocation;
 }
 
 
@@ -63,24 +70,90 @@ MenuButton::MenuButton(int x, int y, int width, std::string in_text, bool center
     this->_buttonrec.h = _text->ScreenText::GetUniversalTextHeight()+4;
     _if_centered = centered;
     InitButtonColors();
+    _initPos.New(x,y);
 }
 
 
 
 void MenuButton::Update(Telecontroller* controller)
 {
-    if (controller->GetMousePoint()->InBoundWH(_buttonrec.x, _buttonrec.y, _buttonrec.w, _buttonrec.h))
-    {
-        _state = ButtonStates::PASSING;
-        if (controller->GetCommand() == cmd_KEY::cmd_RMB)
-        {
-            _state = ButtonStates::CLICKED;
-        }
-    }else
+    if (_shouldrest)
     {
         _state = ButtonStates::NORMAL;
+        _opened = false;
+        goto skipping;
     }
+    if (controller->GetMousePoint()->InBoundWH(_buttonrec.x, _buttonrec.y, _buttonrec.w, _buttonrec.h))
+    {
+        if (_have_child)
+        {
+            if (_opened)
+            {
+                _state = ButtonStates::OPENED;
+            }
+            else
+            {
+                _state = ButtonStates::PASSING;
+            }
+
+            if (controller->GetCommand() == cmd_KEY::cmd_LMB)
+            {
+                _state = ButtonStates::CLICKED;
+                _opened = !_opened;
+            }
+        }
+        else
+        {
+            _state = ButtonStates::PASSING;
+            if (controller->GetCommand() == cmd_KEY::cmd_LMB)
+            {
+                _state = ButtonStates::CLICKED;
+            }
+        }
+    }
+    else
+    {
+        if(_opened && _have_child)
+        {
+            _state = ButtonStates::OPENED;
+        }
+        else if(_have_child)
+        {
+            _state = ButtonStates::NORMAL;
+        }else
+        {
+            _state = ButtonStates::NORMAL;
+        }
+
+        if (controller->GetCommand() == cmd_KEY::cmd_LMB || controller->GetCommand() == cmd_KEY::cmd_RMB || controller->GetCommand() == cmd_KEY::cmd_MMB )
+        {
+            
+            if (_opened && _have_child && controller->current_panel == PanelID::ON_MENU)
+            {
+                _state = ButtonStates::OPENED;
+                _opened = true;
+                
+            }
+            else
+            {
+                _state = ButtonStates::NORMAL;
+                _opened = false;
+            }
+            skipping:
+            {
+
+            }
+        }
+    }
+    _shouldrest = false;
 }
+
+void MenuButton::PositionOffset(int offset_x, int offset_y)
+{
+    this->_buttonrec.x = _initPos.x + offset_x;
+    this->_buttonrec.y = _initPos.y + offset_y;
+}
+
 
 
 void MenuButton::Draw(SDL_Renderer* renderer)
@@ -95,7 +168,7 @@ void MenuButton::Draw(SDL_Renderer* renderer)
         SDL_SetRenderDrawColor(renderer,_pass_color.r-10,_pass_color.g-10,_pass_color.b-10,_pass_color.a);
         SDL_RenderDrawRect(renderer,&_buttonrec);
         break;
-    case ButtonStates::CLICKED:
+    case ButtonStates::OPENED: 
         SDL_SetRenderDrawColor(renderer,_click_color.r,_click_color.g,_click_color.b,_click_color.a);
         SDL_RenderFillRect(renderer,&_buttonrec);
         break;

@@ -48,11 +48,22 @@ public:
 
     void Draw(SDL_Renderer* renderer) override;
     void Update(Telecontroller* controller);
+    void PositionOffset(int offset_x, int offset_y);
 
     ButtonStates GetState() const{ return _state; }
     void ReleaseState() {_state = ButtonStates::NORMAL;}
+    void SetOpenState() {_state = ButtonStates::OPENED;}
+    int GetButtonX(){return _buttonrec.x;}
+    int GetButtonY(){return _buttonrec.y;}
+
+    int GetButtonWidth(){return _buttonrec.w;}
+    int GetButtonHeight(){return _buttonrec.h;}
+    void HaveFunctionTrue(){_have_function = true;}
+    void HaveChildTrue(){_have_child = true;}
+    void ShouldRest(){_shouldrest = true;}
 
 private:
+    Point2D<int> _initPos;
     ScreenText* _text;
     SDL_Rect _buttonrec;
     ButtonStates _state;
@@ -63,6 +74,8 @@ private:
     bool _if_centered;
     bool _have_child;
     bool _have_function;
+    bool _opened;
+    bool _shouldrest;
     void InitButtonColors();
     cmd_KEY _buttom_cmd;
 };

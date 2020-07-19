@@ -96,18 +96,57 @@ void TeleTall::Run(
     std::vector<std::string> titles = {
         "File",
         "Edit",
-        "Node",
         "View",
-        "Help"};
+        "Nodes",
+        "About"};
     topmenu = new BarMenu(hwnd_main,titles,80);
-    
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+
+
+
     std::vector<std::string> title2 = {
-        "Selections          ",
-        "Preprocess from node",
+        "Open                              Ctrl+O",
+        "Save                              Ctrl+S",
+        "Save As                Shift+Ctrl+S",
+        "Options"
+        };
+    ColumnMenu* subm_file = new ColumnMenu(title2,200);
+
+
+    std::vector<std::string> title_option = {
+        "A",
+        "B",
+        "C",
+    };
+    ColumnMenu* subm_option = new ColumnMenu(title_option,200);
+    subm_file->AddedSubMenu("Options",subm_option);
+
+
+
+
+    topmenu->AddedSubMenu("File",subm_file);
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+
+    std::vector<std::string> title3 = {
         "Copy                            Ctrl+C",
+        "Cut                               Ctrl+X",
         "Paste                           Ctrl+V",
-        "Clear Selection     "};
-    ColumnMenu sm(title2,200,"File");
+        "Delete                          Delete",
+        "Undo                            Ctrl+Z",
+        "Redo                            Ctrl+Y"};
+    ColumnMenu* subm_Edit = new ColumnMenu(title3,200);
+    topmenu->AddedSubMenu("Edit",subm_Edit);
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+
+    std::vector<std::string> title4 = {
+        "Home Telepad                       H",
+        "Home Tall                              H",
+        "Show/Hide Console         Ctrl+;",
+        "Clear Selection                       "};
+    ColumnMenu* subm_View = new ColumnMenu(title4,200);
+    topmenu->AddedSubMenu("View",subm_View);
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+
 
     SDL_Event event;
     SDL_PollEvent(&event);
@@ -124,8 +163,8 @@ void TeleTall::Run(
         //..
         telepad.Update(controller);
         tallwindow.Update(controller);
+
         topmenu->Update(&controller);
-        sm.Update(&controller);
         //Render here:
         //..
 
@@ -133,7 +172,6 @@ void TeleTall::Run(
         tallwindow.Render(hRenderer);
         telepad.Render(hRenderer);
         topmenu->Draw(hRenderer);
-        sm.Draw(hRenderer);
 
         controller.DrawSelectionRect(hRenderer);
 
@@ -175,6 +213,7 @@ void TeleTall::Run(
 
         //------------------------TIME---------------------------
     }//end while
+
 
 
 }
