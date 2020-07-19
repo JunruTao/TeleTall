@@ -26,6 +26,7 @@ class ColumnMenu : public Menu
 
     private:
     std::vector<MenuButton*> MenuItem;
+    std::string active;
     std::map<std::string, ColumnMenu*> Menu_Map;
     Point2D<int> _initPos;
     SDL_Rect _menurec;

@@ -161,7 +161,6 @@ void BarMenu::Update(Telecontroller* controller)
         }
     }
 
-    number_opened = 0;
     
     
     
@@ -214,6 +213,7 @@ ColumnMenu::~ColumnMenu()
             delete e;
         }     
     }
+    
 }
 //_____________________________
 //=============>>>  Constructor.
@@ -231,6 +231,7 @@ ColumnMenu::ColumnMenu(std::vector<std::string> options, int button_w)
         Menu_Map[options[i]] = new ColumnMenu();
     }
     _ifshown = false;
+    active = "null";
 }
 
 //_____________________________
@@ -261,29 +262,92 @@ void ColumnMenu::Update(Telecontroller* controller, int x, int y, bool show)
 
     this->_ifshown = show;
 
+    if (_ifshown)
+    {
+        if (controller->GetMousePoint()->InBoundWH(_menurec.x, _menurec.y, _menurec.w, _menurec.h))
+        {
+            controller->current_panel = PanelID::ON_MENU;
+        }
+    }
     
     for(auto &b: MenuItem)
     {
         b->PositionOffset(x,y);
-        b->Update(controller);
+        //b->Update(controller);
 
         std::string name = b->GetName();
         std::map<std::string, ColumnMenu *>::iterator itr = Menu_Map.find(name);
         if (itr != Menu_Map.end())
         {
             ButtonStates state =  b->GetState();
-            if (state == ButtonStates::OPENED || state == ButtonStates::CLICKED)
+            if (active == "null")
             {
-                Menu_Map[name]->Update(controller, b->GetButtonX() + _menurec.w, b->GetButtonY(), true);
+                if (state == ButtonStates::CLICKED)
+                {
+                    b->SetOpenState();
+                    Menu_Map[name]->Update(controller, b->GetButtonX() + _menurec.w, b->GetButtonY(), true);
+                    active = name;
+                }
+                else
+                {
+                    Menu_Map[name]->Update(controller, b->GetButtonX() + _menurec.w, b->GetButtonY(), false);
+                    b->ReleaseState();
+                }
             }
-            else
+
+            else if(active != name)
+            {  
+                if((state == ButtonStates::CLICKED))
+                {
+                     for (auto &b2 : MenuItem)
+                     {
+                         if (b2->GetName() == active)
+                         {
+                             b2->ShouldRest();
+                            break;
+                         }
+                    }
+                    Menu_Map[active]->Update(controller, b->GetButtonX() + _menurec.w, b->GetButtonY(), false);
+                    Menu_Map[name]->Update(controller, b->GetButtonX() + _menurec.w, b->GetButtonY(), true);
+                    active = name;
+                    
+                }
+                else
+                {
+                    Menu_Map[name]->Update(controller, b->GetButtonX() + _menurec.w, b->GetButtonY(), false);
+                    b->ReleaseState();
+                }
+            }
+            
+            else if(active == name)
+            {
+                if(state == ButtonStates::CLICKED)
+                {
+                    Menu_Map[name]->Update(controller, b->GetButtonX() + _menurec.w, b->GetButtonY(), false);
+                    active = "null";
+                    b->ReleaseState();
+                }
+                if(state == ButtonStates::OPENED)
+                {
+                    Menu_Map[name]->Update(controller, b->GetButtonX() + _menurec.w, b->GetButtonY(), true);
+                }else
+                {
+                    Menu_Map[name]->Update(controller, b->GetButtonX() + _menurec.w, b->GetButtonY(), false);
+                    active = "null";
+                    b->ReleaseState();
+                }
+                
+            }else
             {
                 Menu_Map[name]->Update(controller, b->GetButtonX() + _menurec.w, b->GetButtonY(), false);
+                active = "null";
+                b->ReleaseState();
             }
-        }else
-        {
-            b->HaveFunctionTrue();
+
+            b->Update(controller);
+
         }
+        
     }
     if (_ifshown)
     {
@@ -292,6 +356,9 @@ void ColumnMenu::Update(Telecontroller* controller, int x, int y, bool show)
             controller->current_panel = PanelID::ON_MENU;
         }
     }
+    
+    
+    
 }
 
 

@@ -126,9 +126,9 @@ void Tallwindow::Update(Telecontroller &controller)
 
 void Tallwindow::MoveGrid(Telecontroller &controller, const int &x, const int &y)
 {
-    Point2D tempP(x,y);
-    onTall = tempP.InBoundWH(controller.GetTallRect()->x,controller.GetTallRect()->y,controller.GetTallRect()->w,controller.GetTallRect()->h );
-    
+
+    Point2D tempP(x, y);
+    onTall = (tempP.InBoundWH(controller.GetTallRect()->x, controller.GetTallRect()->y, controller.GetTallRect()->w, controller.GetTallRect()->h)) || controller.current_panel == PanelID::ON_TALL;
     if (onTall)
     {
         controller.current_panel = PanelID::ON_TALL;

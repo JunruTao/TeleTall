@@ -108,6 +108,7 @@ void MenuButton::Update(Telecontroller* controller)
             if (controller->GetCommand() == cmd_KEY::cmd_LMB)
             {
                 _state = ButtonStates::CLICKED;
+                controller->SendCommand(_buttom_cmd);
             }
         }
     }

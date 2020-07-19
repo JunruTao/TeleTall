@@ -102,8 +102,6 @@ void TeleTall::Run(
     topmenu = new BarMenu(hwnd_main,titles,80);
     std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
-
-
     std::vector<std::string> title2 = {
         "Open                              Ctrl+O",
         "Save                              Ctrl+S",
@@ -113,18 +111,25 @@ void TeleTall::Run(
     ColumnMenu* subm_file = new ColumnMenu(title2,200);
 
 
+    std::vector<std::string> title_bella = {
+        "I",
+        "Love you",
+        "Very Much",
+    };
+    ColumnMenu* subm_Bella = new ColumnMenu(title_bella,200);
+
     std::vector<std::string> title_option = {
-        "A",
-        "B",
-        "C",
+        "Option 1",
+        "Option 2",
+        "Bella",
     };
     ColumnMenu* subm_option = new ColumnMenu(title_option,200);
+
+
+    subm_option->AddedSubMenu("Bella",subm_Bella);
     subm_file->AddedSubMenu("Options",subm_option);
-
-
-
-
     topmenu->AddedSubMenu("File",subm_file);
+
     std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
     std::vector<std::string> title3 = {
@@ -171,9 +176,10 @@ void TeleTall::Run(
 
         tallwindow.Render(hRenderer);
         telepad.Render(hRenderer);
-        topmenu->Draw(hRenderer);
+        
 
         controller.DrawSelectionRect(hRenderer);
+        topmenu->Draw(hRenderer);
 
         //Render before this line
         SDL_RenderPresent(hRenderer);

@@ -55,6 +55,7 @@ public:
     void SetOpenState() {_state = ButtonStates::OPENED;}
     int GetButtonX(){return _buttonrec.x;}
     int GetButtonY(){return _buttonrec.y;}
+    int SetCommand(cmd_KEY cmd){ _buttom_cmd = cmd;}
 
     int GetButtonWidth(){return _buttonrec.w;}
     int GetButtonHeight(){return _buttonrec.h;}
