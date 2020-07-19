@@ -90,6 +90,30 @@ The viewport on the left is called `TelePad` which is the context for holding an
 #### :pushpin: Latest!!!: :arrow_down: :arrow_down: :arrow_down:
 
 
+
+:radio_button: &larr;- - - - :bookmark_tabs:
+* #### DAY 12 { <ins>7/20/2020</ins> } : Telenode's Classes
+**[00:07 PM] Created new header and cpp for nodes**
+I am huge fan of all the softwares with node editors which basically allows me to animate, simulate or model things procedurally. It is more like a visual programming tool encapulate all the code but preserved all the logic behind. Here are some key references of software interfaces that I have used in the pass:
+<img src=".markdown.images/20200720_key_references.png"/>
+In this app, I'm trying to immulate and make a simple version of a node-based procedural modelling tool. something very similar to Grasshopper for rhino3D. 
+
+So the structure of these class:
+| `Node Class` | `Node Class` |     |
+| :---:| :---:| :---:|
+| `paramter node classes`|`processing node classes` |<sup> &larr;(Composed into) </sup>`Node Connectors`|
+(hold / fetch / create data resource) | (modify data)|  (establish I/O streams)|
+|i.g. `PointNode`|i.g. `LineNode`, `PolylineNode`, `NurbsCurveNode`, `TranslateNode`, `RotateNode`, `ScaleNode`...| |
+|i.g. `NumberNode`| i.g. `Add`, `Subtract`,`Multiply`, `Divide` ...| |
+|i.g. `MeshNode` | i.g. `SubdivideNode`, `ExtrudeNode`, `ExtractVertNode`...| |
+
+:milky_way: **Goals:**
+  1. passing and recieving data
+  2. process data
+  3. multi-threading
+  4. display results
+  5. interative(create/select/delete/change io/change source data)
+
 ---
 
 :radio_button: &larr;- - - - :bookmark_tabs:
@@ -97,10 +121,13 @@ The viewport on the left is called `TelePad` which is the context for holding an
 
 **[8:40 PM] Communication of Menu Events Finalised**
   * Finally bridging the Menus and buttons to send cmds to controller. Spend a bit of time working around the menu popping and hiding when executing a command or clicked somewhere else in the application. 
-  <img src=".markdown.images/20200719_2SmartMenuandEvent.gif"/>
+
+  > build preview: 
+  > <img src=".markdown.images/20200719_2SmartMenuandEvent.gif"/>
 
 **[3:02 PM] sub-menu**
   * Added a drawing function in ColumnMenu class: drawing an arrow when it has a child menu, double drawing the lines making it look anti-aliased:
+
   > build preview: 
   > <img src=".markdown.images/20200719SmartMenu_Arrow.png"/>
   

@@ -36,7 +36,7 @@ endforeach(_headerFile ${TELETALL_PROJECT_HEADERS})
 list(REMOVE_DUPLICATES TELETALL_INCLUDE_DIRS)
 
 
-include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIR} ${SDL2_TTF_INCLUDE_DIR} source ui JUTA mingw_std_threads)
+include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIR} ${SDL2_TTF_INCLUDE_DIR} source ui JUTA mingw_std_threads node)
 add_executable(teletall ${TELETALL_PROJECT_SOURCES} teletall.o)
 
 find_package(Threads REQUIRED) ####pThread
