@@ -83,6 +83,32 @@ The viewport on the left is called `TelePad` which is the context for holding an
 ## :black_circle:Production Logs:
 #### :pushpin: Latest!!!: :arrow_down: :arrow_down: :arrow_down:
 
+
+:radio_button: &larr;- - - - :bookmark_tabs:
+* #### DAY 10 { <ins>7/18/2020</ins> } : Smart Menu API done
+
+After spending 2 days working on a smart menu API, it is finally working as I was expecting. I have to admit that the `Menu-Button` + `Menu` compositional structure is not a great structure. In the middle of it, I almost gave up working on this creation of a smart interface. The purpose is to make an encapsulated interface works just like Win32's menu object, you can create a menu from string, and create a submenu appended to the submenu then to the top-bar menu. simple as that. However the event's handling was very tough. Now the code seems very redundant however it works.
+
+I'm not going into too much detail of the event handling here. If you are interested you can look at both `teletall_menu.cpp/.h` and `teletall_button.cpp/.h` source code under `source/ui/`. The usage is very simple: 
+
+> `std::vector<std::string> main_list { "file", "options", "edit"};`
+> `std::vector<std::string> sublist1 { "option 1", "option 2", "option 3"};`
+> `BarMenu* topmenu = new BarMenu(hwnd, main_list, 80);` <sup>&larr;arg:(SDL_Window*, std::vector< std::string >, int <ins>height</ins>)</sup>
+> `ColumnMenu* submenu1 = new ColumnMenu(sublist1, 200);`<sup>&larr;arg:(std::vector< std::string >, int <ins>width</ins>)</sup>
+> `topmenu->AddedSubMenu("options", submenu1);`<sup>&larr;append submenu1 under 'options' of topmenu</sup>
+
+Simple is that, highly readable and easy to change. Current still working on adding commands to the menu buttons so when click on the ones with instructions, the button will send command to the controller to execute.
+|:warning: Note: DO NOT deallocate the ColumnMenu objects once it has been Added to another Menu Object. The resource of ColumeMenu Objects are being "moved" by the AddedSubMenu function and it will be handled by the destructor of upper level. |
+| :---|
+> Build Test: 
+> <img src=".markdown.images/20200718SmartMenu.png"/>
+
+
+---
+
+:radio_button: &larr;- - - - :bookmark_tabs:
+* #### DAY 9 { <ins>7/17/2020</ins> } : Continue working on menu
+---
 :radio_button: &larr;- - - - :bookmark_tabs:
 * #### DAY 8 { <ins>7/16/2020</ins> } : Menu and Console
   * Console is working taking and displaying commands, you can show and hide the console by `ctrl` + ` ; ` key

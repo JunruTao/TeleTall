@@ -26,6 +26,7 @@ public:
         Telecontroller &controller);
 
 private:
+    void ConstructMenu();
     void ErrorReporter(const char *errorMessage);
     std::string win_title;
     SDL_Window *hwnd_main;

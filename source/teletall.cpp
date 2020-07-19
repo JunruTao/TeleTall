@@ -92,66 +92,8 @@ void TeleTall::Run(
     bool running = true;
     bool tltl_showframerate = true;
 
-    //Menu Section:
-    std::vector<std::string> titles = {
-        "File",
-        "Edit",
-        "View",
-        "Nodes",
-        "About"};
-    topmenu = new BarMenu(hwnd_main,titles,80);
-    std::this_thread::sleep_for(std::chrono::milliseconds(1));
-
-    std::vector<std::string> title2 = {
-        "Open                              Ctrl+O",
-        "Save                              Ctrl+S",
-        "Save As                Shift+Ctrl+S",
-        "Options"
-        };
-    ColumnMenu* subm_file = new ColumnMenu(title2,200);
-
-
-    std::vector<std::string> title_bella = {
-        "I",
-        "Love you",
-        "Very Much",
-    };
-    ColumnMenu* subm_Bella = new ColumnMenu(title_bella,200);
-
-    std::vector<std::string> title_option = {
-        "Option 1",
-        "Option 2",
-        "Bella",
-    };
-    ColumnMenu* subm_option = new ColumnMenu(title_option,200);
-
-
-    subm_option->AddedSubMenu("Bella",subm_Bella);
-    subm_file->AddedSubMenu("Options",subm_option);
-    topmenu->AddedSubMenu("File",subm_file);
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(1));
-
-    std::vector<std::string> title3 = {
-        "Copy                            Ctrl+C",
-        "Cut                               Ctrl+X",
-        "Paste                           Ctrl+V",
-        "Delete                          Delete",
-        "Undo                            Ctrl+Z",
-        "Redo                            Ctrl+Y"};
-    ColumnMenu* subm_Edit = new ColumnMenu(title3,200);
-    topmenu->AddedSubMenu("Edit",subm_Edit);
-    std::this_thread::sleep_for(std::chrono::milliseconds(1));
-
-    std::vector<std::string> title4 = {
-        "Home Telepad                       H",
-        "Home Tall                              H",
-        "Show/Hide Console         Ctrl+;",
-        "Clear Selection                       "};
-    ColumnMenu* subm_View = new ColumnMenu(title4,200);
-    topmenu->AddedSubMenu("View",subm_View);
-    std::this_thread::sleep_for(std::chrono::milliseconds(1));
-
+    
+    ConstructMenu();
 
     SDL_Event event;
     SDL_PollEvent(&event);
@@ -228,4 +170,70 @@ void TeleTall::Run(
 void TeleTall::ErrorReporter(const char *errorMessage)
 {
     SDL_ShowSimpleMessageBox(0, "TeleTall-SDL: Error", errorMessage, NULL);
+}
+
+void TeleTall::ConstructMenu()
+{
+
+    //Menu Section:
+    std::vector<std::string> titles = {
+        "File",
+        "Edit",
+        "View",
+        "Nodes",
+        "About"};
+    topmenu = new BarMenu(hwnd_main, titles, 80);
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+
+    std::vector<std::string> title2 = {
+        "Open                              Ctrl+O",
+        "Save                              Ctrl+S",
+        "Save As                Shift+Ctrl+S",
+        "Options",
+        "Quit"};
+    ColumnMenu *subm_file = new ColumnMenu(title2, 200);
+
+    std::vector<std::string> title_bella = {
+        "I",
+        "Love you",
+        "Very Much",
+    };
+    ColumnMenu *subm_Bella = new ColumnMenu(title_bella, 200);
+
+    std::vector<std::string> title_option = {
+        "Option 1",
+        "Option 2",
+        "Bella",
+    };
+    ColumnMenu *subm_option = new ColumnMenu(title_option, 200);
+
+    subm_option->AddedSubMenu("Bella", subm_Bella);
+    subm_file->AddedSubMenu("Options", subm_option);
+    topmenu->AddedSubMenu("File", subm_file);
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+
+    std::vector<std::string> title3 = {
+        "Copy                            Ctrl+C",
+        "Cut                               Ctrl+X",
+        "Paste                           Ctrl+V",
+        "Delete                          Delete",
+        "Undo                            Ctrl+Z",
+        "Redo                            Ctrl+Y"};
+    ColumnMenu *subm_Edit = new ColumnMenu(title3, 200);
+    topmenu->AddedSubMenu("Edit", subm_Edit);
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+
+    std::vector<std::string> title4 = {
+        "Home Telepad                       H",
+        "Home Tall                              H",
+        "Show/Hide Console         Ctrl+;",
+        "Clear Selection                       "};
+    ColumnMenu *subm_View = new ColumnMenu(title4, 200);
+    topmenu->AddedSubMenu("View", subm_View);
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+
+
+
+
 }
