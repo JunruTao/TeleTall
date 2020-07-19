@@ -123,12 +123,14 @@ So the structure of these class:
   * Finally bridging the Menus and buttons to send cmds to controller. Spend a bit of time working around the menu popping and hiding when executing a command or clicked somewhere else in the application. 
 
   > build preview: 
+  
   > <img src=".markdown.images/20200719_2SmartMenuandEvent.gif"/>
 
 **[3:02 PM] sub-menu**
   * Added a drawing function in ColumnMenu class: drawing an arrow when it has a child menu, double drawing the lines making it look anti-aliased:
 
   > build preview: 
+
   > <img src=".markdown.images/20200719SmartMenu_Arrow.png"/>
   
 
@@ -151,7 +153,9 @@ I'm not going into too much detail of the event handling here. If you are intere
 Simple is that, highly readable and easy to change. Current still working on adding commands to the menu buttons so when click on the ones with instructions, the button will send command to the controller to execute.
 |:warning: Note: DO NOT deallocate the ColumnMenu objects once it has been Added to another Menu Object. The resource of ColumeMenu Objects are being "moved" by the AddedSubMenu function and it will be handled by the destructor of upper level. |
 | :---|
+
 > Build Test: 
+
 > <img src=".markdown.images/20200718SmartMenu.png"/>
 
 
