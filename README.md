@@ -40,7 +40,7 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
 > * ⚪ The project uses scope / Resource Acquisition Is Initialization (RAII) where appropriate.
 > * ⚪ The project follows the Rule of 5.
 > * ✔️ The project uses move semantics to move data, instead of copying it, where possible.
-> * ⚪ The project uses smart pointers instead of raw pointers.
+> * ✔️ (Mixed) The project uses smart pointers instead of raw pointers.
 
 > **4. Concurrency**
 > * ⚪ The project uses multithreading.
@@ -55,10 +55,11 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
 
 * ##### 1.Start: Viewport and Window
 
-The viewport on the left is called `TelePad` which is the context for holding and creating `Tele-Nodes` and their connections; the one on the right is `Tall v1.0` viewport2D, rendering the geometries. Once OpenGL is introduced, a GL-3D viewport will replace `Tall v1.0`.
+The viewport on the left is called `TelePad` which is the context for holding and creating `Tele-Nodes` and their connections; the one on the right is `Tall` viewport2D, rendering the geometries. Once OpenGL is introduced, a GL-3D viewport will replace `Tall`.
   * 🖱️`Left mouse button`: click and drag to move assets and UI elements.
   * 🖱️`Right mouse button`: click and drag to nevigate around the viewport space; 
   * ⌨️"`H`" key, to 'home' the viewport grid back to its origin (0,0).
+  * ⌨️"`F`" key, to 'Frame' all the geometries or nodes to the screen centre.
     * >  they all works for both viewport: `TelePad` (node viewport) and `Tall` (geometry viewport).
   * ⌨️"`ctrl`+ `;`" to show and hide the console;
 
@@ -138,10 +139,25 @@ The viewport on the left is called `TelePad` which is the context for holding an
 #### :pushpin: Latest!!!: :arrow_down: :arrow_down: :arrow_down:
 
 
+:radio_button: &larr;- - - - :bookmark_tabs:
+* #### DAY 13 { <ins>7/21/2020</ins> } : Telenode's Classes - <img src=".package.extra.merge/tltl_node_icon/pointnode.bmp"/> 'PointNode'
+**[00:10 AM] Node's class and PointNode class structured**
+
+  *  made <sup>icon</sup> <img src=".package.extra.merge/tltl_node_icon/pointnode.bmp"/> **Point Node** class working. you can now:
+    * To create a <sup>icon</sup> <img src=".package.extra.merge/tltl_node_icon/pointnode.bmp"/> **Point Node** by hitting `P` on Telepad, or in the `Top Menu`&rarr;`View`&rarr;`Point Node`to add a node to the Telepad.
+  * You can 'frame' the all the node to viewport center by hitting `F`.
+  * Here is a preview:
+  > build preview: 
+  > <img src=".markdown.images\20200721_PointNode.png"/>
+
+  * There is more:
+    * in order to manage the icon resource loading, a **IconManager** is created to manage all the resource. Thus, it is created using a `std::shared_ptr` to be passed around to draw the icons. Inside **IconManager**, the textures are stored in a `std::map<std::string, SDL_Texture>`. Everytime querying or requesting to draw, all the nodes need is passing a string to the shared manager pointer. 
+    * In telepad, a **Node Pool**, made of `std::vector<std::unique_ptr<Node>>` is created so that all type of nodes are being stored here, they can create update, draw, simulate and delete.
+
 
 :radio_button: &larr;- - - - :bookmark_tabs:
 * #### DAY 12 { <ins>7/20/2020</ins> } : Telenode's Classes
-**[00:07 PM] Created new header and cpp for nodes**
+**[00:07 AM] Created new header and cpp for nodes**
 I am huge fan of all the softwares with node editors which basically allows me to animate, simulate or model things procedurally. It is more like a visual programming tool encapulate all the code but preserved all the logic behind. Here are some key references of software interfaces that I have used in the pass:
 <img src=".markdown.images/20200720_key_references.png"/>
 In this app, I'm trying to immulate and make a simple version of a node-based procedural modelling tool. something very similar to Grasshopper for rhino3D. 

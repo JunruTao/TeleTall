@@ -87,6 +87,9 @@ void BarMenu::Update(Telecontroller* controller)
     if (controller->GetMousePoint()->InBound(0, 0, _menurec.w, _menurec.h))
     {
         controller->current_panel = PanelID::ON_MENU;
+    }else
+    {
+        controller->current_panel = PanelID::NONE;
     }
 
 

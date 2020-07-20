@@ -36,12 +36,15 @@ public:
     void CloseAllMenusTrue(){_closeAllMenus = true;};
     bool ShouldCloseMenu(){return _closeAllMenus;}
     cmd_KEY GetCommand(){return cmd;}
+    std::string GetMsg(){return _Msg;}
 
     void LinkPadRect(SDL_Rect* in_PadRect, SDL_Rect* in_MSlidRec);
     void LinkTallRec(SDL_Rect* in_TallRect);
     void LinkMenuRec(SDL_Rect* in_Menu);
     SDL_Rect* GetPadRect(){ return &r_PadRect;}
     SDL_Rect* GetTallRect(){return &r_TallRect;}
+    void SetCurrentPanel(PanelID panel){current_panel = panel;}
+    PanelID GetCurrentPanel(){return current_panel;}
 
     bool MouseL_hold;
     bool MouseR_hold;

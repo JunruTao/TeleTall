@@ -45,7 +45,6 @@ Telepad::Telepad(
     origin.y = pad_height / 2;
     grid_size = TELEPAD_GRID_SIZE;
 
-
 }
 /*
 #[[[[[[[[[[[]]]]]]]]]]]
@@ -77,7 +76,22 @@ void Telepad::Update(Telecontroller &controller)
     Resize(controller, x, y);
     MoveGrid(controller, x, y);
 
+    if((controller.GetCommand() == cmd_KEY::cmd_CREATE_NODE_Point) && (controller.GetCurrentPanel() == PanelID::ON_PAD))
+    {
+        CreateNode(x,y);
+    }else if(controller.GetCommand() == cmd_KEY::cmd_CREATE_NODE_Point_M)
+    {
+        if (node_pool.empty())
+        {
+            CreateNode(controller.GetPadRect()->x + (controller.GetPadRect()->w / 2), controller.GetPadRect()->y + (controller.GetPadRect()->h / 2));
+        }
+        else
+        {
+            CreateNode(node_pool[node_pool.size()-1]->GetLocation().x + origin.x +50,node_pool[node_pool.size()-1]->GetLocation().y + origin.y +50);
+        }
+    }
 
+    UpdateNode(&controller);
     controller.UpdateSplitLocation(pad_width + HALF_SLIDEBAR + SLIDEBAR_SEL_BLEED);
     controller.LinkPadRect(&padViewport, &slidebar);
 }
@@ -103,6 +117,7 @@ void Telepad::Render(SDL_Renderer *renderer)
         DrawCross(renderer,origin,5,110,110,110);
     }
     //..
+    DrawNodes(renderer);
 
     //Draw slider---------------------------
     DrawSlideBar(renderer);
@@ -224,20 +239,12 @@ void Telepad::Resize(Telecontroller &controller, const int &x, const int &y)
 /*
 #
 #
-#
-#
-#
-#
-#
-#
-#
-#
 */
 //-------------------------------------------------------------------------------------
 void Telepad::MoveGrid(Telecontroller &controller, const int &x, const int &y)
 {
     SDL_Cursor *cursor = NULL;
-    onPad = ((x > 0) && (x < pad_width - HALF_SLIDEBAR))&&(y>controller.GetPadRect()->y && y<controller.GetPadRect()->h)&&controller.current_panel!=PanelID::ON_MENU;
+    onPad = ((x > 0) && (x < pad_width - HALF_SLIDEBAR))&&(y>controller.GetPadRect()->y && y<controller.GetPadRect()->h) && controller.current_panel!= PanelID::ON_MENU || controller.current_panel == PanelID::ON_PAD;
     if ((controller.MouseR_hold) && (controller.Shared_Nevigation_Lock == MouseLockID::TELE_LOCKED || controller.Shared_Nevigation_Lock == MouseLockID::FREE))
     {
         if (onPad)
@@ -281,6 +288,34 @@ void Telepad::MoveGrid(Telecontroller &controller, const int &x, const int &y)
         origin.x = controller.GetPadRect()->w / 2 + controller.GetPadRect()->x;
         origin.y = controller.GetPadRect()->h / 2 + controller.GetPadRect()->y;
     }
+    else if ((onPad && controller.GetCommand() == cmd_KEY::cmd_FRAME)|| controller.GetCommand() == cmd_KEY::cmd_HOME_Pad)
+    {
+        if (!node_pool.empty())
+        {
+            origin.x = controller.GetPadRect()->w / 2 + controller.GetPadRect()->x;
+            origin.y = controller.GetPadRect()->h / 2 + controller.GetPadRect()->y;
+
+            
+            int av_x = 0, av_y = 0;
+            for (auto &n : node_pool)
+            {
+                av_x += n->GetLocation().x + origin.x;
+                av_y += n->GetLocation().y + origin.y;
+            }
+            av_x = (av_x/node_pool.size());
+            av_y = (av_y/node_pool.size());
+
+            
+
+            origin.x += (controller.GetPadRect()->w / 2 + controller.GetPadRect()->x) - av_x;
+            origin.y += (controller.GetPadRect()->h / 2 + controller.GetPadRect()->y) - av_y;
+
+        }else
+        {
+            origin.x = controller.GetPadRect()->w / 2 + controller.GetPadRect()->x;
+            origin.y = controller.GetPadRect()->h / 2 + controller.GetPadRect()->y;
+        }
+    }
     else
     {
         if (onPad)
@@ -299,4 +334,39 @@ void Telepad::MoveGrid(Telecontroller &controller, const int &x, const int &y)
         gridSelected = false;
         controller.Shared_Nevigation_Lock = MouseLockID::FREE;
     }
+}
+
+
+void Telepad::CreateNode(int x, int y)
+{
+    Point2D<double> loc(x - origin.x, y- origin.y);
+    node_pool.emplace_back(std::make_unique<PointNode>(loc, origin, 1.0));
+}
+
+void Telepad::UpdateNode(Telecontroller* controller)
+{
+    if(!node_pool.empty())
+    {
+        for(auto& node : node_pool)
+        {
+            node->Update(controller,origin,1);
+        }
+    }
+}
+
+
+void Telepad::DrawNodes(SDL_Renderer* renderer)
+{
+    if(!node_pool.empty())
+    {
+        for(auto& node : node_pool)
+        {
+            node->DrawNode(renderer,_Icm);
+        }
+    }
+}
+
+void Telepad::AssignIconManager(std::shared_ptr<IconManager>& Icm)
+{
+    this->_Icm = Icm;
 }

@@ -2,6 +2,7 @@
 #include "ui/teletall_graphics.h"
 #include "ui/teletall_button.h"
 #include <string>
+#include "node/telenode.h"
 
 #define VERSION "v0.2.1"
 #define WINDOW_NAME "TeleTall - Beta - "
@@ -42,6 +43,8 @@ TeleTall::TeleTall(const size_t &tltl_Window_Width, const size_t &tltl_Window_He
     hRenderer = SDL_CreateRenderer(hwnd_main, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (hRenderer == NULL)
         ErrorReporter("SDL Renderer creation failed. "); //Test Success;
+
+    
 }
 
 
@@ -88,13 +91,21 @@ void TeleTall::Run(
 
 
 
+    //Create the resource managers here:
+    std::shared_ptr<IconManager> Icm = std::make_shared<IconManager>(hRenderer);
+    //pass the Icon manager to telepad
+    telepad.AssignIconManager(Icm);
+
+
     //Field for toggles
     bool running = true;
     bool tltl_showframerate = true;
 
     
     ConstructMenu();
-
+    controller.SetCurrentPanel(PanelID::ON_PAD);
+    controller.SendCommand(cmd_KEY::cmd_EMPTY);
+    
     SDL_Event event;
     SDL_PollEvent(&event);
     /*The Feedback Loop*/
@@ -123,6 +134,7 @@ void TeleTall::Run(
         controller.DrawSelectionRect(hRenderer);
 
         topmenu->Draw(hRenderer);
+
 
         //Render before this line
         SDL_RenderPresent(hRenderer);
@@ -178,8 +190,11 @@ void TeleTall::ErrorReporter(const char *errorMessage)
 //[Construct Menu]:
 void TeleTall::ConstructMenu()
 {
+    typedef std::vector<std::string> NameList;
+    typedef std::vector<cmd_KEY> __KeyList__;
+
     //Menu Section:
-    std::vector<std::string> titles = {
+   NameList titles = {
         "File",
         "Edit",
         "View",
@@ -187,7 +202,10 @@ void TeleTall::ConstructMenu()
         "About"};
 
     topmenu = new BarMenu(hwnd_main, titles, 80);
-    std::vector<cmd_KEY> title_cmds = 
+
+
+
+    __KeyList__ title_cmds = 
     {
         cmd_KEY::cmd_EMPTY,
         cmd_KEY::cmd_EMPTY,
@@ -197,10 +215,9 @@ void TeleTall::ConstructMenu()
     };
     topmenu->AddCommand(title_cmds);
 
-
     std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
-    std::vector<std::string> title2 = {
+    NameList title2 = {
         "Open                              Ctrl+O",
         "Save                              Ctrl+S",
         "Save As                Shift+Ctrl+S",
@@ -208,7 +225,7 @@ void TeleTall::ConstructMenu()
         "Quit"};
     ColumnMenu *subm_file = new ColumnMenu(title2, 200);
 
-    std::vector<std::string> title_bella = {
+    NameList title_bella = {
         "I",
         "Love you",
         "Very Much",
@@ -216,7 +233,7 @@ void TeleTall::ConstructMenu()
     ColumnMenu *subm_Bella = new ColumnMenu(title_bella, 200);
     ColumnMenu *subm_Bella2 = new ColumnMenu(title_bella, 200);
 
-    std::vector<std::string> title_option = {
+    NameList title_option = {
         "Option 1",
         "Option 2",
         "Bella",
@@ -232,7 +249,7 @@ void TeleTall::ConstructMenu()
 
     std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
-    std::vector<std::string> title3 = {
+    NameList title3 = {
         "Copy                            Ctrl+C",
         "Cut                               Ctrl+X",
         "Paste                           Ctrl+V",
@@ -240,17 +257,27 @@ void TeleTall::ConstructMenu()
         "Undo                            Ctrl+Z",
         "Redo                            Ctrl+Y"};
     ColumnMenu *subm_Edit = new ColumnMenu(title3, 200);
+    __KeyList__ edit_keys= 
+    {
+        cmd_KEY::cmd_COPY,
+        cmd_KEY::cmd_EMPTY,
+        cmd_KEY::cmd_PASTE,
+        cmd_KEY::cmd_Delete,
+        cmd_KEY::cmd_UNDO,
+        cmd_KEY::cmd_REDO
+    };
+    subm_Edit->AddCommand(edit_keys);
 
     topmenu->AddedSubMenu("Edit", subm_Edit);
     std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
-    std::vector<std::string> title4 = {
+    NameList title4 = {
         "Home Telepad                       H",
         "Home Tall                              H",
         "Show/Hide Console         Ctrl+;",
         "Clear Selection                       "};
     ColumnMenu *subm_View = new ColumnMenu(title4, 200);
-    std::vector<cmd_KEY> viewtab_cmds = 
+    __KeyList__ viewtab_cmds = 
     {
         cmd_KEY::cmd_HOME_Pad,
         cmd_KEY::cmd_HOME_Tall,
@@ -260,7 +287,12 @@ void TeleTall::ConstructMenu()
     subm_View->AddCommand(viewtab_cmds);
 
 
+    NameList node_title = {"Point Node"};
+    __KeyList__ node_cmds = {cmd_KEY::cmd_CREATE_NODE_Point_M};
+    ColumnMenu *subm_Nodes = new ColumnMenu(node_title, 200);
+    subm_Nodes->AddCommand(node_cmds);
 
+    topmenu->AddedSubMenu("Nodes", subm_Nodes);
     topmenu->AddedSubMenu("View", subm_View);
     std::this_thread::sleep_for(std::chrono::milliseconds(1));
 }

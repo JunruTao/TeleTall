@@ -68,8 +68,15 @@ void Telecontroller::ProcessInput(bool &running)
             switch (event.button.button)
             {
             case SDL_BUTTON_LEFT:
-                MouseL_hold = true;
-                cmd = cmd_KEY::cmd_LMB;
+                if (key_ctrl)
+                {
+                    
+                }
+                else
+                {
+                    MouseL_hold = true;
+                    cmd = cmd_KEY::cmd_LMB;
+                }
                 break;
             case SDL_BUTTON_RIGHT:
                 MouseR_hold = true;
@@ -103,6 +110,9 @@ void Telecontroller::ProcessInput(bool &running)
                 {
                     cmd = cmd_KEY::cmd_CONSOLE_SHOW;
                 }
+                break;
+            case SDLK_p:
+                cmd = cmd_KEY::cmd_CREATE_NODE_Point;
                 break;
             case SDLK_h:
                 cmd = cmd_KEY::cmd_HOME;
