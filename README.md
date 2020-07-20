@@ -1,12 +1,68 @@
 # :radio_button: TeleTall 
 
 This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](https://www.udacity.com/course/c-plus-plus-nanodegree--nd213). The Capstone Project is a chance to integrate what I've learned throughout this program. 
-<img src=".markdown.images/20200719_2SmartMenuandEvent.gif"/>
+* :pushpin:**Capstone Option:** :one: + :two:
+  * <sup>The type:</sup> 
+  
+  |_**A simple node-based procedural 2D modelling application**_|
+  |---|
+
+* :pushpin:**Program Preview:**
+
+  |<img src=".markdown.images/20200719_2SmartMenuandEvent.gif"/> |
+  |---|
+
+* :pushpin:**Program Structure:**
+> .
+> .
+
+* :pushpin:**Rubric Points addressed:**
+
+> **1. Loops, Functions, I/O**
+> * ✔️ The project demonstrates an understanding of C++ functions and control structures.
+> * ⚪ The project reads data from a file and process the data, or the program writes data to a file.
+> * ✔️ The project accepts user input and processes the input.
+
+> **2. Object Oriented Programming**
+> * ✔️ The project uses Object Oriented Programming techniques.
+> * ✔️ Classes use appropriate access specifiers for class members.
+> * ✔️ Class constructors utilize member initialization lists.
+> * ✔️ Classes abstract implementation details from their interfaces.
+> * ✔️ Classes encapsulate behavior.
+> * ✔️ Classes follow an appropriate inheritance hierarchy.
+> * ✔️ Overloaded functions allow the same function to operate on different parameters.
+> * ✔️ Derived class functions override virtual base class functions.
+> * ✔️ Templates generalize functions in the project.
+
+> **3. Memory Management**
+> * ✔️ The project makes use of references in function declarations.
+> * ✔️ The project uses destructors appropriately.
+> * ⚪ The project uses scope / Resource Acquisition Is Initialization (RAII) where appropriate.
+> * ⚪ The project follows the Rule of 5.
+> * ✔️ The project uses move semantics to move data, instead of copying it, where possible.
+> * ⚪ The project uses smart pointers instead of raw pointers.
+
+> **4. Concurrency**
+> * ⚪ The project uses multithreading.
+> * ⚪ A promise and future is used in the project.
+> * ⚪ A mutex or lock is used in the project.
+> * ⚪ A condition variable is used in the project.
 ***
 
 
 
+### :white_circle:Program Guide
 
+* ##### 1.Start: Viewport and Window
+
+The viewport on the left is called `TelePad` which is the context for holding and creating `Tele-Nodes` and their connections; the one on the right is `Tall v1.0` viewport2D, rendering the geometries. Once OpenGL is introduced, a GL-3D viewport will replace `Tall v1.0`.
+  * 🖱️`Left mouse button`: click and drag to move assets and UI elements.
+  * 🖱️`Right mouse button`: click and drag to nevigate around the viewport space; 
+  * ⌨️"`H`" key, to 'home' the viewport grid back to its origin (0,0).
+    * >  they all works for both viewport: `TelePad` (node viewport) and `Tall` (geometry viewport).
+  * ⌨️"`ctrl`+ `;`" to show and hide the console;
+
+***
 
 
 
@@ -56,19 +112,11 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
   3. Compile: `cmake.exe -G "MinGW Makefiles" .. `
   4. Build(make): `mingw32-make` 
   5. Run it: `./${ProjectName}`
-***
-### :white_circle:Program Guide
 
-* ##### 1.Start: Viewport and Window
 
-The viewport on the left is called `TelePad` which is the context for holding and creating `Tele-Nodes` and their connections; the one on the right is `Tall v1.0` viewport2D, rendering the geometries. Once OpenGL is introduced, a GL-3D viewport will replace `Tall v1.0`.
-  * 🖱️`Left mouse button`: click and drag to move assets and UI elements.
-  * 🖱️`Right mouse button`: click and drag to nevigate around the viewport space; 
-  * ⌨️"`H`" key, to 'home' the viewport grid back to its origin (0,0).
-    * >  they all works for both viewport: `TelePad` (node viewport) and `Tall` (geometry viewport).
-  * ⌨️"`ctrl`+ `;`" to show and hide the console;
 
 ***
+
 ### :white_circle:License
 
 |:key: _[Copyright ©Junru Tao 2020 License ](https://github.com/JunruTao/Udacity.Cpp.Capstone.Project/blob/master/LICENSE)_|
