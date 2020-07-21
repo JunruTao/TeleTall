@@ -132,7 +132,6 @@ void TeleTall::Run(
         tallwindow.Render(hRenderer);
         telepad.Render(hRenderer);
         controller.DrawSelectionRect(hRenderer);
-
         topmenu->Draw(hRenderer);
 
 
@@ -171,6 +170,7 @@ void TeleTall::Run(
             SDL_Delay(MsPerFrame - frame_duration);
         }
         
+        controller.SetCurrentPanel(PanelID::NONE);
 
         //------------------------TIME---------------------------
     }//end while

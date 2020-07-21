@@ -45,6 +45,8 @@ Telepad::Telepad(
     origin.y = pad_height / 2;
     grid_size = TELEPAD_GRID_SIZE;
 
+    _selecting = false;
+
 }
 /*
 #[[[[[[[[[[[]]]]]]]]]]]
@@ -75,11 +77,14 @@ void Telepad::Update(Telecontroller &controller)
     SDL_GetMouseState(&x, &y);
     Resize(controller, x, y);
     MoveGrid(controller, x, y);
+    
+    
 
-    if((controller.GetCommand() == cmd_KEY::cmd_CREATE_NODE_Point) && (controller.GetCurrentPanel() == PanelID::ON_PAD))
+    if ((controller.GetCommand() == cmd_KEY::cmd_CREATE_NODE_Point) && (controller.GetCurrentPanel() == PanelID::ON_PAD))
     {
-        CreateNode(x,y);
-    }else if(controller.GetCommand() == cmd_KEY::cmd_CREATE_NODE_Point_M)
+        CreateNode(x, y);
+    }
+    else if (controller.GetCommand() == cmd_KEY::cmd_CREATE_NODE_Point_M)
     {
         if (node_pool.empty())
         {
@@ -87,13 +92,16 @@ void Telepad::Update(Telecontroller &controller)
         }
         else
         {
-            CreateNode(node_pool[node_pool.size()-1]->GetLocation().x + origin.x +50,node_pool[node_pool.size()-1]->GetLocation().y + origin.y +50);
+            CreateNode(node_pool[node_pool.size() - 1]->GetLocation().x + origin.x + 50, node_pool[node_pool.size() - 1]->GetLocation().y + origin.y + 50);
         }
     }
 
     UpdateNode(&controller);
+    Select(&controller, x, y);
+
     controller.UpdateSplitLocation(pad_width + HALF_SLIDEBAR + SLIDEBAR_SEL_BLEED);
     controller.LinkPadRect(&padViewport, &slidebar);
+
 }
 /*
 #
@@ -118,11 +126,12 @@ void Telepad::Render(SDL_Renderer *renderer)
     }
     //..
     DrawNodes(renderer);
-
+    DrawSelectionRect(renderer);
     //Draw slider---------------------------
     DrawSlideBar(renderer);
-
 }
+
+
 /*
 #
 #
@@ -295,7 +304,7 @@ void Telepad::MoveGrid(Telecontroller &controller, const int &x, const int &y)
             origin.x = controller.GetPadRect()->w / 2 + controller.GetPadRect()->x;
             origin.y = controller.GetPadRect()->h / 2 + controller.GetPadRect()->y;
 
-            
+
             int av_x = 0, av_y = 0;
             for (auto &n : node_pool)
             {
@@ -325,11 +334,13 @@ void Telepad::MoveGrid(Telecontroller &controller, const int &x, const int &y)
             SDL_SetCursor(cursor);
             SDL_ShowCursor(1);
         }
-
-        //after release set gimble location
-        while (mouse_trail.size() > 0)
+        if (!_selecting)
         {
-            mouse_trail.pop_back();
+            //after release set gimble location
+            while (mouse_trail.size() > 0)
+            {
+                mouse_trail.pop_back();
+            }
         }
         gridSelected = false;
         controller.Shared_Nevigation_Lock = MouseLockID::FREE;
@@ -369,4 +380,54 @@ void Telepad::DrawNodes(SDL_Renderer* renderer)
 void Telepad::AssignIconManager(std::shared_ptr<IconManager>& Icm)
 {
     this->_Icm = Icm;
+}
+
+void Telepad::Select(Telecontroller *controller, int x, int y)
+{
+    if (onPad && Node::GetOnDragMotion()<1)
+    {
+        if (controller->GetCommand() == cmd_KEY::cmd_LMB)
+        {
+            if (mouse_trail.empty())
+            {
+                Point2D<int> temp(x, y);
+                mouse_trail.emplace_back(std::move(temp));
+            }
+        }
+
+        if (controller->GetCommand() == cmd_KEY::cmd_LMB || controller->MouseL_hold)
+        {
+            _selecting = true;
+            Point2D<int> temp(x, y);
+            mouse_trail.emplace_back(std::move(temp));
+
+            if (mouse_trail.size() > 3)
+            {
+                mouse_trail.erase(mouse_trail.begin() + 1);
+                mouse_trail.erase(mouse_trail.begin() + 1);
+            }
+        }
+        else
+        {
+            _selecting = false;
+        }
+        
+    }
+    else
+    {
+        _selecting = false;
+        
+    }
+}
+
+void Telepad::DrawSelectionRect(SDL_Renderer* renderer)
+{
+    if (!mouse_trail.empty() && _selecting)
+    {
+        SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
+        SDL_RenderDrawLine(renderer, mouse_trail[0].x, mouse_trail[0].y, mouse_trail[mouse_trail.size()-1].x, mouse_trail[0].y);
+        SDL_RenderDrawLine(renderer, mouse_trail[0].x, mouse_trail[0].y, mouse_trail[0].x, mouse_trail[mouse_trail.size()-1].y);
+        SDL_RenderDrawLine(renderer, mouse_trail[mouse_trail.size()-1].x, mouse_trail[0].y, mouse_trail[mouse_trail.size()-1].x, mouse_trail[mouse_trail.size()-1].y);
+        SDL_RenderDrawLine(renderer, mouse_trail[0].x, mouse_trail[mouse_trail.size()-1].y, mouse_trail[mouse_trail.size()-1].x, mouse_trail[mouse_trail.size()-1].y);
+    }
 }

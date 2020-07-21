@@ -60,6 +60,8 @@ void IconManager::DrawIcon(SDL_Renderer* renderer, SDL_Rect* rect, std::string i
 int Node::_node_width = 100;
 int Node::_node_height = 30;
 int Node::_icon_edge_len = 24;
+size_t Node::selected_count = 0;
+int Node::ondrag_any = 0;
 SDL_Color Node::_node_color = {100, 100, 100, 255};
 SDL_Color Node::_selcolor = {35,240,127,255}; //outline
 SDL_Color Node::_passcolor = {200,200,200,255}; //outline
@@ -133,11 +135,16 @@ size_t PointNode::counter = 0;
 PointNode::PointNode(Point2D<double> drop_location, const Point2D<int>& origin_s, double scale)
 {
     counter++;
+
     _manipulatable = false;
     _selected = false;
+    _passing = false;
     _running = false;
+    _ondrag = false;
+
     _name = "Point" + std::to_string(counter);
     _center = drop_location;
+    _clicked_old_pos = _center;
 
     Point2D<double> input_cloc(_center.x, _center.y+(_node_height/2));
     Point2D<double> output_cloc(_center.x, _center.y-(_node_height/2));
@@ -168,7 +175,72 @@ void PointNode::ScreenTransform(const Point2D<int>& origin_s, double scale)
 
 void PointNode::Update(Telecontroller *controller, const Point2D<int> origin_s, double scale)
 {
+
+    bool inboud = controller->GetMousePoint()->InBoundWH(_node_rect.x, _node_rect.y, _node_rect.w, _node_rect.h);
+    
+    if(controller->GetCommand() == cmd_KEY::cmd_CLEAR_Sel)
+    {
+        _selected = false;
+        ondrag_any = 0;
+        selected_count--;
+        goto skip;
+    }
+
+    if(inboud)
+    {
+        _passing = true;
+        if(controller->GetCommand() == cmd_KEY::cmd_LMB  || _selected)
+        {
+            _selected = true;
+            selected_count++; //here a node got selected
+            if (controller->MouseL_hold)
+            {
+                _ondrag = true;
+                ondrag_any ++;
+                _center.x +=  (controller->GetMousePoint()->x - origin_s.x) - _clicked_old_pos.x;
+                _center.y +=  (controller->GetMousePoint()->y - origin_s.y) - _clicked_old_pos.y;
+            }
+            else
+            {
+                ondrag_any --;
+                _ondrag = false;
+            }
+        }
+    }
+    else if (_ondrag)
+    {
+        if (controller->MouseL_hold)
+        {
+            _ondrag = true;
+            ondrag_any++;
+            _center.x += (controller->GetMousePoint()->x - origin_s.x) - _clicked_old_pos.x;
+            _center.y += (controller->GetMousePoint()->y - origin_s.y) - _clicked_old_pos.y;
+
+        }else
+        {
+            _ondrag = false;
+            ondrag_any--;
+        }
+    }
+    else
+    {
+        _ondrag = false;
+        
+        if(controller->GetCommand() == cmd_KEY::cmd_LMB && (controller->GetCurrentPanel() == PanelID::ON_PAD))
+        {   
+            _selected = false;
+            selected_count = 0;
+        }
+
+        _passing = false;
+    }
+    skip:{}
+
+    _clicked_old_pos.x = (controller->GetMousePoint()->x - origin_s.x);
+    _clicked_old_pos.y = (controller->GetMousePoint()->y - origin_s.y);
+
     ScreenTransform(origin_s,scale);
+    
 }
 
 void PointNode::DrawNode(SDL_Renderer * renderer, std::shared_ptr<IconManager> Icm)
@@ -190,6 +262,16 @@ void PointNode::DrawNode(SDL_Renderer * renderer, std::shared_ptr<IconManager> I
     Icm->DrawIcon(renderer,&_icon_rect,_icon_name);
     _textdisplay->loadFromRenderedText(_name, renderer, _textcolor, _node_color, 3);
     _textdisplay->Draw(renderer,_node_rect.x + _node_width+3, _node_rect.y + (_node_rect.h/2) - (ScreenText::GetUniversalTextHeight()/2));
+
+    if(_passing && !_selected)
+    {
+        SDL_SetRenderDrawColor(renderer,_passcolor.r,_passcolor.g ,_passcolor.b,_passcolor.a);
+        SDL_RenderDrawRect(renderer,&_node_rect);
+    }else if(_selected)
+    {
+        SDL_SetRenderDrawColor(renderer,_selcolor.r,_selcolor.g ,_selcolor.b,_selcolor.a);
+        SDL_RenderDrawRect(renderer,&_node_rect);
+    }
 }
 
 

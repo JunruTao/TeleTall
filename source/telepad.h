@@ -51,6 +51,11 @@ private:
     void Simulate(){};
     void DrawNodes(SDL_Renderer* renderer);
 
+    //Selection;
+    void Select(Telecontroller* controller, int x, int y);
+    void DrawSelectionRect(SDL_Renderer* renderer);
+    bool _selecting;
+
     //ResourceManagers
     std::shared_ptr<IconManager> _Icm;
 

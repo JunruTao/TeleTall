@@ -39,8 +39,18 @@ public:
     virtual void ProcessData() = 0;
     virtual void SendData() = 0;
     Point2D<double> GetLocation(){return _center;}
+    static size_t GetSelectionCount(){return selected_count;}
+    static int GetOnDragMotion(){return ondrag_any;}
+    void SetAsSelected(){_selected = true; selected_count ++; }
+    void SetAsUnselected(){_selected = false; selected_count --;}
 
 protected:
+    bool _passing;
+    bool _selected;
+    bool _running;
+    bool _ondrag;
+    static size_t selected_count;
+    static int ondrag_any;
     //Graphics
     
     static int _node_width;
@@ -53,6 +63,7 @@ protected:
 
     //info
     Point2D<double> _center;
+    Point2D<double> _clicked_old_pos;
     SDL_Rect _icon_rect;
     SDL_Rect _node_rect;
     
@@ -82,6 +93,7 @@ private:
     Node *_parent;
     Node *_target;
     Point2D<double> _pos;
+
     bool _in_or_out; //is input or output
     bool _selected;
     //graphics
@@ -116,8 +128,7 @@ private:
 
     //status
     bool _manipulatable;
-    bool _selected;
-    bool _running;
+
 
     //information
     std::vector<NodeConnector*> _inputs;
