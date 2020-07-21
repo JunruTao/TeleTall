@@ -26,6 +26,12 @@ struct Point2D
         return pt;
     };
 
+    void operator*=(var amplitue)
+    {
+        this->x *= amplitue;
+        this->y *= amplitue;
+    }
+
     double Length(const Point2D &vec2)
     {
         double len = sqrt(pow((double)vec2.x, 2) + pow((double)vec2.y, 2));
@@ -35,6 +41,12 @@ struct Point2D
     double Length()
     {
         double len = sqrt(pow((double)this->x, 2) + pow((double)this->y, 2));
+        return len;
+    }
+
+    double DistanceTo(const Point2D &vec2)
+    {
+        double len = sqrt(pow((double)vec2.x - (double)this->x, 2) + pow((double)vec2.y -(double)this->y, 2));
         return len;
     }
 
@@ -58,6 +70,20 @@ struct Point2D
     {
         this->x = _x;
         this->y = _y;
+    }
+
+    Point2D GetUnitVector()
+    {
+        Point2D unitv;
+        unitv.x = this->x / this->Length();
+        unitv.y = this->y / this->Length();
+        return unitv;
+    }
+
+    void MakeUnitVector()
+    {
+        this->x = (var)(this->x/this->Length());
+        this->y = (var)(this->y/this->Length());
     }
 };
 

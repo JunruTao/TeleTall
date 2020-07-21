@@ -49,8 +49,10 @@ public:
     bool MouseL_hold;
     bool MouseR_hold;
     bool MouseM_hold;
+    Uint8 clicktime;
 
 private:
+    Uint8 clickstamp;
     int _split_location; 
     std::vector<std::string> _msg;
     SDL_Window** _hhwnd;

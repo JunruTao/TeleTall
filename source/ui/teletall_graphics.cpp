@@ -104,3 +104,25 @@ void ScreenText::Draw(SDL_Renderer* renderer, int x, int y, double scale)
     SDL_RendererFlip flip = SDL_FLIP_NONE;
     SDL_RenderCopyEx(renderer,mTexture, NULL, &renderrecs,0,&pt,flip);
 }
+
+
+void DrawDashLine(SDL_Renderer* renderer,Point2D<int> pt1, Point2D<int> pt2, int dist)
+{
+    Point2D<int> p1 = pt1;
+    Point2D<int> p2 = pt2;
+
+    Point2D<int> unit = p2 - p1;
+    double distance = unit.Length();
+
+    unit.MakeUnitVector();
+    unit.x *= dist;
+    unit.y *= dist;
+    int count = (int)(distance / (dist));
+
+    for (size_t i = 0; i < count; i++)
+    {
+        if(i%2 == 0){
+        SDL_RenderDrawLine(renderer, p1.x + (unit.x*i), p1.y+ (unit.y*i), p1.x + (unit.x*(i+1)), p1.y+ (unit.y*(i+1)));
+        }
+    }
+}

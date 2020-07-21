@@ -75,6 +75,7 @@ void Telepad::Update(Telecontroller &controller)
     //current mouse location
     int x, y;
     SDL_GetMouseState(&x, &y);
+
     Resize(controller, x, y);
     MoveGrid(controller, x, y);
     
@@ -95,9 +96,18 @@ void Telepad::Update(Telecontroller &controller)
             CreateNode(node_pool[node_pool.size() - 1]->GetLocation().x + origin.x + 50, node_pool[node_pool.size() - 1]->GetLocation().y + origin.y + 50);
         }
     }
-
+    if(_selecting)
+    {
+        controller.Shared_Nevigation_Lock = MouseLockID::TELE_LOCKED;
+        Node::ToggleGroupSelect(true);
+    }else
+    {
+        controller.Shared_Nevigation_Lock = MouseLockID::FREE;
+    }
     UpdateNode(&controller);
     Select(&controller, x, y);
+
+    
 
     controller.UpdateSplitLocation(pad_width + HALF_SLIDEBAR + SLIDEBAR_SEL_BLEED);
     controller.LinkPadRect(&padViewport, &slidebar);
@@ -205,7 +215,7 @@ void Telepad::Resize(Telecontroller &controller, const int &x, const int &y)
     }
 
     SDL_Cursor *cursor = NULL;
-    onBar = ((x > slidebar.x - SLIDEBAR_SEL_BLEED) && (x < slidebar.x + slidebar.w + SLIDEBAR_SEL_BLEED))&&(y>controller.GetPadRect()->y && y<controller.GetPadRect()->h);
+    onBar = (((x > slidebar.x - SLIDEBAR_SEL_BLEED) && (x < slidebar.x + slidebar.w + SLIDEBAR_SEL_BLEED))&&(y>controller.GetPadRect()->y && y<controller.GetPadRect()->h)) && !_selecting;
     onTall = (x > slidebar.x + slidebar.w + SLIDEBAR_SEL_BLEED) && (x < win_width);
 
 
@@ -384,7 +394,38 @@ void Telepad::AssignIconManager(std::shared_ptr<IconManager>& Icm)
 
 void Telepad::Select(Telecontroller *controller, int x, int y)
 {
-    if (onPad && Node::GetOnDragMotion()<1)
+    int ondrags = 0;
+    for(auto& n: node_pool)
+    {
+        if(n->GetIfDrag())
+        {
+            ondrags++;
+        }
+    }
+
+
+    int onpass = 0;
+    for(auto& n: node_pool)
+    {
+        if(n->GetIfPass())
+        {
+            onpass++;
+        }
+    }
+    Node::SetPassingCount(onpass);
+    if(onpass == 0)
+    {
+        if (controller->GetCommand() == cmd_KEY::cmd_LMB)
+        {
+            for(auto& n: node_pool)
+            {
+                n->SetAsUnselected();
+            }
+        }
+    }
+
+
+    if (onPad && ondrags == 0)
     {
         if (controller->GetCommand() == cmd_KEY::cmd_LMB)
         {
@@ -400,11 +441,51 @@ void Telepad::Select(Telecontroller *controller, int x, int y)
             _selecting = true;
             Point2D<int> temp(x, y);
             mouse_trail.emplace_back(std::move(temp));
+            controller->Shared_Nevigation_Lock = MouseLockID::TELE_LOCKED;
 
             if (mouse_trail.size() > 3)
             {
                 mouse_trail.erase(mouse_trail.begin() + 1);
                 mouse_trail.erase(mouse_trail.begin() + 1);
+            }
+
+            //Here: Making the box selection:
+            for (auto &n : node_pool)
+            {
+                if (mouse_trail[0].y < mouse_trail.back().y)
+                {
+                    if (mouse_trail[0].x < mouse_trail.back().x)
+                    {
+                        if (n->GetLocation().InBound(mouse_trail[0].x - origin.x, mouse_trail[0].y - origin.y, mouse_trail.back().x - origin.x, mouse_trail.back().y - origin.y))
+                        {
+                            n->SetAsSelected();
+                        }
+                    }
+                    else
+                    {
+                        if (n->GetLocation().InBound(mouse_trail.back().x - origin.x, mouse_trail[0].y - origin.y, mouse_trail[0].x - origin.x, mouse_trail.back().y - origin.y))
+                        {
+                            n->SetAsSelected();
+                        }
+                    }
+                }
+                else
+                {
+                    if (mouse_trail[0].x > mouse_trail.back().x)
+                    {
+                        if (n->GetLocation().InBound(mouse_trail.back().x - origin.x, mouse_trail.back().y - origin.y, mouse_trail[0].x - origin.x, mouse_trail[0].y - origin.y))
+                        {
+                            n->SetAsSelected();
+                        }
+                    }
+                    else
+                    {
+                        if (n->GetLocation().InBound(mouse_trail[0].x - origin.x, mouse_trail.back().y - origin.y, mouse_trail.back().x - origin.x, mouse_trail[0].y - origin.y))
+                        {
+                            n->SetAsSelected();
+                        }
+                    }
+                }
             }
         }
         else
@@ -424,10 +505,22 @@ void Telepad::DrawSelectionRect(SDL_Renderer* renderer)
 {
     if (!mouse_trail.empty() && _selecting)
     {
-        SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
-        SDL_RenderDrawLine(renderer, mouse_trail[0].x, mouse_trail[0].y, mouse_trail[mouse_trail.size()-1].x, mouse_trail[0].y);
-        SDL_RenderDrawLine(renderer, mouse_trail[0].x, mouse_trail[0].y, mouse_trail[0].x, mouse_trail[mouse_trail.size()-1].y);
-        SDL_RenderDrawLine(renderer, mouse_trail[mouse_trail.size()-1].x, mouse_trail[0].y, mouse_trail[mouse_trail.size()-1].x, mouse_trail[mouse_trail.size()-1].y);
-        SDL_RenderDrawLine(renderer, mouse_trail[0].x, mouse_trail[mouse_trail.size()-1].y, mouse_trail[mouse_trail.size()-1].x, mouse_trail[mouse_trail.size()-1].y);
+        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255,200);
+        //SDL_RenderDrawLine(renderer, mouse_trail[0].x, mouse_trail[0].y, mouse_trail.back().x, mouse_trail[0].y);
+        Point2D<int> leftcor(mouse_trail.back().x, mouse_trail[0].y);
+        Point2D<int> rightcor(mouse_trail[0].x, mouse_trail.back().y);
+        /*
+        [0]----vh---[leftcor]
+         |             |
+         |             |vv
+        [rightcor]----[back]
+        
+        */
+       DrawDashLine(renderer, mouse_trail.front(), leftcor, 4);
+       DrawDashLine(renderer, leftcor, mouse_trail.back(), 4);
+       DrawDashLine(renderer, rightcor, mouse_trail.front(), 4);
+       DrawDashLine(renderer, mouse_trail.back(), rightcor, 4);
+       SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
     }
 }

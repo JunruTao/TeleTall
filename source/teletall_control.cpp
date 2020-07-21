@@ -15,6 +15,7 @@ Telecontroller::Telecontroller()
     MouseL_hold = false;
     MouseR_hold = false;
     _closeAllMenus = false;
+    clickstamp = 0;
 }
 
 Telecontroller::~Telecontroller() 
@@ -35,7 +36,7 @@ void Telecontroller::ProcessInput(bool &running)
 
     int _x, _y;
     SDL_GetMouseState(&_x, &_y);
-     _mouseLocation.New(_x, _y);
+    _mouseLocation.New(_x, _y);
     SDL_Event event;
     SDL_PollEvent(&event);
 
@@ -65,12 +66,13 @@ void Telecontroller::ProcessInput(bool &running)
         //--------------------------------------[Mouse press]
         else if (event.type == SDL_MOUSEBUTTONDOWN)
         {
+            clickstamp = event.button.timestamp;
+
             switch (event.button.button)
             {
             case SDL_BUTTON_LEFT:
                 if (key_ctrl)
                 {
-                    
                 }
                 else
                 {
@@ -94,6 +96,7 @@ void Telecontroller::ProcessInput(bool &running)
         //--------------------------------------[Mouse Release]
         else if (event.type == SDL_MOUSEBUTTONUP)
         {
+            clicktime = event.button.timestamp - clickstamp;
             _closeAllMenus = false;
             MouseM_hold = false;
             MouseL_hold = false;

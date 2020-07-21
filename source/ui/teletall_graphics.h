@@ -222,6 +222,8 @@ private:
     static int uniHeight;
 };
 
+void DrawDashLine(SDL_Renderer* renderer,Point2D<int> pt1, Point2D<int> pt2, int dist);
+
 
 
 #endif

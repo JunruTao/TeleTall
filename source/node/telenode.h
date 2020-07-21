@@ -38,11 +38,16 @@ public:
     virtual void RecieveData() = 0;
     virtual void ProcessData() = 0;
     virtual void SendData() = 0;
+    bool GetIfDrag(){return _ondrag;}
+    bool GetIfPass(){return _passing;}
     Point2D<double> GetLocation(){return _center;}
     static size_t GetSelectionCount(){return selected_count;}
-    static int GetOnDragMotion(){return ondrag_any;}
+    static void SetPassingCount(int count){passing_count = count;}
+    static void ToggleGroupSelect(bool group_sel){if_groupsel = group_sel;}
     void SetAsSelected(){_selected = true; selected_count ++; }
     void SetAsUnselected(){_selected = false; selected_count --;}
+    
+    
 
 protected:
     bool _passing;
@@ -50,12 +55,14 @@ protected:
     bool _running;
     bool _ondrag;
     static size_t selected_count;
-    static int ondrag_any;
+    static size_t passing_count;
+    static bool if_groupsel;
     //Graphics
     
     static int _node_width;
     static int _node_height;
     static int _icon_edge_len;
+
     static SDL_Color _node_color;
     static SDL_Color _selcolor;
     static SDL_Color _passcolor;

@@ -61,7 +61,8 @@ int Node::_node_width = 100;
 int Node::_node_height = 30;
 int Node::_icon_edge_len = 24;
 size_t Node::selected_count = 0;
-int Node::ondrag_any = 0;
+size_t Node::passing_count = 0;
+bool Node::if_groupsel = false;
 SDL_Color Node::_node_color = {100, 100, 100, 255};
 SDL_Color Node::_selcolor = {35,240,127,255}; //outline
 SDL_Color Node::_passcolor = {200,200,200,255}; //outline
@@ -177,32 +178,40 @@ void PointNode::Update(Telecontroller *controller, const Point2D<int> origin_s, 
 {
 
     bool inboud = controller->GetMousePoint()->InBoundWH(_node_rect.x, _node_rect.y, _node_rect.w, _node_rect.h);
-    
-    if(controller->GetCommand() == cmd_KEY::cmd_CLEAR_Sel)
+
+    if (inboud)
     {
-        _selected = false;
-        ondrag_any = 0;
-        selected_count--;
+        _passing = true;
+    }
+    else
+    {
+        _passing = false;
+        
+    }
+
+    //command from panel
+    if(controller->GetCommand() == cmd_KEY::cmd_CLEAR_Sel)
+    {   
         goto skip;
     }
 
+    
+
     if(inboud)
     {
-        _passing = true;
         if(controller->GetCommand() == cmd_KEY::cmd_LMB  || _selected)
         {
             _selected = true;
             selected_count++; //here a node got selected
-            if (controller->MouseL_hold)
+            if (controller->MouseL_hold && controller->Shared_Nevigation_Lock != MouseLockID::TELE_LOCKED)
             {
+                dragging:
                 _ondrag = true;
-                ondrag_any ++;
                 _center.x +=  (controller->GetMousePoint()->x - origin_s.x) - _clicked_old_pos.x;
                 _center.y +=  (controller->GetMousePoint()->y - origin_s.y) - _clicked_old_pos.y;
             }
             else
             {
-                ondrag_any --;
                 _ondrag = false;
             }
         }
@@ -212,28 +221,33 @@ void PointNode::Update(Telecontroller *controller, const Point2D<int> origin_s, 
         if (controller->MouseL_hold)
         {
             _ondrag = true;
-            ondrag_any++;
             _center.x += (controller->GetMousePoint()->x - origin_s.x) - _clicked_old_pos.x;
             _center.y += (controller->GetMousePoint()->y - origin_s.y) - _clicked_old_pos.y;
 
         }else
         {
             _ondrag = false;
-            ondrag_any--;
         }
     }
     else
     {
+        if (if_groupsel && selected_count > 1 && _selected && passing_count > 0 && controller->MouseL_hold && controller->Shared_Nevigation_Lock != MouseLockID::TELE_LOCKED)
+        {
+            goto dragging;
+        }
+
         _ondrag = false;
         
         if(controller->GetCommand() == cmd_KEY::cmd_LMB && (controller->GetCurrentPanel() == PanelID::ON_PAD))
         {   
             _selected = false;
             selected_count = 0;
+            if_groupsel = false;
         }
 
-        _passing = false;
+     
     }
+
     skip:{}
 
     _clicked_old_pos.x = (controller->GetMousePoint()->x - origin_s.x);

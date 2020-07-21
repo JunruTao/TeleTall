@@ -9,7 +9,7 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
 
 * :pushpin:**Program Preview:**
 
-  |<img src=".markdown.images/20200719_2SmartMenuandEvent.gif"/> |
+  |<img src=".markdown.images\20200721_Telenodes_move_drag.gif"/> |
   |---|
 
 * :pushpin:**Program Structure:**
@@ -141,6 +141,21 @@ The viewport on the left is called `TelePad` which is the context for holding an
 
 :radio_button: &larr;- - - - :bookmark_tabs:
 * #### DAY 13 { <ins>7/21/2020</ins> } : Telenode's Classes - <img src=".package.extra.merge/tltl_node_icon/pointnode.bmp"/> 'PointNode'
+
+**[10:20 PM] Select/move/group selection solved!!**
+
+So in this update, solved quite a few problems. 
+  * How to select a node; 
+  * deselect a node;
+  * how to select a node and drag around; 
+  * how to group select few nodes and drag around;
+
+There is no short cuts, mainly just implementing few boolean lock inside telepad and node class's static field. Here is the build test:
+
+  > build preview: 
+  > <img src=".markdown.images\20200721_Telenodes_move_drag.gif"/>
+
+
 **[00:10 AM] Node's class and PointNode class structured**
 
   *  made <sup>icon</sup> <img src=".package.extra.merge/tltl_node_icon/pointnode.bmp"/> **Point Node** class working. you can now:
