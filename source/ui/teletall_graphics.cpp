@@ -126,3 +126,84 @@ void DrawDashLine(SDL_Renderer* renderer,Point2D<int> pt1, Point2D<int> pt2, int
         }
     }
 }
+
+
+
+void DrawNurbs(SDL_Renderer* renderer, std::vector<Point2D<int>> points, int degree)
+{
+    if(degree == 1)
+    {
+        for(size_t i = 0; i<points.size()-1; i++)
+        {
+            SDL_RenderDrawLine(renderer,points[i].x, points[i].y, points[i+1].x, points[i+1].y);
+        }
+    }else if(degree == 3)
+    {
+        // std::vector<Point2D<int>> TempList1 = points;
+
+        // for(size_t j = 0; j < 2; j++)
+        // {
+        //     std::vector<Point2D<int>> TempList;
+        //     for(size_t i = 0; i< TempList1.size()-3;i++)
+        //     {
+        //         Point2D<int> tPt1(0, 0);
+        //         tPt1.x = TempList1[i].x*0.5 + TempList1[i+1].x*0.5;
+        //         tPt1.y = TempList1[i].y*0.5 + TempList1[i+1].y*0.5;
+        //         TempList.push_back(tPt1);
+
+        //         Point2D<int> tPt2(0, 0);
+        //         tPt2.x = TempList1[i].x*0.125 + TempList1[i+1].x*0.75 + TempList1[i+2].x*0.125;
+        //         tPt2.y = TempList1[i].y*0.125 + TempList1[i+1].y*0.75 + TempList1[i+2].y*0.125;
+        //         TempList.push_back(tPt2);
+        //     }
+        //     TempList1 = TempList;
+        // }
+        // for(size_t i = 0; i<TempList1.size()-1; i++)
+        // {
+        //     SDL_RenderDrawLine(renderer,TempList1[i].x, TempList1[i].y, TempList1[i+1].x, TempList1[i+1].y);
+        // }
+        std::vector<Point2D<int>> tempList = points;
+
+        for (size_t j = 0; j < 3; ++j)
+        {
+            std::vector<Point2D<int>> tempList2;
+            for (size_t i = 0; i < tempList.size() - 2; i++)
+            {
+                if (i == 0)
+                {
+                    Point2D<int> be1 = tempList.front();
+                    tempList2.emplace_back(std::move(be1));
+                }
+
+                Point2D<int> oneQ;
+                oneQ.x = (int)((((double)tempList[i].x) * 0.5f) + (((double)tempList[i + 1].x) * 0.5f));
+                oneQ.y = (int)((((double)tempList[i].y) * 0.5f) + (((double)tempList[i + 1].y) * 0.5f));
+                //tempList.erase(tempList.begin());
+                tempList2.emplace_back(std::move(oneQ));
+                Point2D<int> threeQ;
+                threeQ.x = (int)(((double)tempList[i].x) * 0.125f + ((double)tempList[i + 1].x) * 0.75f + ((double)tempList[i + 2].x) * 0.125f);
+                threeQ.y = (int)(((double)tempList[i].y) * 0.125f + ((double)tempList[i + 1].y) * 0.75f + ((double)tempList[i + 2].y) * 0.125f);
+                //tempList.erase(tempList.begin());
+                tempList2.emplace_back(std::move(threeQ));
+                Point2D<int> fQ;
+                fQ.x = (int)((((double)tempList[i+1].x) * 0.5f) + (((double)tempList[i + 2].x) * 0.5f));
+                fQ.y = (int)((((double)tempList[i+1].y) * 0.5f) + (((double)tempList[i + 2].y) * 0.5f));
+                tempList2.emplace_back(std::move(fQ));
+
+                if (i == tempList.size() - 3)
+                {
+                    Point2D<int> be2 = tempList.back();
+                    tempList2.emplace_back(std::move(be2));
+                }
+            }
+            tempList = tempList2;
+        }
+
+        for (size_t i = 0; i < tempList.size() -1; ++i)
+        {
+            SDL_RenderDrawLine(renderer, tempList[i].x, tempList[i].y, tempList[i + 1].x, tempList[i + 1].y);
+        }
+    }
+
+   
+}

@@ -32,21 +32,26 @@ class Node
 {
 public:
 
+    //virtual functions
     virtual void Update(Telecontroller *controller, const Point2D<int> origin_s, double scale) = 0;
     virtual void DrawNode(SDL_Renderer *, std::shared_ptr<IconManager>)= 0;
     virtual void DrawGeometry(SDL_Renderer *) const = 0;
     virtual void RecieveData() = 0;
     virtual void ProcessData() = 0;
     virtual void SendData() = 0;
+
+    //setters and getters for all the node objects
     bool GetIfDrag(){return _ondrag;}
     bool GetIfPass(){return _passing;}
+    bool GetIfConnecting(){return _dragconnect_mode;}
     Point2D<double> GetLocation(){return _center;}
     static size_t GetSelectionCount(){return selected_count;}
     static void SetPassingCount(int count){passing_count = count;}
     static void ToggleGroupSelect(bool group_sel){if_groupsel = group_sel;}
     void SetAsSelected(){_selected = true; selected_count ++; }
     void SetAsUnselected(){_selected = false; selected_count --;}
-    
+    int GetWidth(){return _node_width;}
+    int GetHeight(){return _node_height;}
     
 
 protected:
@@ -54,6 +59,8 @@ protected:
     bool _selected;
     bool _running;
     bool _ondrag;
+    bool _dragconnect_mode;
+
     static size_t selected_count;
     static size_t passing_count;
     static bool if_groupsel;
@@ -77,6 +84,8 @@ protected:
     std::string _name;
     std::unique_ptr<ScreenText> _textdisplay;
 
+    void ProcessUserInputs(Telecontroller *controller, const Point2D<int> origin_s, double scale);
+
    
 };
 
@@ -91,19 +100,29 @@ protected:
 class NodeConnector
 {
 public:
-    NodeConnector(Point2D<double> location, bool in_or_out): _pos(location), _in_or_out(in_or_out), _selected(false){};
+    NodeConnector(Point2D<double> location, bool in_or_out, Node* parent);
+    void Update(Telecontroller* controller, Point2D<double> location);
+    
     void EstablishConnection(NodeConnector *target);
     void Draw(SDL_Renderer *renderer);
     void DrawConnection(SDL_Renderer *renderer);
+    bool GetOnConnectDragMode(){return _connecting_mode;}
 
 private:
     Node *_parent;
     Node *_target;
     Point2D<double> _pos;
+    SDL_Rect _rect;
 
+    void UpdateLocation(Point2D<double> location);
+    void DrawDot8x8(SDL_Renderer *renderer);
     bool _in_or_out; //is input or output
+
+    bool _passing;
     bool _selected;
+    bool _connecting_mode;
     //graphics
+    static int _size;
     static SDL_Color _norcolor;
     static SDL_Color _passcolor;
     static SDL_Color _selcolor;

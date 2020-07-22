@@ -20,7 +20,7 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
 
 > **1. Loops, Functions, I/O**
 > * ✔️ The project demonstrates an understanding of C++ functions and control structures.
-> * ⚪ The project reads data from a file and process the data, or the program writes data to a file.
+> * ✔️ The project reads data from a file and process the data, or the program writes data to a file.
 > * ✔️ The project accepts user input and processes the input.
 
 > **2. Object Oriented Programming**
@@ -37,7 +37,7 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
 > **3. Memory Management**
 > * ✔️ The project makes use of references in function declarations.
 > * ✔️ The project uses destructors appropriately.
-> * ⚪ The project uses scope / Resource Acquisition Is Initialization (RAII) where appropriate.
+> * ✔️ The project uses scope / Resource Acquisition Is Initialization (RAII) where appropriate.
 > * ⚪ The project follows the Rule of 5.
 > * ✔️ The project uses move semantics to move data, instead of copying it, where possible.
 > * ✔️ (Mixed) The project uses smart pointers instead of raw pointers.

@@ -5,6 +5,7 @@
 
 #include <JUTA/JUTA_geometry_core.h>
 #include <JUTA/JUTA_math.h>
+#include <vector>
 
 static void DrawGrid(
     SDL_Renderer *renderer,
@@ -224,6 +225,8 @@ private:
 
 void DrawDashLine(SDL_Renderer* renderer,Point2D<int> pt1, Point2D<int> pt2, int dist);
 
+//degree = 1(polyline) if degree = 3(b-spline)
+void DrawNurbs(SDL_Renderer* renderer, std::vector<Point2D<int>> points, int degree);
 
 
 #endif

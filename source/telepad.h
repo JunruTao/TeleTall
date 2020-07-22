@@ -54,7 +54,9 @@ private:
     //Selection;
     void Select(Telecontroller* controller, int x, int y);
     void DrawSelectionRect(SDL_Renderer* renderer);
+    void DrawConnectCurve(SDL_Renderer* renderer);
     bool _selecting;
+    bool _connecting;
 
     //ResourceManagers
     std::shared_ptr<IconManager> _Icm;
