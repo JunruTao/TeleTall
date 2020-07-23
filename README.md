@@ -143,13 +143,16 @@ The viewport on the left is called `TelePad` which is the context for holding an
 
 In this update, fixed the bug of text font release. And now by hitting `delete` key or in the `menu`&rarr;`Edit`&rarr;`Delete`, you can delete a node. In the code, the changes are making all the node connectors shared pointer, and all the nodes are shared pointers are well so they can be passes to Tall to draw the display geos.
 
-In order to get a shadow around the curve, I did a bit of math to do this. So if I have 2 points drawing a line $L\langle A, B \rangle$ so I can add to each points by a perpendicular vector in 2 directions. So the way to calculate: 
+In order to get a shadow around the curve, I did a bit of math to do this. So if I have 2 points drawing a line <img src="https://latex.codecogs.com/gif.latex?L%5Clangle%20A%2C%20B%20%5Crangle"> so I can add to each points by a perpendicular vector in 2 directions. So the way to calculate: 
 
-$$V _{line⊥ perp} = V_{line} 
-\begin{bmatrix} V_x\\V_y\\\end{bmatrix}\begin{bmatrix}0 & -1\\1 & 0\\\end{bmatrix} = \begin{bmatrix} -V_y\\V_x\\\end{bmatrix} = \begin{bmatrix} 
--(B_y - A_y)\\(B_x - A_x))\\\end{bmatrix}$$ 
+<img src="https://latex.codecogs.com/gif.latex?V%20_%7Bline%5Cbot%20perp%7D%20%3D%20V_%7Bline%7D%20%5Cbegin%7Bbmatrix%7D%20V_x%5C%5CV_y%5C%5C%5Cend%7Bbmatrix%7D%5Cbegin%7Bbmatrix%7D0%20%26%20-1%5C%5C1%20%26%200%5C%5C%5Cend%7Bbmatrix%7D%20%3D%20%5Cbegin%7Bbmatrix%7D%20-V_y%5C%5CV_x%5C%5C%5Cend%7Bbmatrix%7D%20%3D%20%5Cbegin%7Bbmatrix%7D%20-%28B_y%20-%20A_y%29%5C%5C%28B_x%20-%20A_x%29%29%5C%5C%5Cend%7Bbmatrix%7D"> 
 
-Then I can use this vector like this   $Lines =\begin{cases} A_{(x,y)} \\ B_{(x,y)}\end{cases}* \left(\frac{(V_{line⊥ perp})* \Delta shift }{||V_line⊥ perp||} \right) * \begin{cases} 1 \\ -1 \end{cases}$ A single line can be offseted in both sides.
+<img src="https://render.githubusercontent.com/render/math?math=e">
+
+Then I can use this vector like this:
+ <img src="https://latex.codecogs.com/gif.latex?Lines%20%3D%5Cbegin%7Bcases%7D%20A_%7B%28x%2Cy%29%7D%20%5C%5C%20B_%7B%28x%2Cy%29%7D%5Cend%7Bcases%7D*%20%5Cleft%28%5Cfrac%7B%28V_%7Bline%u22A5%20perp%7D%29*%20%5CDelta%20shift%20%7D%7B%7C%7CV_line%u22A5%20perp%7C%7C%7D%20%5Cright%29%20*%20%5Cbegin%7Bcases%7D%201%20%5C%5C%20-1%20%5Cend%7Bcases%7D">
+ 
+A single line can be offseted in both sides.
 
 :radio_button: &larr;- - - - :bookmark_tabs:
 * #### DAY 14 { <ins>7/22/2020</ins> } : Node Connector and B-Spline Curve
