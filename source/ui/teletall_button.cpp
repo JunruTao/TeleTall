@@ -112,6 +112,7 @@ void MenuButton::Update(Telecontroller* controller)
         else
         {
             _state = ButtonStates::PASSING;
+            controller->current_panel = PanelID::ON_MENU;
             if (controller->GetCommand() == cmd_KEY::cmd_LMB)
             {
                 _state = ButtonStates::CLICKED;
@@ -157,6 +158,11 @@ void MenuButton::Update(Telecontroller* controller)
 
         }
         
+    }
+
+    if(_state != ButtonStates::NORMAL)
+    {
+        controller->current_panel == PanelID::ON_MENU;
     }
     _shouldrest = false;
 }

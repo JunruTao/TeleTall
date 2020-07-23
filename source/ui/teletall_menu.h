@@ -33,7 +33,6 @@ private:
     SDL_Rect _menurec;
     int _Height;
     bool _ifshown;
-    static std::vector<SDL_Rect*> _opened_range_rect;
 };
 
 

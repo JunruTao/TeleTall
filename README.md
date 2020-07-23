@@ -53,15 +53,41 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
 
 ### :white_circle:Program Guide
 
-* ##### 1.Start: Viewport and Window
-
-The viewport on the left is called `TelePad` which is the context for holding and creating `Tele-Nodes` and their connections; the one on the right is `Tall` viewport2D, rendering the geometries. Once OpenGL is introduced, a GL-3D viewport will replace `Tall`.
+##### 💡 1.Start: Viewport and Window
+|<sup>:notebook: notes:</sup>|
+|:---|
+|The viewport on the left is called `TelePad` which is the context for holding and creating `Tele-Nodes` and their connections; the one on the right is `Tall` viewport2D, rendering the geometries. Once OpenGL is introduced, a GL-3D viewport will replace `Tall`.|
   * 🖱️`Left mouse button`: click and drag to move assets and UI elements.
   * 🖱️`Right mouse button`: click and drag to nevigate around the viewport space; 
   * ⌨️"`H`" key, to 'home' the viewport grid back to its origin (0,0).
   * ⌨️"`F`" key, to 'Frame' all the geometries or nodes to the screen centre.
     * >  they all works for both viewport: `TelePad` (node viewport) and `Tall` (geometry viewport).
   * ⌨️"`ctrl`+ `;`" to show and hide the console;
+
+##### 💡 2.Edit: Tele-Nodes
+
+|<sup>:notebook: notes:</sup>|
+|:---|
+|You can create nodes from the top menu under `Nodes` submenu. To create a basic **PointNode**, you can also use a short cut:|
+
+
+  * ⌨️"`P`" key:  a **PointNode** will be created at mouse location.
+  * 🖱️`Left mouse button` click or drag empty area: to select a node/nodes.
+  * ⌨️"`Delete`" key: delete selected node/nodes.
+  * ⌨️"`Ecs`" key: clear selection of node/nodes.
+
+|<sup>:notebook: notes:</sup>|
+|:---|
+|For each **Telenodes**, a `display flag` indicates whether this node is now rendering at `Tall`. There is only maximum _one_ display flag will be allowed in the telepad node-viewport.|
+
+  * ⌨️"`D`" key: toggle on display, shift `display flag` from one to another.
+
+|<sup>:notebook: notes:</sup>|
+|:---|
+|If a **Telenode** is a `editable node` such as **PointNode**, you can manipulate its data. You will be able to `create`/`select`/`transform`/`delete` when entering **Edit Mode**. This mode will lock the `Telepad` which will turn into a red theme and enable editable feartures in `Tall` viewport.|
+  * ⌨️"` space `" key: Enter/Exit the **Edit Mode**.
+  * ⌨️"`Return ↵`" key: Enter the **Edit Mode**.
+  * ⌨️"`Ecs`" key: Exit the **Edit Mode** or clear selection.
 
 ***
 
@@ -139,8 +165,17 @@ The viewport on the left is called `TelePad` which is the context for holding an
 #### :pushpin: Latest!!!: :arrow_down: :arrow_down: :arrow_down:
 
 :radio_button: &larr;- - - - :bookmark_tabs:
-* #### DAY 15 { <ins>7/23/2020</ins> } : Delete node. Anti-aliased curve
+* #### DAY 15 { <ins>7/23/2020</ins> } : Delete node / Anti-aliased curve / Edit Mode / Display Flag
+**[3:12 PM] fixed a bug of columnmenu, new: Edit-Mode, display flag**
+1. There was small bug with submenus, the mouse panel detection was really working all the time. I realised a simple solution is solve it down to the button level, so that if any button is not at FREE state, then it is definitely on the menu. Simple, the panels are not jumping randomly now;
 
+2. **Important feature 1:** **Edit Mode**. if a node only is selected, and the node type is editable like `PointNode`, by hitting `space` or `return`keys you can lock Teletall into `Edit Mode` where you will be able to create points, select, move,delete points in `Tall` viewport. The other nodes will be locked. So If finished editing, you can hit `space` bar again or hit `esc` key to exit edit mode.
+
+3. **Important feature 2: Display Flag**. This is the feature that Houdini nodes have. If a node is on the display flag, the geometry will be renderer in the viewport. Otherwise, won't. The features are when you create your first node, display-flag will be set to this one. If you hit `d` on your keyboard, and another node is selected, the flag will be switched to that node. The rule is<ins> at least and only one node will have `display flag` on. </ins> If you have a group of node selected, and attemp to switch the flag, the `display flag` will be set to the lastest node in the selection. 
+
+<img src=".markdown.images\20200723Modes_Flags.png">
+
+**[8:20 AM] fixed the bug of text font release**
 In this update, fixed the bug of text font release. And now by hitting `delete` key or in the `menu`&rarr;`Edit`&rarr;`Delete`, you can delete a node. In the code, the changes are making all the node connectors shared pointer, and all the nodes are shared pointers are well so they can be passes to Tall to draw the display geos.
 
 In order to get a shadow around the curve, I did a bit of math to do this. So if I have 2 points drawing a line <img src="https://latex.codecogs.com/gif.latex?L%5Clangle%20A%2C%20B%20%5Crangle"> so I can add to each points by a perpendicular vector in 2 directions. So the way to calculate: 

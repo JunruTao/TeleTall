@@ -19,10 +19,13 @@ void Console::Init()
     cmd_dictionary[cmd_KEY::cmd_COPY] = "> Edit: Copy";
     cmd_dictionary[cmd_KEY::cmd_PASTE] = "> Edit: Paste";
     cmd_dictionary[cmd_KEY::cmd_CUT] = "> Edit: Cut";
+    cmd_dictionary[cmd_KEY::cmd_EditMode] = "> Edit: ";
+    cmd_dictionary[cmd_KEY::cmd_Message] = "> ";
 
     cmd_dictionary[cmd_KEY::cmd_STARTUP] = "> Teletall: Program Init: SUCCESS - ";
     cmd_dictionary[cmd_KEY::cmd_CREATE_NODE_Point] = "> Create Node: Point Node";
     cmd_dictionary[cmd_KEY::cmd_CREATE_NODE_Point_M] = "> Create Node: Point Node";
+    
 }
 
 Console::Console()

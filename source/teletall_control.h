@@ -45,6 +45,9 @@ public:
     SDL_Rect* GetTallRect(){return &r_TallRect;}
     void SetCurrentPanel(PanelID panel){current_panel = panel;}
     PanelID GetCurrentPanel(){return current_panel;}
+    bool GetEditMode(){return EditMode;}
+    void SetSeletedNodesCount(size_t nodescount){_selected_nodes = nodescount;}
+    size_t GetSeletedNodesCount(){return _selected_nodes;}
 
     bool MouseL_hold;
     bool MouseR_hold;
@@ -63,12 +66,15 @@ private:
     bool key_alt;
     bool key_shift;
     bool _closeAllMenus;
+    bool EditMode;
     std::string _Msg;
     SDL_Rect r_PadRect;
     SDL_Rect r_TallRect;
     SDL_Rect r_MSliderRect;
     SDL_Rect r_MenuRect;
     SDL_Rect r_ConsoleRect;
+
+    size_t _selected_nodes;
 };
 
 #endif

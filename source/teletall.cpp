@@ -4,7 +4,7 @@
 #include <string>
 #include "node/telenode.h"
 
-#define VERSION "v0.2.1"
+#define VERSION "v0.2.2"
 #define WINDOW_NAME "TeleTall - Beta - "
 
 //[CONSTRUCTOR]-------------------------------------------------------------------------------------
@@ -239,8 +239,17 @@ void TeleTall::ConstructMenu()
         "Option 2",
         "Bella",
     };
+    __KeyList__ option_cmds = 
+    {
+        cmd_KEY::cmd_EMPTY,
+        cmd_KEY::cmd_EMPTY,
+        cmd_KEY::cmd_EMPTY
+    };
+
+
     
     ColumnMenu *subm_option = new ColumnMenu(title_option, 200);
+    subm_option->AddCommand(option_cmds);
 
     subm_option->AddedSubMenu("Bella", subm_Bella);
     subm_file->AddedSubMenu("Options", subm_option);
@@ -250,18 +259,18 @@ void TeleTall::ConstructMenu()
 
     std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
-    NameList title3 = {
+    NameList title_Edit = {
         "Copy                            Ctrl+C",
         "Cut                               Ctrl+X",
         "Paste                           Ctrl+V",
         "Delete                          Delete",
         "Undo                            Ctrl+Z",
         "Redo                            Ctrl+Y"};
-    ColumnMenu *subm_Edit = new ColumnMenu(title3, 200);
+    ColumnMenu *subm_Edit = new ColumnMenu(title_Edit, 200);
     __KeyList__ edit_keys= 
     {
         cmd_KEY::cmd_COPY,
-        cmd_KEY::cmd_EMPTY,
+        cmd_KEY::cmd_CUT,
         cmd_KEY::cmd_PASTE,
         cmd_KEY::cmd_Delete,
         cmd_KEY::cmd_UNDO,

@@ -219,9 +219,6 @@ void BarMenu::Draw(SDL_Renderer* renderer)const
 //| * * * * * * * * * * * * * * * * * * * [O B J E C T]* * * * * * * * * * * * * * * * * * * * * * * |
 //|CLASS:---------------------------------[Column Menu]
 
-std::vector<SDL_Rect*> ColumnMenu::_opened_range_rect = {};
-
-
 //_____________________________
 //=============>>>  Destructor.
 ColumnMenu::~ColumnMenu()
@@ -302,35 +299,6 @@ void ColumnMenu::Update(Telecontroller* controller, int x, int y, bool show)
 
     if (_ifshown)
     {
-        _opened_range_rect.push_back(&_menurec);
-        int inbound = 0;
-        for (size_t i = 0; i < _opened_range_rect.size(); i++)
-        {
-            if (controller->GetMousePoint()->InBoundWH(_opened_range_rect[i]->x, _opened_range_rect[i]->y,_opened_range_rect[i]->w,_opened_range_rect[i]->h))
-            {
-                inbound ++;
-            }
-            
-        }
-        if (inbound > 0)
-        {
-            controller->current_panel = PanelID::ON_MENU;
-        }
-        else
-        {
-            controller->current_panel = PanelID::NONE;
-        }
-    }
-    else
-    {
-        if(_opened_range_rect.size()>1)
-        {
-            _opened_range_rect.pop_back();
-        }
-    }
-
-    if (_ifshown)
-    {
         
         for (auto &b : MenuItem)
         {
@@ -343,6 +311,7 @@ void ColumnMenu::Update(Telecontroller* controller, int x, int y, bool show)
             if (itr != Menu_Map.end())
             {
                 ButtonStates state = b->GetState();
+                
                 if (active == "null")
                 {
                     if (state == ButtonStates::CLICKED)
@@ -408,6 +377,10 @@ void ColumnMenu::Update(Telecontroller* controller, int x, int y, bool show)
                 }
 
                 b->Update(controller);
+                if(state != ButtonStates::NORMAL)
+                {
+                    controller->current_panel = PanelID::ON_MENU;
+                }
             }
         }
     }

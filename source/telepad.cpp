@@ -39,6 +39,7 @@ Telepad::Telepad(
     onPad = false;
     onBar = false;
     onTall = false;
+    gridcolor = {50,50,50,255};
 
     //world grid Starting Point;
     origin.x = pad_width / 2;
@@ -76,45 +77,108 @@ void Telepad::Update(Telecontroller &controller)
     //current mouse location
     int x, y;
     SDL_GetMouseState(&x, &y);
-
     Resize(controller, x, y);
-    MoveGrid(controller, x, y);
-    
+
     
 
-    if ((controller.GetCommand() == cmd_KEY::cmd_CREATE_NODE_Point) && (controller.GetCurrentPanel() == PanelID::ON_PAD))
+    if (!controller.GetEditMode()) //this will lock the telepad if true
     {
-        CreateNode(x, y);
-    }
-    else if (controller.GetCommand() == cmd_KEY::cmd_CREATE_NODE_Point_M)
-    {
-        if (node_pool.empty())
+        gridcolor = {50,50,50,255};
+        MoveGrid(controller, x, y);
+
+        if ((controller.GetCommand() == cmd_KEY::cmd_CREATE_NODE_Point) && (controller.GetCurrentPanel() == PanelID::ON_PAD))
         {
-            CreateNode(controller.GetPadRect()->x + (controller.GetPadRect()->w / 2), controller.GetPadRect()->y + (controller.GetPadRect()->h / 2));
+            CreateNode(x, y);
+        }
+        else if (controller.GetCommand() == cmd_KEY::cmd_CREATE_NODE_Point_M)
+        {
+            if (node_pool.empty())
+            {
+                CreateNode(controller.GetPadRect()->x + (controller.GetPadRect()->w / 2), controller.GetPadRect()->y + (controller.GetPadRect()->h / 2));
+            }
+            else
+            {
+                CreateNode(node_pool[node_pool.size() - 1]->GetLocation().x + origin.x + 50, node_pool[node_pool.size() - 1]->GetLocation().y + origin.y + 50);
+            }
+        }
+
+
+        if (_selecting)
+        {
+            controller.Shared_Nevigation_Lock = MouseLockID::TELE_LOCKED;
+            Node::ToggleGroupSelect(true);
         }
         else
         {
-            CreateNode(node_pool[node_pool.size() - 1]->GetLocation().x + origin.x + 50, node_pool[node_pool.size() - 1]->GetLocation().y + origin.y + 50);
+            controller.Shared_Nevigation_Lock = MouseLockID::FREE;
+        }
+
+        
+        UpdateNode(&controller);
+        Select(&controller, x, y);
+
+        
+
+        if (controller.GetCommand() == cmd_KEY::cmd_Delete)
+        {
+            DeleteNode();
+            controller.SendCommandEx(cmd_KEY::cmd_EMPTY, " ");
         }
     }
-    if(_selecting)
+    else
     {
-        controller.Shared_Nevigation_Lock = MouseLockID::TELE_LOCKED;
-        Node::ToggleGroupSelect(true);
-    }else
-    {
-        controller.Shared_Nevigation_Lock = MouseLockID::FREE;
+        UpdateNode(&controller);   
+        gridcolor = {70,30,30,255};
     }
-    UpdateNode(&controller);
-    Select(&controller, x, y);
-
-    if(controller.GetCommand() == cmd_KEY::cmd_Delete)
+    //update the node count here
+    if (!node_pool.empty())
     {
-        DeleteNode();
-        controller.SendCommandEx(cmd_KEY::cmd_EMPTY, " ");
-    }
-
-    
+        bool anydisplay = false;
+        _sel_nodes.clear();
+        for (auto &n : node_pool)
+        {
+            if (n->GetIsDisplay())
+            {
+                anydisplay = true;
+            }
+            if (n->GetIsSelected())
+            {
+                _sel_nodes.push_back(n);
+            }
+        }
+        if(anydisplay == false)
+        {
+           node_pool.back()->SetDisplay();
+        }
+        if (controller.GetCommand() == cmd_KEY::cmd_DisplayFlag)
+        {
+            if (_sel_nodes.size() == 1)
+            {
+                for (auto &n : node_pool)
+                {
+                    if (!n->GetIsSelected())
+                    {
+                        n->SetNondisplay();
+                    }
+                }
+            }
+            else if (_sel_nodes.size() > 1)
+            {
+                for (auto &n : node_pool)
+                {
+                    n->SetNondisplay();
+                    n->SetAsUnselected();
+                }
+            }
+            if (!_sel_nodes.empty())
+            {
+                _sel_nodes.back()->SetAsSelected();
+                _sel_nodes.back()->SetDisplay();
+            }
+        }
+        Node::SetSelectedCount(_sel_nodes.size());
+        controller.SetSeletedNodesCount(_sel_nodes.size());
+    } //end selection count and display flag update
 
     controller.UpdateSplitLocation(pad_width + HALF_SLIDEBAR + SLIDEBAR_SEL_BLEED);
     controller.LinkPadRect(&padViewport, &slidebar);
@@ -130,7 +194,7 @@ void Telepad::Update(Telecontroller &controller)
 void Telepad::Render(SDL_Renderer *renderer)
 {
     //background region here
-    SDL_SetRenderDrawColor(renderer, 50, 50, 50, 255);
+    SDL_SetRenderDrawColor(renderer, gridcolor.r, gridcolor.g, gridcolor.b, 255);
     SDL_RenderFillRect(renderer, &padViewport);
     //clipping here
     SDL_RenderSetClipRect(renderer, &padViewport);
@@ -229,8 +293,14 @@ void Telepad::Resize(Telecontroller &controller, const int &x, const int &y)
 
     if (onBar) //Mouse passing the slide bar
     {
-        
-        cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZEWE);
+        if (!controller.GetEditMode())
+        {
+            cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZEWE);
+        }
+        else
+        {
+            cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
+        }
         SDL_SetCursor(cursor);
         SDL_ShowCursor(1);
         controller.current_panel = PanelID::ON_BAR;
@@ -238,7 +308,7 @@ void Telepad::Resize(Telecontroller &controller, const int &x, const int &y)
 
     }
 
-    
+
 
     if (controller.MouseL_hold) //Mouse clicked down
     {
@@ -449,6 +519,7 @@ void Telepad::Select(Telecontroller *controller, int x, int y)
             }
         }
     }
+    
 
     if (onPad && onconnect != 0)
     {
@@ -460,16 +531,16 @@ void Telepad::Select(Telecontroller *controller, int x, int y)
     }
 
     Node::SetPassingCount(onpass);
-    if(onpass == 0)
-    {
-        if (controller->GetCommand() == cmd_KEY::cmd_LMB && !node_pool.empty())
-        {
-            for(auto& n: node_pool)
-            {
-                n->SetAsUnselected();
-            }
-        }
-    }
+    // if(onpass == 0)
+    // {
+    //     if (controller->GetCommand() == cmd_KEY::cmd_LMB && !node_pool.empty())
+    //     {
+    //         for(auto& n: node_pool)
+    //         {
+    //             n->SetAsUnselected();
+    //         }
+    //     }
+    // }
 
 
     if (onPad && ondrags == 0)
@@ -537,7 +608,10 @@ void Telepad::Select(Telecontroller *controller, int x, int y)
                             }
                         }
                     }
+                    
                 }//end of for
+
+                
             }//end if selecting
         }
         else

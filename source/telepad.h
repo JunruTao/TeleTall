@@ -39,6 +39,7 @@ private:
     //The grid
     Point2D<int> origin;
     int grid_size;
+    SDL_Color gridcolor;
     void DrawSlideBar(SDL_Renderer *renderer);
     
     void MoveGrid(Telecontroller &controller, const int &x, const int &y);
@@ -58,6 +59,7 @@ private:
     void DrawSelectionRect(SDL_Renderer* renderer);
     void DrawConnectCurve(SDL_Renderer* renderer);
     std::shared_ptr<NodeConnector> _sel_connector;
+    std::vector<std::shared_ptr<Node>> _sel_nodes;
     bool _selecting;
     bool _connecting;
 

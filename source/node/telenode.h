@@ -84,14 +84,19 @@ public:
     bool GetIfPass(){return _passing;}
     bool GetIfConnecting(){return _dragconnect_mode;}
     bool GetIsSelected(){return _selected;}
+    bool GetIsEditable(){return _editable;};
+    bool GetIsDisplay(){return _displaying;}
     Point2D<double> GetLocation(){return _center;}
     std::shared_ptr<NodeConnector> GetSelConnector();
 
     static size_t GetSelectionCount(){return selected_count;}
+    static void SetSelectedCount(int count){selected_count = count;} 
     static void SetPassingCount(int count){passing_count = count;}
     static void ToggleGroupSelect(bool group_sel){if_groupsel = group_sel;}
-    void SetAsSelected(){_selected = true; selected_count ++; }
-    void SetAsUnselected(){_selected = false; selected_count --;}
+    void SetAsSelected(){_selected = true;}
+    void SetAsUnselected(){_selected = false;}
+    void SetDisplay(){_displaying = true;}
+    void SetNondisplay(){_displaying = false;}
     int GetWidth(){return _node_width;}
     int GetHeight(){return _node_height;}
     
@@ -102,10 +107,15 @@ protected:
     bool _running;
     bool _ondrag;
     bool _dragconnect_mode;
+    bool _editable;
+    bool _displaying;
+    bool _editing;
 
+    static size_t node_counter;
     static size_t selected_count;
     static size_t passing_count;
     static bool if_groupsel;
+    static bool is_editing_mode;
     //Graphics
     
     static int _node_width;
@@ -116,6 +126,9 @@ protected:
     static SDL_Color _selcolor;
     static SDL_Color _passcolor;
     static SDL_Color _textcolor;
+    static SDL_Color _editmode_color;
+    static SDL_Color _lockmode_color;
+    static SDL_Color _renderflag_color;
 
     //info
     Point2D<double> _center;
@@ -132,6 +145,7 @@ protected:
 
     void ProcessUserInputs(Telecontroller *controller, const Point2D<int> origin_s, double scale);
     void ScreenTransform(const Point2D<int>& origin_s, double scale); 
+    void DrawDisplayRects(SDL_Renderer* renderer, std::string icon_name, std::shared_ptr<IconManager> Icon_manager);
 };
 
 //need a resource manager to hold all the texture data, 
@@ -166,7 +180,8 @@ public:
 private:
 
     //status
-    bool _manipulatable;
+    
+    
 
 
     //information

@@ -58,7 +58,7 @@ void IconManager::DrawIcon(SDL_Renderer* renderer, SDL_Rect* rect, std::string i
 //++++++++++++++++++++++++++++== NODE  CONNECTOR==+++++++++++++++++++++++++++++++++++++
 //_____________________________________________________________________________________
 SDL_Color NodeConnector::_norcolor = {200,200,200,255}; //dot color - normal
-SDL_Color NodeConnector::_selcolor = {35,240,127,255}; //dot color - selected
+SDL_Color NodeConnector::_selcolor = {120,178,255,255}; //dot color - selected
 SDL_Color NodeConnector::_passcolor = {240,240,240,255}; //dot color - pass
 int NodeConnector::_size = 8; // dot size;
 
@@ -186,16 +186,28 @@ int Node::_node_height = 30;
 int Node::_icon_edge_len = 24;
 size_t Node::selected_count = 0;
 size_t Node::passing_count = 0;
+size_t Node::node_counter = 0;
+
 bool Node::if_groupsel = false;
+bool Node::is_editing_mode = false;
 SDL_Color Node::_node_color = {100, 100, 100, 255};
-SDL_Color Node::_selcolor = {35,240,127,255}; //outline
+SDL_Color Node::_selcolor = {255,255,0,255}; //outline
 SDL_Color Node::_passcolor = {200,200,200,255}; //outline
 SDL_Color Node::_textcolor = {120,120,120,255};
 
+SDL_Color Node::_editmode_color = {255,42,105,100};
+SDL_Color Node::_lockmode_color = {32,32,32,180};
+SDL_Color Node::_renderflag_color = {0,80,255,180};
+
 void Node::ProcessUserInputs(Telecontroller *controller, const Point2D<int> origin_s, double scale)
 {
-    
+    bool old_sel_status = _selected;
     bool inboud = controller->GetMousePoint()->InBoundWH(_node_rect.x, _node_rect.y, _node_rect.w, _node_rect.h);
+
+    if(controller->GetEditMode())
+    {
+        goto skip;
+    }
 
     if (inboud)
     {
@@ -204,7 +216,6 @@ void Node::ProcessUserInputs(Telecontroller *controller, const Point2D<int> orig
     else
     {
         _passing = false;
-        
     }
 
     //command from panel
@@ -214,11 +225,11 @@ void Node::ProcessUserInputs(Telecontroller *controller, const Point2D<int> orig
     }
 
     if(inboud)
-    {
+    {    
         if(controller->GetCommand() == cmd_KEY::cmd_LMB  || _selected)
         {
             _selected = true;
-            selected_count++; //here a node got selected
+            
             if (controller->MouseL_hold && controller->Shared_Nevigation_Lock != MouseLockID::TELE_LOCKED)
             {
                 dragging:
@@ -254,10 +265,9 @@ void Node::ProcessUserInputs(Telecontroller *controller, const Point2D<int> orig
 
         _ondrag = false;
         
-        if(controller->GetCommand() == cmd_KEY::cmd_LMB && (controller->GetCurrentPanel() == PanelID::ON_PAD))
+        if(controller->GetCommand() == cmd_KEY::cmd_LMB && controller->current_panel == PanelID::ON_PAD)
         {   
             _selected = false;
-            selected_count = 0;
             if_groupsel = false;
         }
 
@@ -309,26 +319,130 @@ void Node::ScreenTransform(const Point2D<int>& origin_s, double scale)
 //constructor for all node objects
 Node::Node()
 {
+    node_counter++;
     _selected = false;
     _passing = false;
     _running = false;
     _ondrag = false;
     _dragconnect_mode = false;
+    _displaying = false;
+    _editing = false;
+
+
+    if(node_counter == 1)
+    {
+        _displaying = true;
+    }
 }
 
-Node::~Node()
+Node::~Node() //virtual destructor
 {
+    node_counter--;
+}
+
+void Node::DrawDisplayRects(SDL_Renderer* renderer, std::string icon_name, std::shared_ptr<IconManager> Icm)
+{
+    SDL_SetRenderDrawColor(renderer, _node_color.r, _node_color.g, _node_color.b, _node_color.a);
+    SDL_RenderFillRect(renderer,&_node_rect);
+
+    SDL_SetRenderDrawColor(renderer,_node_color.r + 20 ,_node_color.g + 20 ,_node_color.b + 20,_node_color.a);
+    SDL_RenderDrawRect(renderer,&_node_rect);
+    SDL_SetRenderDrawColor(renderer,_node_color.r - 12 ,_node_color.g - 12 ,_node_color.b - 12,_node_color.a);
+    SDL_RenderDrawLine(renderer, _node_rect.x+1,_node_rect.y+1,_node_rect.x+_node_rect.w-2,_node_rect.y+1);
+    SDL_RenderDrawLine(renderer, _node_rect.x+1, _node_rect.y+_node_rect.h -2,_node_rect.x+_node_rect.w-2,_node_rect.y+_node_rect.h -2);
+
+
+
+    Icm->DrawIcon(renderer,&_icon_rect, icon_name);
+    _textdisplay->loadFromRenderedText(_name, renderer, _textcolor, _node_color, 3);
+    _textdisplay->Draw(renderer,_node_rect.x + _node_width+3, _node_rect.y + (_node_rect.h/2) - (ScreenText::GetUniversalTextHeight()/2));
+
+
+    if(_displaying)
+    {
+        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_ADD);
+        SDL_SetRenderDrawColor(renderer, _renderflag_color.r, _renderflag_color.g, _renderflag_color.b, 170);
+        SDL_Rect flagrec = _node_rect;
+        flagrec.x += _node_rect.w*0.9 - 2;
+        flagrec.w = _node_rect.w*0.1-1;
+        flagrec.y += 5;
+        flagrec.h -= 10;
+        SDL_RenderFillRect(renderer, &flagrec);
+        SDL_SetRenderDrawColor(renderer, _renderflag_color.r, _renderflag_color.g, _renderflag_color.b, 180);
+        SDL_RenderDrawRect(renderer, &flagrec);
+        flagrec.x += 1;
+        flagrec.w -= 2;
+        flagrec.y += 1;
+        flagrec.h -= 2;
+        SDL_SetRenderDrawColor(renderer, _renderflag_color.r, _renderflag_color.g, _renderflag_color.b, 40);
+        SDL_RenderDrawRect(renderer, &flagrec);
+        
+
+        flagrec.x -= 2;
+        flagrec.w += 4;
+        flagrec.y -= 2;
+        flagrec.h += 4;
+
+        SDL_SetRenderDrawColor(renderer, _renderflag_color.r, _renderflag_color.g, _renderflag_color.b, 100);
+        SDL_RenderDrawRect(renderer, &flagrec);
+        SDL_RenderDrawRect(renderer, &_node_rect);
+
+        flagrec.x -= 1;
+        flagrec.w += 2;
+        flagrec.y -= 1;
+        flagrec.h += 2;
+        SDL_SetRenderDrawColor(renderer, _renderflag_color.r, _renderflag_color.g, _renderflag_color.b, 50);
+        SDL_RenderDrawRect(renderer, &flagrec);
+
+        flagrec.x -= 1;
+        flagrec.w += 2;
+        flagrec.y -= 1;
+        flagrec.h += 2;
+        SDL_SetRenderDrawColor(renderer, _renderflag_color.r, _renderflag_color.g, _renderflag_color.b, 20);
+        SDL_RenderDrawRect(renderer, &flagrec);
+        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+    }
+
+    if (is_editing_mode && _editing)
+    {
+        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_ADD);
+        SDL_SetRenderDrawColor(renderer, _editmode_color.r, _editmode_color.g, _editmode_color.b, _editmode_color.a);
+        SDL_RenderFillRect(renderer, &_node_rect);
+        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+        SDL_SetRenderDrawColor(renderer, 204, 0, 102, 255);
+            SDL_RenderDrawRect(renderer, &_node_rect);
+    }
+    else if (is_editing_mode && !_editing)
+    {
+        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+        SDL_SetRenderDrawColor(renderer, _lockmode_color.r, _lockmode_color.g, _lockmode_color.b, _lockmode_color.a);
+        SDL_RenderFillRect(renderer, &_node_rect);
+        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+    }
+    else
+    {
+        if (_passing && !_selected)
+        {
+            SDL_SetRenderDrawColor(renderer, _passcolor.r, _passcolor.g, _passcolor.b, _passcolor.a);
+            SDL_RenderDrawRect(renderer, &_node_rect);
+        }
+        else if (_selected)
+        {
+            SDL_SetRenderDrawColor(renderer, _selcolor.r, _selcolor.g, _selcolor.b, _selcolor.a);
+            SDL_RenderDrawRect(renderer, &_node_rect);
+        }
+        else if (_dragconnect_mode)
+        {
+            SDL_SetRenderDrawColor(renderer, 0, 120, 255, _selcolor.a);
+            SDL_RenderDrawRect(renderer, &_node_rect);
+        }
+    }
 }
 
 
-/*===================================================================================================
-
-//field info
-//status
-
-
-//Point Node class
-
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//++++++++++++++++++++++++++++++== POINT NODE ==++++++++++++++++++++++++++++++++++++++++++
+//_____________________________________________________________________________________
 /*===================================================================================================
 
    (O)--x> (O's screen space)
@@ -353,7 +467,8 @@ PointNode::PointNode(Point2D<double> drop_location, const Point2D<int>& origin_s
 {
     counter++;
 
-    _manipulatable = false;
+    _editable = true;
+    _editing = false;
 
 
     _name = "Point" + std::to_string(counter);
@@ -385,8 +500,12 @@ void PointNode::Update(Telecontroller *controller, const Point2D<int> origin_s, 
     ProcessUserInputs(controller,origin_s,scale);
     ScreenTransform(origin_s,scale);
 
+
+
     Point2D<double> input_cloc(_center.x + origin_s.x, _center.y-(_node_height/2) + origin_s.y);
     Point2D<double> output_cloc(_center.x + origin_s.x, _center.y+(_node_height/2) + origin_s.y);
+
+
     for(auto& n:_inputs)
     {
         n->Update(controller,input_cloc);
@@ -421,6 +540,25 @@ void PointNode::Update(Telecontroller *controller, const Point2D<int> origin_s, 
     {
         _dragconnect_mode = false;
     }
+
+    if (controller->GetEditMode())
+    {
+        is_editing_mode = true;
+
+        if (_selected && controller->GetSeletedNodesCount() == 1)
+        {
+            _editing = true;           
+        }
+        else
+        {
+            _editing = false;
+        }
+    }
+    else
+    {
+        is_editing_mode = false;
+        _editing = false;
+    }
 }
 
 
@@ -428,35 +566,9 @@ void PointNode::Update(Telecontroller *controller, const Point2D<int> origin_s, 
 
 void PointNode::DrawNode(SDL_Renderer * renderer, std::shared_ptr<IconManager> Icm)
 {
-    SDL_SetRenderDrawColor(renderer,_node_color.r,_node_color.g,_node_color.b,_node_color.a);
-    SDL_RenderFillRect(renderer,&_node_rect);
-    SDL_SetRenderDrawColor(renderer,_node_color.r + 20 ,_node_color.g + 20 ,_node_color.b + 20,_node_color.a);
-    SDL_RenderDrawRect(renderer,&_node_rect);
 
+    DrawDisplayRects(renderer, "pointnode", Icm);
 
-    SDL_SetRenderDrawColor(renderer,_node_color.r - 12 ,_node_color.g - 12 ,_node_color.b - 12,_node_color.a);
-    SDL_RenderDrawLine(renderer, _node_rect.x+1,_node_rect.y+1,_node_rect.x+_node_rect.w-2,_node_rect.y+1);
-    SDL_RenderDrawLine(renderer, _node_rect.x+1, _node_rect.y+_node_rect.h -2,_node_rect.x+_node_rect.w-2,_node_rect.y+_node_rect.h -2);
-
-
-
-    Icm->DrawIcon(renderer,&_icon_rect,"pointnode");
-    _textdisplay->loadFromRenderedText(_name, renderer, _textcolor, _node_color, 3);
-    _textdisplay->Draw(renderer,_node_rect.x + _node_width+3, _node_rect.y + (_node_rect.h/2) - (ScreenText::GetUniversalTextHeight()/2));
-
-    if(_passing && !_selected)
-    {
-        SDL_SetRenderDrawColor(renderer,_passcolor.r,_passcolor.g ,_passcolor.b,_passcolor.a);
-        SDL_RenderDrawRect(renderer,&_node_rect);
-    }else if(_selected)
-    {
-        SDL_SetRenderDrawColor(renderer,_selcolor.r,_selcolor.g ,_selcolor.b,_selcolor.a);
-        SDL_RenderDrawRect(renderer,&_node_rect);
-    }else if(_dragconnect_mode)
-    {
-        SDL_SetRenderDrawColor(renderer,0,120,255,_selcolor.a);
-        SDL_RenderDrawRect(renderer,&_node_rect);
-    }
 
     for(auto& n:_inputs)
     {

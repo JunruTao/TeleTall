@@ -15,7 +15,8 @@ enum class cmd_KEY
     cmd_UNDO, cmd_REDO,cmd_COPY,cmd_PASTE, cmd_CUT, cmd_Delete,
     cmd_WINDOWSIZE,cmd_CONSOLE_SHOW, cmd_HOME_Pad, 
     cmd_HOME_Tall, cmd_WIN_ABOUT, cmd_CLEAR_Sel,
-    cmd_CREATE_NODE_Point, cmd_CREATE_NODE_Point_M
+    cmd_CREATE_NODE_Point, cmd_CREATE_NODE_Point_M,
+    cmd_EditMode, cmd_DisplayFlag, cmd_Message
     
 };
 

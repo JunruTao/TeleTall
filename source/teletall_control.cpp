@@ -15,7 +15,9 @@ Telecontroller::Telecontroller()
     MouseL_hold = false;
     MouseR_hold = false;
     _closeAllMenus = false;
+    EditMode = false;
     clickstamp = 0;
+    _selected_nodes = 0;
 }
 
 Telecontroller::~Telecontroller() 
@@ -34,10 +36,14 @@ void Telecontroller::SendCommandEx(const cmd_KEY& _cmd, std::string _msg)
 void Telecontroller::ProcessInput(bool &running)
 {
 
+
     int _x, _y;
     SDL_GetMouseState(&_x, &_y);
     _mouseLocation.New(_x, _y);
     SDL_Event event;
+
+    current_panel = PanelID::NONE;
+
     SDL_PollEvent(&event);
 
         if (event.type == SDL_WINDOWEVENT)
@@ -117,6 +123,9 @@ void Telecontroller::ProcessInput(bool &running)
             case SDLK_p:
                 cmd = cmd_KEY::cmd_CREATE_NODE_Point;
                 break;
+            case SDLK_d:
+                cmd = cmd_KEY::cmd_DisplayFlag;
+                break;
             case SDLK_h:
                 cmd = cmd_KEY::cmd_HOME;
                 break;
@@ -143,6 +152,39 @@ void Telecontroller::ProcessInput(bool &running)
                 break;
             case SDLK_DELETE:
                 cmd = cmd_KEY::cmd_Delete;
+                break;
+            case SDLK_RETURN:
+                if(!EditMode)
+                {
+                    EditMode = true;
+                    cmd = cmd_KEY::cmd_EditMode;
+                    _Msg = " Entering Edit Mode";
+                }
+                break;
+            case SDLK_ESCAPE:
+                if (EditMode)
+                {
+                    EditMode = false;
+                    cmd = cmd_KEY::cmd_EditMode;
+                    _Msg = " Exit Edit Mode";
+                }
+                else
+                {
+                    cmd = cmd_KEY::cmd_CLEAR_Sel;
+                }
+                break;
+            case SDLK_SPACE:
+                EditMode = !EditMode;
+                cmd = cmd_KEY::cmd_EditMode;
+                if (EditMode)
+                {
+                    _Msg = " Entering Edit Mode";
+                }
+                else
+                {
+                    _Msg = " Exit Edit Mode";
+                }
+                break;
             default:
                 break;
             }
@@ -162,9 +204,13 @@ void Telecontroller::ProcessInput(bool &running)
             _closeAllMenus = false;
         }
         //--------------------------------------[Nothing]
-        
+        if (EditMode)
+        {
+            current_panel = PanelID::ON_TALL;
+            Shared_Nevigation_Lock = MouseLockID::TALL_LOCKED;
+        }
         console->Update(cmd, _Msg);
-        
+
 } //end of ProcessInput scope
 
 
@@ -256,7 +302,14 @@ void Telecontroller::DrawSelectionRect(SDL_Renderer* renderer)
         SDL_RenderDrawRect(renderer, &r_MSliderRect);
         break;
     case PanelID::ON_TALL:
-        SDL_SetRenderDrawColor(renderer, 0, 153, 153, 210);
+        if (EditMode)
+        {
+            SDL_SetRenderDrawColor(renderer, 255, 30, 140, 210);
+        }
+        else
+        {
+            SDL_SetRenderDrawColor(renderer, 0, 153, 153, 210);
+        }
         SDL_RenderDrawRect(renderer, &r_TallRect);
         break;
     case PanelID::ON_CONSOLE:
