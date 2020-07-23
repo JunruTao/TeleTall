@@ -47,6 +47,7 @@ Telepad::Telepad(
 
     _selecting = false;
 
+
 }
 /*
 #[[[[[[[[[[[]]]]]]]]]]]
@@ -106,6 +107,12 @@ void Telepad::Update(Telecontroller &controller)
     }
     UpdateNode(&controller);
     Select(&controller, x, y);
+
+    if(controller.GetCommand() == cmd_KEY::cmd_Delete)
+    {
+        DeleteNode();
+        controller.SendCommandEx(cmd_KEY::cmd_EMPTY, " ");
+    }
 
     
 
@@ -359,11 +366,36 @@ void Telepad::MoveGrid(Telecontroller &controller, const int &x, const int &y)
 }
 
 
+
+
+
 void Telepad::CreateNode(int x, int y)
 {
     Point2D<double> loc(x - origin.x, y- origin.y);
-    node_pool.emplace_back(std::make_unique<PointNode>(loc, origin, 1.0));
+    node_pool.emplace_back(std::make_shared<PointNode>(loc, origin, 1.0));
 }
+
+
+
+
+
+
+void Telepad::DeleteNode()
+{
+    if(!node_pool.empty())
+    {
+        for(size_t i = 0; i < node_pool.size(); i++)
+        {
+            if(node_pool[i]->GetIsSelected())
+            {
+                node_pool[i]->SetAsUnselected();
+                node_pool.erase(node_pool.begin() + i);
+                i--;
+            }
+        }
+    }
+}
+
 
 void Telepad::UpdateNode(Telecontroller* controller)
 {
@@ -398,23 +430,25 @@ void Telepad::Select(Telecontroller *controller, int x, int y)
     int ondrags = 0;
     int onpass = 0;
     int onconnect = 0;
-    for(auto& n: node_pool)
+    if (!node_pool.empty())
     {
-        if(n->GetIfDrag())
+        for (auto &n : node_pool)
         {
-            ondrags++;
-        }
-        if(n->GetIfPass())
-        {
-            onpass++;
-        }
-        if(n->GetIfConnecting())
-        {
-            onconnect++;
+            if (n->GetIfDrag())
+            {
+                ondrags++;
+            }
+            if (n->GetIfPass())
+            {
+                onpass++;
+            }
+            if (n->GetIfConnecting())
+            {
+                onconnect++;
+                _sel_connector = n->GetSelConnector();
+            }
         }
     }
-
-    
 
     if (onPad && onconnect != 0)
     {
@@ -428,7 +462,7 @@ void Telepad::Select(Telecontroller *controller, int x, int y)
     Node::SetPassingCount(onpass);
     if(onpass == 0)
     {
-        if (controller->GetCommand() == cmd_KEY::cmd_LMB)
+        if (controller->GetCommand() == cmd_KEY::cmd_LMB && !node_pool.empty())
         {
             for(auto& n: node_pool)
             {
@@ -464,9 +498,8 @@ void Telepad::Select(Telecontroller *controller, int x, int y)
                 mouse_trail.erase(mouse_trail.begin() + 1);
             }
 
-            if (!_connecting)
+            if (!_connecting && !node_pool.empty())
             {
-
                 //Here: Making the box selection:
                 for (auto &n : node_pool)
                 {
@@ -547,18 +580,41 @@ void Telepad::DrawConnectCurve(SDL_Renderer* renderer)
 {
     if (!mouse_trail.empty() &&_connecting)
     {
-        std::vector<Point2D<int>> pointlist;
-        pointlist.push_back(mouse_trail.front());
-        Point2D<int> midpt;
-        midpt.x = mouse_trail.front().x;
-        midpt.y = 0.7 * mouse_trail.front().y + 0.3 * mouse_trail.back().y;
-        pointlist.push_back(midpt);
-        midpt.x = mouse_trail.back().x;
-        midpt.y = 0.3 * mouse_trail.front().y + 0.7 * mouse_trail.back().y;
-        pointlist.push_back(midpt);
-        pointlist.push_back(mouse_trail.back());
+        mouse_trail.front().New(_sel_connector->GetLocation().x,_sel_connector->GetLocation().y);
 
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-        DrawNurbs(renderer, pointlist, 3);
+
+        std::vector<Point2D<double>> pointlist;
+        pointlist.emplace_back(Point2D<double>(mouse_trail.front().x, mouse_trail.front().y));
+
+
+        Point2D<double> midpt;
+        midpt.x = mouse_trail.front().x;
+
+        double distp = abs((mouse_trail.front().y - mouse_trail.back().y)*0.4);
+        JUTA_Math::Clamp(distp,0.0,70.0);
+
+        if(_sel_connector->IsInput())
+        {
+            midpt.y = mouse_trail.front().y - distp;
+            pointlist.push_back(midpt);
+            midpt.x = mouse_trail.back().x;
+            midpt.y = mouse_trail.back().y + distp;
+            pointlist.emplace_back(std::move(midpt));
+        }else
+        {
+            midpt.y = mouse_trail.front().y + distp;
+            pointlist.push_back(midpt);
+            midpt.x = mouse_trail.back().x;
+            midpt.y = mouse_trail.back().y - distp;
+            pointlist.emplace_back(std::move(midpt));
+        }
+        
+        
+        
+        pointlist.emplace_back(Point2D<double>(mouse_trail.back().x, mouse_trail.back().y));
+
+        //SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        SDL_Color rendercolor = {160,160,160,255};
+        DrawNurbs(renderer, pointlist, 3, rendercolor);
     }
 }

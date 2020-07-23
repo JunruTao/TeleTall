@@ -141,6 +141,8 @@ void Telecontroller::ProcessInput(bool &running)
             case SDLK_RALT:
                 key_alt = true;
                 break;
+            case SDLK_DELETE:
+                cmd = cmd_KEY::cmd_Delete;
             default:
                 break;
             }

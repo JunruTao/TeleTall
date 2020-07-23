@@ -12,6 +12,9 @@
 #include "JUTA/JUTA_math.h"
 #include "teletall_control.h"
 
+class Node;
+
+
 
 struct IconManager
 {
@@ -25,12 +28,48 @@ struct IconManager
 
 
 
+class NodeConnector
+{
+public:
+    NodeConnector(Point2D<double> location, bool in_or_out, Node* parent);
+    ~NodeConnector();
+    void Update(Telecontroller* controller, Point2D<double> location);
+    Point2D<double> GetLocation(){return _pos;}
+    bool IsInput(){return _in_or_out;}
+    
+    void EstablishConnection(NodeConnector *target);
+    void Draw(SDL_Renderer *renderer);
+    void DrawConnection(SDL_Renderer *renderer);
+    bool GetOnConnectDragMode(){return _connecting_mode;}
+
+private:
+    Node *_parent;
+    Node *_target;
+    Point2D<double> _pos;
+    SDL_Rect _rect;
+
+    void UpdateLocation(Point2D<double> location);
+    void DrawDot8x8(SDL_Renderer *renderer);
+    bool _in_or_out; //is input or output
+
+    bool _passing;
+    bool _selected;
+    bool _connecting_mode;
+    //graphics
+    static int _size;
+    static SDL_Color _norcolor;
+    static SDL_Color _passcolor;
+    static SDL_Color _selcolor;
+};
+
 
 
 
 class Node
 {
 public:
+    Node();
+    virtual ~Node();
 
     //virtual functions
     virtual void Update(Telecontroller *controller, const Point2D<int> origin_s, double scale) = 0;
@@ -44,7 +83,10 @@ public:
     bool GetIfDrag(){return _ondrag;}
     bool GetIfPass(){return _passing;}
     bool GetIfConnecting(){return _dragconnect_mode;}
+    bool GetIsSelected(){return _selected;}
     Point2D<double> GetLocation(){return _center;}
+    std::shared_ptr<NodeConnector> GetSelConnector();
+
     static size_t GetSelectionCount(){return selected_count;}
     static void SetPassingCount(int count){passing_count = count;}
     static void ToggleGroupSelect(bool group_sel){if_groupsel = group_sel;}
@@ -80,13 +122,16 @@ protected:
     Point2D<double> _clicked_old_pos;
     SDL_Rect _icon_rect;
     SDL_Rect _node_rect;
+
+    std::vector<std::shared_ptr<NodeConnector>> _inputs;
+    std::vector<std::shared_ptr<NodeConnector>> _outputs;
+    std::shared_ptr<NodeConnector> _current_sel_connector;
     
     std::string _name;
     std::unique_ptr<ScreenText> _textdisplay;
 
     void ProcessUserInputs(Telecontroller *controller, const Point2D<int> origin_s, double scale);
-
-   
+    void ScreenTransform(const Point2D<int>& origin_s, double scale); 
 };
 
 //need a resource manager to hold all the texture data, 
@@ -97,36 +142,7 @@ protected:
 
 
 
-class NodeConnector
-{
-public:
-    NodeConnector(Point2D<double> location, bool in_or_out, Node* parent);
-    void Update(Telecontroller* controller, Point2D<double> location);
-    
-    void EstablishConnection(NodeConnector *target);
-    void Draw(SDL_Renderer *renderer);
-    void DrawConnection(SDL_Renderer *renderer);
-    bool GetOnConnectDragMode(){return _connecting_mode;}
 
-private:
-    Node *_parent;
-    Node *_target;
-    Point2D<double> _pos;
-    SDL_Rect _rect;
-
-    void UpdateLocation(Point2D<double> location);
-    void DrawDot8x8(SDL_Renderer *renderer);
-    bool _in_or_out; //is input or output
-
-    bool _passing;
-    bool _selected;
-    bool _connecting_mode;
-    //graphics
-    static int _size;
-    static SDL_Color _norcolor;
-    static SDL_Color _passcolor;
-    static SDL_Color _selcolor;
-};
 
 
 
@@ -148,21 +164,16 @@ public:
     void SendData() override { };
 
 private:
-    //meta data
-    static std::string _icon_name;
-    
 
     //status
     bool _manipulatable;
 
 
     //information
-    std::vector<NodeConnector*> _inputs;
-    std::vector<NodeConnector*> _outputs;
-    static size_t counter;
 
+    static size_t counter;
     //graphics
-    void ScreenTransform(const Point2D<int>& origin_s, double scale);
+    
 };
 
 
@@ -176,7 +187,14 @@ private:
 
 class LineNode : public Node
 {
+public:
 
+    void Update(Telecontroller *controller, const Point2D<int> origin_s, double scale)override{}
+    void DrawNode(SDL_Renderer *, std::shared_ptr<IconManager>)override{}
+    void DrawGeometry(SDL_Renderer *)const override{}
+    void RecieveData()override{}
+    void ProcessData()override{}
+    void SendData()override{}
 };
 
 class PolylineNode : public Node

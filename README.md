@@ -138,6 +138,30 @@ The viewport on the left is called `TelePad` which is the context for holding an
 ## :black_circle:Production Logs:
 #### :pushpin: Latest!!!: :arrow_down: :arrow_down: :arrow_down:
 
+:radio_button: &larr;- - - - :bookmark_tabs:
+* #### DAY 15 { <ins>7/23/2020</ins> } : Delete node. Anti-aliased curve
+
+In this update, fixed the bug of text font release. And now by hitting `delete` key or in the `menu`&rarr;`Edit`&rarr;`Delete`, you can delete a node. In the code, the changes are making all the node connectors shared pointer, and all the nodes are shared pointers are well so they can be passes to Tall to draw the display geos.
+
+In order to get a shadow around the curve, I did a bit of math to do this. So if I have 2 points drawing a line $L\langle A, B \rangle$ so I can add to each points by a perpendicular vector in 2 directions. So the way to calculate: 
+
+$$V _{line⊥ perp} = V_{line} 
+\begin{bmatrix} V_x\\V_y\\\end{bmatrix}\begin{bmatrix}0 & -1\\1 & 0\\\end{bmatrix} = \begin{bmatrix} -V_y\\V_x\\\end{bmatrix} = \begin{bmatrix} 
+-(B_y - A_y)\\(B_x - A_x))\\\end{bmatrix}$$ 
+
+Then I can use this vector like this   $Lines =\begin{cases} A_{(x,y)} \\ B_{(x,y)}\end{cases}* \left(\frac{(V_{line⊥ perp})* \Delta shift }{||V_line⊥ perp||} \right) * \begin{cases} 1 \\ -1 \end{cases}$ A single line can be offseted in both sides.
+
+:radio_button: &larr;- - - - :bookmark_tabs:
+* #### DAY 14 { <ins>7/22/2020</ins> } : Node Connector and B-Spline Curve
+
+Made Node connectors working. The Nodes owns connectors. So when dragging a node connector, a connection curve is created in Telepad. When dragging the connector, the selection will be disabled and lock the mode as TELE_LOCKED. 
+
+The node connector draws a circular dot which is hard coded by drawing lines to make a dot.
+
+The Draw curve function is under teletall_graphics.h, which you can draw a polyline or a B-spline depends on the degree you set. (1 is polyline, 3 is b-spline)
+
+
+****
 
 :radio_button: &larr;- - - - :bookmark_tabs:
 * #### DAY 13 { <ins>7/21/2020</ins> } : Telenode's Classes - <img src=".package.extra.merge/tltl_node_icon/pointnode.bmp"/> 'PointNode'

@@ -105,6 +105,7 @@ void TeleTall::Run(
     ConstructMenu();
     controller.SetCurrentPanel(PanelID::ON_PAD);
     controller.SendCommand(cmd_KEY::cmd_EMPTY);
+
     
     SDL_Event event;
     SDL_PollEvent(&event);

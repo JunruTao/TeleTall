@@ -45,8 +45,10 @@ private:
     void Resize(Telecontroller &controller, const int &x, const int &y);
 
     //nodes
-    std::vector<std::unique_ptr<Node>> node_pool;
+    std::vector<std::shared_ptr<Node>> node_pool;
+
     void CreateNode(int x, int y);
+    void DeleteNode();
     void UpdateNode(Telecontroller* controller);
     void Simulate(){};
     void DrawNodes(SDL_Renderer* renderer);
@@ -55,6 +57,7 @@ private:
     void Select(Telecontroller* controller, int x, int y);
     void DrawSelectionRect(SDL_Renderer* renderer);
     void DrawConnectCurve(SDL_Renderer* renderer);
+    std::shared_ptr<NodeConnector> _sel_connector;
     bool _selecting;
     bool _connecting;
 

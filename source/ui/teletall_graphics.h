@@ -226,7 +226,7 @@ private:
 void DrawDashLine(SDL_Renderer* renderer,Point2D<int> pt1, Point2D<int> pt2, int dist);
 
 //degree = 1(polyline) if degree = 3(b-spline)
-void DrawNurbs(SDL_Renderer* renderer, std::vector<Point2D<int>> points, int degree);
+void DrawNurbs(SDL_Renderer* renderer, std::vector<Point2D<double>> points, int degree, const SDL_Color& rendercolor);
 
 
 #endif

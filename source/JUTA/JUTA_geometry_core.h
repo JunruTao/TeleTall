@@ -2,7 +2,6 @@
 #define JUTA_GEOMETRY_CORE_H
 #include <cmath>
 #include <string>
-
 template <class var>
 struct Point2D
 {
