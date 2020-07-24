@@ -38,7 +38,7 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
 > * ✔️ The project makes use of references in function declarations.
 > * ✔️ The project uses destructors appropriately.
 > * ✔️ The project uses scope / Resource Acquisition Is Initialization (RAII) where appropriate.
-> * ⚪ The project follows the Rule of 5.
+> * ✔️ The project follows the Rule of 5. (Point3D)
 > * ✔️ The project uses move semantics to move data, instead of copying it, where possible.
 > * ✔️ (Mixed) The project uses smart pointers instead of raw pointers.
 
@@ -157,12 +157,36 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
 
 
 
-
-
-
 *****************************************************************
 ## :black_circle:Production Logs:
 #### :pushpin: Latest!!!: :arrow_down: :arrow_down: :arrow_down:
+
+
+:radio_button: &larr;- - - - :bookmark_tabs:
+* #### DAY 16 { <ins>7/24/2020</ins> } : Features
+
+**[2:00 PM] Added Geometry Data classes**
+> .
+  * Created **JUTA_GeoData** types: 
+    * **GeoData** <sup>(base abstract class)</sup>
+      * &rarr; **Point3D** (`RAII & Rule of 5`)
+    * **Vector3** __&uarr;<sup>(basic component, used for transforms as well)</sup>
+    * **GeoData** <sup>(base abstract class)</sup>
+      * **Line** &larr;(`std::shared_ptr<Point3d>` A&B)
+      * **Polyline** &larr;(`std::vector<shared_ptr<Point3d>>` knots)
+> .
+  * Getting started with `DrawGeometry` function in Nodes
+  * Sending preview geometry pointers to `Tall`'s node pool
+  * `Tall` displaying `Display-flagged` geometries and selected nodes.
+
+
+**[5:00 AM] fixing menu commands**
+  * Menu cmd linking to controller
+  * Added Menu &rarr; `About` option and show info 
+
+
+-----
+
 
 :radio_button: &larr;- - - - :bookmark_tabs:
 * #### DAY 15 { <ins>7/23/2020</ins> } : Delete node / Anti-aliased curve / Edit Mode / Display Flag
@@ -186,6 +210,9 @@ Then I can use this vector like this:
  <img src="https://latex.codecogs.com/gif.latex?Lines%20%3D%5Cbegin%7Bcases%7D%20A_%7B%28x%2Cy%29%7D%20%5C%5C%20B_%7B%28x%2Cy%29%7D%5Cend%7Bcases%7D*%20%5Cleft%28%5Cfrac%7B%28V_%7Bline%5Cbot%20perp%7D%29*%20%5CDelta%20shift%20%7D%7B%7C%7CV_line%5Cbot%20perp%7C%7C%7D%20%5Cright%29%20*%20%5Cbegin%7Bcases%7D%201%20%5C%5C%20-1%20%5Cend%7Bcases%7D">
 
 A single line can be offseted in both sides.
+
+
+------
 
 :radio_button: &larr;- - - - :bookmark_tabs:
 * #### DAY 14 { <ins>7/22/2020</ins> } : Node Connector and B-Spline Curve

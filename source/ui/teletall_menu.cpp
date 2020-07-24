@@ -376,6 +376,7 @@ void ColumnMenu::Update(Telecontroller* controller, int x, int y, bool show)
                     b->ReleaseState();
                 }
 
+
                 b->Update(controller);
                 if(state != ButtonStates::NORMAL)
                 {

@@ -130,6 +130,9 @@ void Telepad::Update(Telecontroller &controller)
         UpdateNode(&controller);   
         gridcolor = {70,30,30,255};
     }
+
+
+
     //update the node count here
     if (!node_pool.empty())
     {
@@ -144,6 +147,12 @@ void Telepad::Update(Telecontroller &controller)
             if (n->GetIsSelected())
             {
                 _sel_nodes.push_back(n);
+                
+            }
+
+            if(n->GetIsDisplay() || n->GetIsSelected())
+            {
+                SendNodesToTall(n);
             }
         }
         if(anydisplay == false)
@@ -178,6 +187,8 @@ void Telepad::Update(Telecontroller &controller)
         }
         Node::SetSelectedCount(_sel_nodes.size());
         controller.SetSeletedNodesCount(_sel_nodes.size());
+
+
     } //end selection count and display flag update
 
     controller.UpdateSplitLocation(pad_width + HALF_SLIDEBAR + SLIDEBAR_SEL_BLEED);
@@ -531,16 +542,6 @@ void Telepad::Select(Telecontroller *controller, int x, int y)
     }
 
     Node::SetPassingCount(onpass);
-    // if(onpass == 0)
-    // {
-    //     if (controller->GetCommand() == cmd_KEY::cmd_LMB && !node_pool.empty())
-    //     {
-    //         for(auto& n: node_pool)
-    //         {
-    //             n->SetAsUnselected();
-    //         }
-    //     }
-    // }
 
 
     if (onPad && ondrags == 0)
@@ -691,4 +692,10 @@ void Telepad::DrawConnectCurve(SDL_Renderer* renderer)
         SDL_Color rendercolor = {160,160,160,255};
         DrawNurbs(renderer, pointlist, 3, rendercolor);
     }
+}
+
+
+void Telepad::SendNodesToTall(std::shared_ptr<Node>& node_to_tall)
+{
+    _tall->CaptureRenderNodes(node_to_tall);
 }

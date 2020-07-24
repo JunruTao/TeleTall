@@ -265,7 +265,7 @@ void Node::ProcessUserInputs(Telecontroller *controller, const Point2D<int> orig
 
         _ondrag = false;
         
-        if(controller->GetCommand() == cmd_KEY::cmd_LMB && controller->current_panel == PanelID::ON_PAD)
+        if((controller->GetCommand() == cmd_KEY::cmd_LMB && controller->current_panel == PanelID::ON_PAD)) 
         {   
             _selected = false;
             if_groupsel = false;
@@ -274,7 +274,14 @@ void Node::ProcessUserInputs(Telecontroller *controller, const Point2D<int> orig
      
     }
 
+
     skip:{}
+        if(controller->GetCommand() == cmd_KEY::cmd_CLEAR_Sel)
+    {
+        _selected = false;
+        if_groupsel = false;
+    }
+
 
     _clicked_old_pos.x = (controller->GetMousePoint()->x - origin_s.x);
     _clicked_old_pos.y = (controller->GetMousePoint()->y - origin_s.y);
@@ -578,8 +585,28 @@ void PointNode::DrawNode(SDL_Renderer * renderer, std::shared_ptr<IconManager> I
     {
         n->Draw(renderer);
     }
+
+    
 }
 
+
+void PointNode::DrawGeometry(SDL_Renderer* renderer, Point2D<int>& origin_s, int grid_size) const 
+{
+    if(!point_pool.empty())
+    {
+        for(auto& p : point_pool)
+        {
+            if (_displaying)
+            {
+                p->Draw(renderer, origin_s, grid_size, 1);
+            }
+            else
+            {
+                p->Draw(renderer, origin_s, grid_size, 0);
+            }
+        }
+    }
+}
 
 
 

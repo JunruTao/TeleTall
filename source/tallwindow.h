@@ -5,6 +5,7 @@
 
 #include "x_sdl2headers.h"
 #include "teletall_control.h"
+#include "telenode.h"
 #include "JUTA/JUTA_geometry_core.h"
 #include "JUTA/JUTA_math.h"
 #include "ui/teletall_graphics.h"
@@ -19,6 +20,7 @@ public:
         const size_t &master_height);
     ~Tallwindow();
 
+    void CaptureRenderNodes(const std::shared_ptr<Node>& node);
     void Update(Telecontroller &controller);
 
     void Render(SDL_Renderer *renderer);
@@ -30,6 +32,9 @@ private:
 
     bool gridSelected;
     bool onTall;
+
+    //node that drawing:
+    std::vector<std::shared_ptr<Node>> nodes;
 
     //The grid
     Point2D<int> origin;

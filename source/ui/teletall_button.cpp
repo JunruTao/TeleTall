@@ -81,6 +81,7 @@ void MenuButton::Update(Telecontroller* controller)
     {
         _state = ButtonStates::NORMAL;
         _opened = false;
+        controller->current_panel = PanelID::NONE;
         goto skipping;
     }
     if(controller->ShouldCloseMenu())
@@ -160,10 +161,6 @@ void MenuButton::Update(Telecontroller* controller)
         
     }
 
-    if(_state != ButtonStates::NORMAL)
-    {
-        controller->current_panel == PanelID::ON_MENU;
-    }
     _shouldrest = false;
 }
 

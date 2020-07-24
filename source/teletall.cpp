@@ -81,6 +81,9 @@ void TeleTall::Run(
     controller.SendCommandEx(cmd_KEY::cmd_STARTUP, " * version number " + std::string(VERSION));
     controller.SendCommandEx(cmd_KEY::cmd_STARTUP, "program running...");
 
+    //this bridges telepad to tall, to send geometry data.
+    telepad.LinkTall(&tallwindow);
+
     //Field For time measuring
     Uint32 time_stamp = SDL_GetTicks();
     Uint32 frame_start;
@@ -124,8 +127,6 @@ void TeleTall::Run(
         telepad.Update(controller);
         tallwindow.Update(controller);
         
-        //controller.ProcessInput(running);
-
         //Render here:
         //..
 
@@ -225,6 +226,17 @@ void TeleTall::ConstructMenu()
         "Options",
         "Quit"};
     ColumnMenu *subm_file = new ColumnMenu(title2, 200);
+    __KeyList__ file_cmds = 
+    {
+        cmd_KEY::cmd_FILE,
+        cmd_KEY::cmd_SAVE,
+        cmd_KEY::cmd_SAVE,
+        cmd_KEY::cmd_EMPTY,
+        cmd_KEY::cmd_QUIT
+    };
+    subm_file->AddCommand(file_cmds);
+
+
 
     NameList title_bella = {
         "I",
@@ -232,7 +244,6 @@ void TeleTall::ConstructMenu()
         "Very Much",
     };
     ColumnMenu *subm_Bella = new ColumnMenu(title_bella, 200);
-    ColumnMenu *subm_Bella2 = new ColumnMenu(title_bella, 200);
 
     NameList title_option = {
         "Option 1",
@@ -245,16 +256,13 @@ void TeleTall::ConstructMenu()
         cmd_KEY::cmd_EMPTY,
         cmd_KEY::cmd_EMPTY
     };
-
-
-    
     ColumnMenu *subm_option = new ColumnMenu(title_option, 200);
     subm_option->AddCommand(option_cmds);
 
+
+
     subm_option->AddedSubMenu("Bella", subm_Bella);
     subm_file->AddedSubMenu("Options", subm_option);
-
-    subm_file->AddedSubMenu("Quit", subm_Bella2);
     topmenu->AddedSubMenu("File", subm_file);
 
     std::this_thread::sleep_for(std::chrono::milliseconds(1));
@@ -265,7 +273,9 @@ void TeleTall::ConstructMenu()
         "Paste                           Ctrl+V",
         "Delete                          Delete",
         "Undo                            Ctrl+Z",
-        "Redo                            Ctrl+Y"};
+        "Redo                            Ctrl+Y",
+        "Edit Mode          Space/Return",
+        "Set DisplayFlag                   D "};
     ColumnMenu *subm_Edit = new ColumnMenu(title_Edit, 200);
     __KeyList__ edit_keys= 
     {
@@ -274,7 +284,9 @@ void TeleTall::ConstructMenu()
         cmd_KEY::cmd_PASTE,
         cmd_KEY::cmd_Delete,
         cmd_KEY::cmd_UNDO,
-        cmd_KEY::cmd_REDO
+        cmd_KEY::cmd_REDO,
+        cmd_KEY::cmd_EditMode_M,
+        cmd_KEY::cmd_DisplayFlag
     };
     subm_Edit->AddCommand(edit_keys);
 

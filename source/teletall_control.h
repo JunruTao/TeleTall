@@ -55,6 +55,7 @@ public:
     Uint8 clicktime;
 
 private:
+    std::string about_text;
     Uint8 clickstamp;
     int _split_location; 
     std::vector<std::string> _msg;

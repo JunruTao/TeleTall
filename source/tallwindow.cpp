@@ -82,6 +82,16 @@ void Tallwindow::Render(SDL_Renderer *renderer)
         //Drawing the world coordinates on tall mouse
         cordText->loadFromRenderedText(cortostring,renderer,text_color);
         cordText->Draw(renderer,mouseLocation_ptptr->x +3,mouseLocation_ptptr->y+3);
+
+        
+    }
+    if (!nodes.empty())
+    {
+        for (auto &n : nodes)
+        {
+            n->DrawGeometry(renderer, origin, grid_size);
+        }
+        nodes.clear();
     }
     
 }
@@ -192,4 +202,10 @@ Point2D<float> Tallwindow::CalcLocalCord(const Point2D<int>& origin, const Point
     float x = -((float)(origin.x -target.x))/((float)grid_size);
     float y = +((float)(origin.y -target.y))/((float)grid_size);
     return Point2D<float>(x,y);
+}
+
+
+void Tallwindow::CaptureRenderNodes(const std::shared_ptr<Node>& node)
+{
+    nodes.push_back(node);
 }

@@ -35,6 +35,35 @@ void Telecontroller::SendCommandEx(const cmd_KEY& _cmd, std::string _msg)
 /*MAIN PROCESSING UNIT - PROCESS ALL INPUTS*/
 void Telecontroller::ProcessInput(bool &running)
 {
+    //---------------------------------
+    switch (cmd)//Get commands from menu
+    {
+    case cmd_KEY::cmd_EditMode_M:
+        EditMode = !EditMode;
+        if (EditMode)
+        {
+            _Msg = " Entering Edit Mode";
+        }
+        else
+        {
+            _Msg = " Exit Edit Mode";
+        }
+        break;
+    case cmd_KEY::cmd_WIN_ABOUT:
+
+        about_text = "                       TeleTall Software Copyright. 2020\n\n";
+        about_text += "Teletall is a simple node-based procedural 2D modelling application\n";
+        about_text += "This project was made for the Capstone project in the Udacity C++\n";
+        about_text += "Nanodegree Program. The Capstone Project is a chance to integrate\n";
+        about_text += "what I've learned throughout this program. \n\n";
+        about_text += "Author: Junru Tao";
+
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "   About",  about_text.c_str(), *_hhwnd);
+        break;
+    default:
+        break;
+    }
+    //---------------------------
 
 
     int _x, _y;
@@ -46,170 +75,171 @@ void Telecontroller::ProcessInput(bool &running)
 
     SDL_PollEvent(&event);
 
-        if (event.type == SDL_WINDOWEVENT)
-        {
-            switch (event.window.event)
-            {
-            case SDL_WINDOWEVENT_RESIZED:         
-                break;
-            case SDL_WINDOWEVENT_SIZE_CHANGED:
-                cmd = cmd_KEY::cmd_WINDOWSIZE;
-                break;
+ 
 
-            default:
-                cmd = cmd_KEY::cmd_EMPTY;
-                break;
-            }
-        }
-
-        //-------------------------------------[Quit Only]
-        else if (event.type == SDL_QUIT)
+    if (event.type == SDL_WINDOWEVENT)
+    {
+        switch (event.window.event)
         {
-            _closeAllMenus = false;
-            running = false;
-        }
+        case SDL_WINDOWEVENT_RESIZED:
+            break;
+        case SDL_WINDOWEVENT_SIZE_CHANGED:
+            cmd = cmd_KEY::cmd_WINDOWSIZE;
+            break;
 
-        //--------------------------------------[Mouse press]
-        else if (event.type == SDL_MOUSEBUTTONDOWN)
-        {
-            clickstamp = event.button.timestamp;
-
-            switch (event.button.button)
-            {
-            case SDL_BUTTON_LEFT:
-                if (key_ctrl)
-                {
-                }
-                else
-                {
-                    MouseL_hold = true;
-                    cmd = cmd_KEY::cmd_LMB;
-                }
-                break;
-            case SDL_BUTTON_RIGHT:
-                MouseR_hold = true;
-                cmd = cmd_KEY::cmd_RMB;
-                break;
-            default:
-                MouseM_hold = true;
-                cmd = cmd_KEY::cmd_MMB;
-                break;
-            }
-        }
-        //--------------------------------------[Mouse Moving]
-        //else if (event.type == SDL_MOUSEMOTION)
-        //{   }
-        //--------------------------------------[Mouse Release]
-        else if (event.type == SDL_MOUSEBUTTONUP)
-        {
-            clicktime = event.button.timestamp - clickstamp;
-            _closeAllMenus = false;
-            MouseM_hold = false;
-            MouseL_hold = false;
-            MouseR_hold = false;
+        default:
             cmd = cmd_KEY::cmd_EMPTY;
-            
+            break;
         }
-        else if (event.type == SDL_KEYDOWN)
+    }
+
+    //-------------------------------------[Quit Only]
+    else if (event.type == SDL_QUIT || cmd == cmd_KEY::cmd_QUIT)
+    {
+        _closeAllMenus = false;
+        running = false;
+    }
+
+    //--------------------------------------[Mouse press]
+    else if (event.type == SDL_MOUSEBUTTONDOWN)
+    {
+        clickstamp = event.button.timestamp;
+
+        switch (event.button.button)
         {
-            switch (event.key.keysym.sym)
+        case SDL_BUTTON_LEFT:
+            if (key_ctrl)
             {
-            case SDLK_SEMICOLON:
-                if(key_ctrl)
-                {
-                    cmd = cmd_KEY::cmd_CONSOLE_SHOW;
-                }
-                break;
-            case SDLK_p:
-                cmd = cmd_KEY::cmd_CREATE_NODE_Point;
-                break;
-            case SDLK_d:
-                cmd = cmd_KEY::cmd_DisplayFlag;
-                break;
-            case SDLK_h:
-                cmd = cmd_KEY::cmd_HOME;
-                break;
-            case SDLK_f:
-                cmd = cmd_KEY::cmd_FRAME;
-                break;
-            case SDLK_LCTRL:
-                key_ctrl = true;
-                break;
-           case SDLK_RCTRL:
-                key_ctrl = true;
-                break;
-            case SDLK_LSHIFT:
-                key_shift = true;
-                break;
-            case SDLK_RSHIFT:
-                key_shift = true;
-                break;
-            case SDLK_LALT:
-                key_alt = true;
-                break;
-            case SDLK_RALT:
-                key_alt = true;
-                break;
-            case SDLK_DELETE:
-                cmd = cmd_KEY::cmd_Delete;
-                break;
-            case SDLK_RETURN:
-                if(!EditMode)
-                {
-                    EditMode = true;
-                    cmd = cmd_KEY::cmd_EditMode;
-                    _Msg = " Entering Edit Mode";
-                }
-                break;
-            case SDLK_ESCAPE:
-                if (EditMode)
-                {
-                    EditMode = false;
-                    cmd = cmd_KEY::cmd_EditMode;
-                    _Msg = " Exit Edit Mode";
-                }
-                else
-                {
-                    cmd = cmd_KEY::cmd_CLEAR_Sel;
-                }
-                break;
-            case SDLK_SPACE:
-                EditMode = !EditMode;
+            }
+            else
+            {
+                MouseL_hold = true;
+                cmd = cmd_KEY::cmd_LMB;
+            }
+            break;
+        case SDL_BUTTON_RIGHT:
+            MouseR_hold = true;
+            cmd = cmd_KEY::cmd_RMB;
+            break;
+        default:
+            MouseM_hold = true;
+            cmd = cmd_KEY::cmd_MMB;
+            break;
+        }
+    }
+    //--------------------------------------[Mouse Moving]
+    //else if (event.type == SDL_MOUSEMOTION)
+    //{   }
+    //--------------------------------------[Mouse Release]
+    else if (event.type == SDL_MOUSEBUTTONUP)
+    {
+        clicktime = event.button.timestamp - clickstamp;
+        _closeAllMenus = false;
+        MouseM_hold = false;
+        MouseL_hold = false;
+        MouseR_hold = false;
+        cmd = cmd_KEY::cmd_EMPTY;
+    }
+    else if (event.type == SDL_KEYDOWN)
+    {
+        switch (event.key.keysym.sym)
+        {
+        case SDLK_SEMICOLON:
+            if (key_ctrl)
+            {
+                cmd = cmd_KEY::cmd_CONSOLE_SHOW;
+            }
+            break;
+        case SDLK_p:
+            cmd = cmd_KEY::cmd_CREATE_NODE_Point;
+            break;
+        case SDLK_d:
+            cmd = cmd_KEY::cmd_DisplayFlag;
+            break;
+        case SDLK_h:
+            cmd = cmd_KEY::cmd_HOME;
+            break;
+        case SDLK_f:
+            cmd = cmd_KEY::cmd_FRAME;
+            break;
+        case SDLK_LCTRL:
+            key_ctrl = true;
+            break;
+        case SDLK_RCTRL:
+            key_ctrl = true;
+            break;
+        case SDLK_LSHIFT:
+            key_shift = true;
+            break;
+        case SDLK_RSHIFT:
+            key_shift = true;
+            break;
+        case SDLK_LALT:
+            key_alt = true;
+            break;
+        case SDLK_RALT:
+            key_alt = true;
+            break;
+        case SDLK_DELETE:
+            cmd = cmd_KEY::cmd_Delete;
+            break;
+        case SDLK_RETURN:
+            if (!EditMode)
+            {
+                EditMode = true;
                 cmd = cmd_KEY::cmd_EditMode;
-                if (EditMode)
-                {
-                    _Msg = " Entering Edit Mode";
-                }
-                else
-                {
-                    _Msg = " Exit Edit Mode";
-                }
-                break;
-            default:
-                break;
+                _Msg = " Entering Edit Mode";
             }
+            break;
+        case SDLK_ESCAPE:
+            if (EditMode)
+            {
+                EditMode = false;
+                cmd = cmd_KEY::cmd_EditMode;
+                _Msg = " Exit Edit Mode";
+            }
+            else
+            {
+                cmd = cmd_KEY::cmd_CLEAR_Sel;
+            }
+            break;
+        case SDLK_SPACE:
+            cmd = cmd_KEY::cmd_EditMode;
+            EditMode = !EditMode;
+            if (EditMode)
+            {
+                _Msg = " Entering Edit Mode";
+            }
+            else
+            {
+                _Msg = " Exit Edit Mode";
+            }
+            break;
+        default:
+            break;
         }
-        else if (event.type == SDL_KEYUP)
-        {
-            cmd = cmd_KEY::cmd_EMPTY;
-            key_ctrl = false;
-            key_alt = false;
-            key_shift = false;
-            _closeAllMenus = false;
-            
-        }else
-        {
-            cmd = cmd_KEY::cmd_EMPTY;
-            _Msg.clear();
-            _closeAllMenus = false;
-        }
-        //--------------------------------------[Nothing]
-        if (EditMode)
-        {
-            current_panel = PanelID::ON_TALL;
-            Shared_Nevigation_Lock = MouseLockID::TALL_LOCKED;
-        }
-        console->Update(cmd, _Msg);
+    }
+    else if (event.type == SDL_KEYUP)
+    {
+        cmd = cmd_KEY::cmd_EMPTY;
+        key_ctrl = false;
+        key_alt = false;
+        key_shift = false;
+        _closeAllMenus = false;
+    }
+    else
+    {
+        cmd = cmd_KEY::cmd_EMPTY;
+        _Msg.clear();
+        _closeAllMenus = false;
+    }
+    //--------------------------------------[Nothing]
+    if (EditMode)
+    {
+        current_panel = PanelID::ON_TALL;
+        Shared_Nevigation_Lock = MouseLockID::TALL_LOCKED;
+    }
+    console->Update(cmd, _Msg);
 
 } //end of ProcessInput scope
 

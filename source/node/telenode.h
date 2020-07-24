@@ -74,7 +74,7 @@ public:
     //virtual functions
     virtual void Update(Telecontroller *controller, const Point2D<int> origin_s, double scale) = 0;
     virtual void DrawNode(SDL_Renderer *, std::shared_ptr<IconManager>)= 0;
-    virtual void DrawGeometry(SDL_Renderer *) const = 0;
+    virtual void DrawGeometry(SDL_Renderer *, Point2D<int>& origin_s, int grid_size) const = 0;
     virtual void RecieveData() = 0;
     virtual void ProcessData() = 0;
     virtual void SendData() = 0;
@@ -171,24 +171,17 @@ public:
     void Update(Telecontroller *controller, const Point2D<int> origin_s, double scale) override;
     
     void DrawNode(SDL_Renderer * renderer, std::shared_ptr<IconManager> Icm)override;
-    void DrawGeometry(SDL_Renderer *) const override { };
+    void DrawGeometry(SDL_Renderer *renderer, Point2D<int>& origin_s, int grid_size) const override;
 
     void RecieveData() override { };
     void ProcessData() override { };
     void SendData() override { };
 
 private:
-
-    //status
-    
-    
-
-
-    //information
+    //Data field
+    std::vector<std::shared_ptr<Point3D>> point_pool;
 
     static size_t counter;
-    //graphics
-    
 };
 
 
@@ -206,7 +199,7 @@ public:
 
     void Update(Telecontroller *controller, const Point2D<int> origin_s, double scale)override{}
     void DrawNode(SDL_Renderer *, std::shared_ptr<IconManager>)override{}
-    void DrawGeometry(SDL_Renderer *)const override{}
+    void DrawGeometry(SDL_Renderer *, Point2D<int>& origin_s, int grid_size)const override{}
     void RecieveData()override{}
     void ProcessData()override{}
     void SendData()override{}

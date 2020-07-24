@@ -20,7 +20,9 @@ void Console::Init()
     cmd_dictionary[cmd_KEY::cmd_PASTE] = "> Edit: Paste";
     cmd_dictionary[cmd_KEY::cmd_CUT] = "> Edit: Cut";
     cmd_dictionary[cmd_KEY::cmd_EditMode] = "> Edit: ";
+    cmd_dictionary[cmd_KEY::cmd_EditMode_M] = "> Edit: ";
     cmd_dictionary[cmd_KEY::cmd_Message] = "> ";
+    cmd_dictionary[cmd_KEY::cmd_WIN_ABOUT] = "> About: software information";
 
     cmd_dictionary[cmd_KEY::cmd_STARTUP] = "> Teletall: Program Init: SUCCESS - ";
     cmd_dictionary[cmd_KEY::cmd_CREATE_NODE_Point] = "> Create Node: Point Node";

@@ -9,6 +9,7 @@
 #include "ui/teletall_graphics.h"
 #include "ui/teletall_button.h"
 #include "node/telenode.h"
+#include "tallwindow.h"
 
 class Telepad
 {
@@ -19,6 +20,7 @@ public:
     void Update(Telecontroller &controller);
     void Render(SDL_Renderer *renderer);
     void AssignIconManager(std::shared_ptr<IconManager>& Icm);
+    void LinkTall(Tallwindow* htall){_tall = htall;}
     Point2D<int>* GetOrigin();
 
 private:
@@ -48,6 +50,9 @@ private:
     //nodes
     std::vector<std::shared_ptr<Node>> node_pool;
 
+    //Send render lists to tall:
+    void SendNodesToTall(std::shared_ptr<Node>& node_to_tall);
+
     void CreateNode(int x, int y);
     void DeleteNode();
     void UpdateNode(Telecontroller* controller);
@@ -65,6 +70,9 @@ private:
 
     //ResourceManagers
     std::shared_ptr<IconManager> _Icm;
+
+    //geometry renderer
+    Tallwindow* _tall;
 
 };
 
