@@ -164,6 +164,22 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
 
 :radio_button: &larr;- - - - :bookmark_tabs:
 * #### DAY 16 { <ins>7/24/2020</ins> } : Features
+**[10:20 PM] Sending/Display/Create/Edit Points; Grid Snap and Zoom**
+
+In this update, some key features has been added and working okay.
+|  |
+|---|
+|1. Each point nodes now store a `point pool`, which is a vector of shared pointer of Point3D. |
+|2. `Telepad` owns `Nodes`, when there is selection / Edit mode / display flag events, `Telepad` send these shared `Node` pointers to `Tall`. Tall will display the geometry data that stored in these nodes. |
+|3. Under `Edit Mode`, you are allowed to **create new points**, by **left-double-click** on `Tall` viewport. |
+|4. Under `Edit Mode`, By **left-single-click-&-hold**, you can **move existing points**|
+| <img src= ".markdown.images/20200724_DrawPoint Function.png">|
+|5. Hit key '`X`', you can toggle on **grid-snapping** which allows you to snap points to integer coordinates, i.g. `P(10,5)`. Hit '`X`' again will exit the grid snapping mode.|
+|6. '`Ctrl + Z`' or `undo` in Edit menu, you can delete the last point you created. |
+|7. `Scrole mouse wheel` you can **Zoom-in** or **Zoom-out** in the `tall` viewport |
+|<img src= ".markdown.images/20200724_ZoomIn%Out.png"> |
+
+
 
 **[2:00 PM] Added Geometry Data classes**
 > .
