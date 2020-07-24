@@ -57,14 +57,17 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
 |<sup>:notebook: notes:</sup>|
 |:---|
 |The viewport on the left is called `TelePad` which is the context for holding and creating `Tele-Nodes` and their connections; the one on the right is `Tall` viewport2D, rendering the geometries. Once OpenGL is introduced, a GL-3D viewport will replace `Tall`.|
-  * 🖱️`Left mouse button`: click and drag to move assets and UI elements.
-  * 🖱️`Right mouse button`: click and drag to nevigate around the viewport space; 
-  * ⌨️"`H`" key, to 'home' the viewport grid back to its origin (0,0).
-  * ⌨️"`F`" key, to 'Frame' all the geometries or nodes to the screen centre.
+  * 🖱️`Left mouse button`: click and drag to **move assets and UI elements**.
+  * 🖱️`Right mouse button`: click and drag to **nevigate** around the viewport space; 
+  * 🖱️`Middle mouse wheel`: scrole to **zoom in / out** `Tall` viewport space; 
+  * ⌨️"`H`" key, to **'home'** the viewport grid back to its origin (0,0).
+  * ⌨️"`F`" key, to **'Frame'** all the geometries or nodes to the screen centre.
     * >  they all works for both viewport: `TelePad` (node viewport) and `Tall` (geometry viewport).
-  * ⌨️"`ctrl`+ `;`" to show and hide the console;
+  * ⌨️"`ctrl`+ `;`" to **show and hide the console**;
 
-##### 💡 2.Edit: Tele-Nodes
+    ---
+
+##### 💡 2.Edit: Tele-Pad and Nodes
 
 |<sup>:notebook: notes:</sup>|
 |:---|
@@ -88,6 +91,18 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
   * ⌨️"` space `" key: Enter/Exit the **Edit Mode**.
   * ⌨️"`Return ↵`" key: Enter the **Edit Mode**.
   * ⌨️"`Ecs`" key: Exit the **Edit Mode** or clear selection.
+
+    ---
+##### 💡 3.Create and Edit Geometry: Points
+
+|<sup>:notebook: notes:</sup>|
+|:---|
+|<img src=".package.extra.merge/tltl_node_icon/pointnode.bmp"> **Point Node** is a `editable node`, when one **Point Node** is seleted and it has been entered **Edit Mode**, you can create points, delete points, move points. |
+
+  * 🖱️`Left mouse button`: <ins>**double-click**</ins> to **create points**.    &larr;`tall`
+  * 🖱️`Left mouse button`: <ins>**single-click and drag**</ins> to **move points**.    &larr;`tall`
+  * ⌨️"`Ctrl`+`Z`" keys(or undo in menu): **delete** last created point.    &larr;`tall`
+  * ⌨️"`X`" key: toggle on/off **Grid Snap**.    &larr;`tall`
 
 ***
 
@@ -177,7 +192,7 @@ In this update, some key features has been added and working okay.
 |5. Hit key '`X`', you can toggle on **grid-snapping** which allows you to snap points to integer coordinates, i.g. `P(10,5)`. Hit '`X`' again will exit the grid snapping mode.|
 |6. '`Ctrl + Z`' or `undo` in Edit menu, you can delete the last point you created. |
 |7. `Scrole mouse wheel` you can **Zoom-in** or **Zoom-out** in the `tall` viewport |
-|<img src= ".markdown.images/20200724_ZoomIn%Out.png"> |
+|<img src= ".markdown.images/20200724_ZoomIn_Out.png" > |
 
 
 
@@ -243,7 +258,7 @@ The Draw curve function is under teletall_graphics.h, which you can draw a polyl
 ****
 
 :radio_button: &larr;- - - - :bookmark_tabs:
-* #### DAY 13 { <ins>7/21/2020</ins> } : Telenode's Classes - <img src=".package.extra.merge/tltl_node_icon/pointnode.bmp"/> 'PointNode'
+* #### DAY 13 { <ins>7/21/2020</ins> } : Telenode's Classes - <img src=".package.extra.merge/tltl_node_icon/pointnode.bmp"> 'PointNode'
 
 **[10:20 PM] Select/move/group selection solved!!**
 
