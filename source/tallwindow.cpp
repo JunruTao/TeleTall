@@ -20,6 +20,7 @@ Tallwindow::Tallwindow(
 
     //Slide bar seletion init
     gridSelected = false;
+    mouseDown = false;
 
     //world grid Starting Point;
     origin.x = win_width / 4 * 3;
@@ -29,7 +30,7 @@ Tallwindow::Tallwindow(
     //mouse_reference;
     mouseLocation_ptptr = new Point2D<int>();
     cordText = new ScreenText();
-    text_color = {255,255,255,200};
+    text_color = {255,255,255,255};
 }
 
 
@@ -62,38 +63,74 @@ void Tallwindow::Render(SDL_Renderer *renderer)
         DrawCross_D(renderer,origin,cross_size,100,100,100);
     }
 
+    if (!displaying_nodes.empty())
+    {
+        for (auto &n : displaying_nodes)
+        {
+            n->DrawGeometry(renderer, origin, grid_size);
+        }
+        displaying_nodes.clear();
+    }
 
-    
-    
     if(onTall) // Window Graphics: inrange rec and mouse cross
     {
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 200);
+        SDL_Color color_s = {0, 255, 210, 255};
+        if (gridSnap)
+        {
+            SDL_SetRenderDrawColor(renderer, color_s.r, color_s.g, color_s.b, 255);
+        }
+        else
+        {
+            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 200);
+        }
 
-        DrawLineExtendToBound(renderer,mouseLocation_ptptr,&tallviewport_RECT,1);//draw the mouse extended line -y
-        DrawLineExtendToBound(renderer,mouseLocation_ptptr,&tallviewport_RECT,0);//draw the mouse extended line -x
+        DrawLineExtendToBound(renderer, mouseLocation_ptptr, &tallviewport_RECT, 1); //draw the mouse extended line -y
+        DrawLineExtendToBound(renderer, mouseLocation_ptptr, &tallviewport_RECT, 0); //draw the mouse extended line -x
 
-        DrawCross_D(renderer,*mouseLocation_ptptr,20, 255, 255, 255);
+        if (gridSnap)
+        {
+            if (mouseDown)
+            {
+                DrawCross(renderer, *mouseLocation_ptptr, 32, 255, 255, 255);
+                DrawCross_D(renderer, *mouseLocation_ptptr, 5, color_s.r, color_s.g, color_s.b);
+            }
+            else
+            {
+                DrawCross_D(renderer, *mouseLocation_ptptr, 10, color_s.r, color_s.g, color_s.b);
+            }
+        }
+        else
+        {
+            if (mouseDown)
+            {
+                DrawCross(renderer, *mouseLocation_ptptr, 32, color_s.r, color_s.g, color_s.b);
+                DrawCross_D(renderer, *mouseLocation_ptptr, 2, 255, 255, 255);
+            }
+            else
+            {
+                DrawCross_D(renderer, *mouseLocation_ptptr, 10, 255, 255, 255);
+            }
+        }
+
         SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_NONE);
 
         //send mouse cords to screen
         Point2D<float> temp = CalcLocalCord(origin,*mouseLocation_ptptr);
         std::string cortostring = "[x=" + JUTA_Math::Num_To_String_Percision<float>(temp.x,2) +", y=" + JUTA_Math::Num_To_String_Percision<float>(temp.y,2)+ "]";
-        
-        //Drawing the world coordinates on tall mouse
-        cordText->loadFromRenderedText(cortostring,renderer,text_color);
-        cordText->Draw(renderer,mouseLocation_ptptr->x +3,mouseLocation_ptptr->y+3);
 
-        
-    }
-    if (!nodes.empty())
-    {
-        for (auto &n : nodes)
+        if (gridSnap)
         {
-            n->DrawGeometry(renderer, origin, grid_size);
+            cortostring = " [GRID SNAP ON]";
+            cordText->loadFromRenderedText(cortostring, renderer, text_color, text_color, 2);
         }
-        nodes.clear();
+        else
+        {
+            //Drawing the world coordinates on tall mouse
+            cordText->loadFromRenderedText(cortostring, renderer, text_color,text_color, 2);
+        }
+        cordText->Draw(renderer, mouseLocation_ptptr->x + 3, mouseLocation_ptptr->y + 3, 0.8);
     }
-    
+
 }
 
 
@@ -118,6 +155,21 @@ void Tallwindow::Update(Telecontroller &controller)
         win_height = wsY;
 
     }
+    if(controller.xkey_hold)
+    {
+        gridSnap = true;
+    }
+    else
+    {
+        gridSnap = false;
+    }
+    if(controller.MouseL_hold)
+    {
+        mouseDown = true;
+    }else
+    {
+        mouseDown = false;
+    }
 
     //moving Grid
     int x, y;
@@ -126,11 +178,25 @@ void Tallwindow::Update(Telecontroller &controller)
 
     MoveGrid(controller, x, y);
 
+
     tallviewport_RECT.x = controller.GetSplitLocation() - 4;
     tallviewport_RECT.w = win_width-controller.GetSplitLocation()+4;
     tallviewport_RECT.h = win_height;
 
     controller.LinkTallRec(&tallviewport_RECT);
+
+
+    if(controller.GetEditMode() && !displaying_nodes.empty())
+    {
+        for(auto& n:displaying_nodes)
+        {
+            if(n->GetIsEditable() && n->GetIsSelected())
+            {
+                editing_node = n;
+                editing_node->ProcessInput(&controller,origin,grid_size);
+            }
+        }
+    }
 
 }
 
@@ -143,6 +209,14 @@ void Tallwindow::MoveGrid(Telecontroller &controller, const int &x, const int &y
     {
         controller.current_panel = PanelID::ON_TALL;
         SDL_ShowCursor(0);
+        if(controller.GetCommand() == cmd_KEY::cmd_ZOOM_IN)
+        {
+            grid_size += 2;
+        }else if(controller.GetCommand() == cmd_KEY::cmd_ZOOM_OUT)
+        {
+            grid_size -= 2;
+        }
+        JUTA_Math::Clamp(grid_size,5,100);
     }
     else
     {
@@ -207,5 +281,27 @@ Point2D<float> Tallwindow::CalcLocalCord(const Point2D<int>& origin, const Point
 
 void Tallwindow::CaptureRenderNodes(const std::shared_ptr<Node>& node)
 {
-    nodes.push_back(node);
+    displaying_nodes.push_back(node);
+}
+
+void Tallwindow::CaptureEditNode(const std::shared_ptr<Node>& node)
+{
+    editing_node.reset();
+    editing_node = node;
+}
+
+
+void Tallwindow::EditGeometry(Telecontroller *controller, const int &x, const int &y)
+{
+    if(controller->GetEditMode())
+    {
+        if(editing_node != nullptr)
+        {
+
+        }
+    }
+    else
+    {
+        editing_node.reset();
+    }
 }

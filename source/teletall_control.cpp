@@ -14,6 +14,7 @@ Telecontroller::Telecontroller()
     MouseM_hold = false;
     MouseL_hold = false;
     MouseR_hold = false;
+    xkey_hold = false;
     _closeAllMenus = false;
     EditMode = false;
     clickstamp = 0;
@@ -35,6 +36,7 @@ void Telecontroller::SendCommandEx(const cmd_KEY& _cmd, std::string _msg)
 /*MAIN PROCESSING UNIT - PROCESS ALL INPUTS*/
 void Telecontroller::ProcessInput(bool &running)
 {
+
     //---------------------------------
     switch (cmd)//Get commands from menu
     {
@@ -60,11 +62,20 @@ void Telecontroller::ProcessInput(bool &running)
 
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "   About",  about_text.c_str(), *_hhwnd);
         break;
+    case cmd_KEY::cmd_GRID_SNAP_M:
+        xkey_hold = !xkey_hold;
+        if(xkey_hold)
+        {
+            SendCommandEx(cmd_KEY::cmd_Message, " Grid Snap {ON}");
+        }else
+        {
+            SendCommandEx(cmd_KEY::cmd_Message, " Grid Snap {OFF}");
+        }
+        break;
     default:
         break;
     }
     //---------------------------
-
 
     int _x, _y;
     SDL_GetMouseState(&_x, &_y);
@@ -72,10 +83,7 @@ void Telecontroller::ProcessInput(bool &running)
     SDL_Event event;
 
     current_panel = PanelID::NONE;
-
     SDL_PollEvent(&event);
-
- 
 
     if (event.type == SDL_WINDOWEVENT)
     {
@@ -108,8 +116,9 @@ void Telecontroller::ProcessInput(bool &running)
         switch (event.button.button)
         {
         case SDL_BUTTON_LEFT:
-            if (key_ctrl)
+            if (EditMode && event.button.clicks == 2)
             {
+                cmd = cmd_KEY::cmd_CREATE_POINT;
             }
             else
             {
@@ -125,6 +134,17 @@ void Telecontroller::ProcessInput(bool &running)
             MouseM_hold = true;
             cmd = cmd_KEY::cmd_MMB;
             break;
+        }
+    }
+    else if (event.type == SDL_MOUSEWHEEL)
+    {
+        if (event.wheel.y > 0) // scroll up
+        {
+            cmd = cmd_KEY::cmd_ZOOM_IN;
+        }
+        else if (event.wheel.y < 0) // scroll down
+        {
+            cmd = cmd_KEY::cmd_ZOOM_OUT;
         }
     }
     //--------------------------------------[Mouse Moving]
@@ -180,6 +200,17 @@ void Telecontroller::ProcessInput(bool &running)
         case SDLK_RALT:
             key_alt = true;
             break;
+        case SDLK_x:
+            xkey_hold = !xkey_hold;
+            if (xkey_hold)
+            {
+                cmd = cmd_KEY::cmd_Message; _Msg =  " Grid Snap {ON} x";
+            }
+            else
+            {
+                cmd = cmd_KEY::cmd_Message; _Msg =  " Grid Snap {OFF} x";
+            }
+            break;
         case SDLK_DELETE:
             cmd = cmd_KEY::cmd_Delete;
             break;
@@ -213,6 +244,12 @@ void Telecontroller::ProcessInput(bool &running)
             else
             {
                 _Msg = " Exit Edit Mode";
+            }
+            break;
+        case SDLK_z:
+            if (key_ctrl)
+            {
+                cmd = cmd_KEY::cmd_UNDO;
             }
             break;
         default:

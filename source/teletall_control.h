@@ -49,6 +49,8 @@ public:
     void SetSeletedNodesCount(size_t nodescount){_selected_nodes = nodescount;}
     size_t GetSeletedNodesCount(){return _selected_nodes;}
 
+    bool xkey_hold;
+
     bool MouseL_hold;
     bool MouseR_hold;
     bool MouseM_hold;
@@ -76,6 +78,7 @@ private:
     SDL_Rect r_ConsoleRect;
 
     size_t _selected_nodes;
+
 };
 
 #endif

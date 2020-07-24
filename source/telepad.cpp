@@ -154,11 +154,14 @@ void Telepad::Update(Telecontroller &controller)
             {
                 SendNodesToTall(n);
             }
+            
         }
         if(anydisplay == false)
         {
            node_pool.back()->SetDisplay();
         }
+
+
         if (controller.GetCommand() == cmd_KEY::cmd_DisplayFlag)
         {
             if (_sel_nodes.size() == 1)
@@ -185,6 +188,8 @@ void Telepad::Update(Telecontroller &controller)
                 _sel_nodes.back()->SetDisplay();
             }
         }
+
+        
         Node::SetSelectedCount(_sel_nodes.size());
         controller.SetSeletedNodesCount(_sel_nodes.size());
 

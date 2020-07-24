@@ -75,6 +75,8 @@ public:
     virtual void Update(Telecontroller *controller, const Point2D<int> origin_s, double scale) = 0;
     virtual void DrawNode(SDL_Renderer *, std::shared_ptr<IconManager>)= 0;
     virtual void DrawGeometry(SDL_Renderer *, Point2D<int>& origin_s, int grid_size) const = 0;
+    //this function only for editable node objects
+    virtual void ProcessInput(Telecontroller *controller, const Point2D<int> origin, int grid_size) = 0;;
     virtual void RecieveData() = 0;
     virtual void ProcessData() = 0;
     virtual void SendData() = 0;
@@ -169,9 +171,11 @@ public:
     ~PointNode();
 
     void Update(Telecontroller *controller, const Point2D<int> origin_s, double scale) override;
-    
+    //this function only for editable node objects
+    void ProcessInput(Telecontroller *controller, const Point2D<int> origin, int grid_size)override;
     void DrawNode(SDL_Renderer * renderer, std::shared_ptr<IconManager> Icm)override;
     void DrawGeometry(SDL_Renderer *renderer, Point2D<int>& origin_s, int grid_size) const override;
+    void CreatePoints(double x, double y, double z);
 
     void RecieveData() override { };
     void ProcessData() override { };
@@ -182,6 +186,7 @@ private:
     std::vector<std::shared_ptr<Point3D>> point_pool;
 
     static size_t counter;
+    bool pt_onlysel;
 };
 
 
@@ -200,6 +205,7 @@ public:
     void Update(Telecontroller *controller, const Point2D<int> origin_s, double scale)override{}
     void DrawNode(SDL_Renderer *, std::shared_ptr<IconManager>)override{}
     void DrawGeometry(SDL_Renderer *, Point2D<int>& origin_s, int grid_size)const override{}
+    void ProcessInput(Telecontroller *controller, const Point2D<int> origin, int grid_size)override{};
     void RecieveData()override{}
     void ProcessData()override{}
     void SendData()override{}

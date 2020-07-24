@@ -116,21 +116,20 @@ void ScreenText::Draw(SDL_Renderer* renderer, int x, int y, double scale)
 
 void DrawDashLine(SDL_Renderer* renderer,Point2D<int> pt1, Point2D<int> pt2, int dist)
 {
-    Point2D<int> p1 = pt1;
-    Point2D<int> p2 = pt2;
+    Point2D<double> p1(pt1.x,pt1.y);
+    Point2D<double> p2(pt2.x,pt2.y);
 
-    Point2D<int> unit = p2 - p1;
+    Point2D<double> unit = p2 - p1;
     double distance = unit.Length();
 
-    unit.MakeUnitVector();
-    unit.x *= dist;
-    unit.y *= dist;
+    unit.x *= dist/distance;
+    unit.y *= dist/distance;
     int count = (int)(distance / (dist));
 
     for (size_t i = 0; i < count; i++)
     {
         if(i%2 == 0){
-        SDL_RenderDrawLine(renderer, p1.x + (unit.x*i), p1.y+ (unit.y*i), p1.x + (unit.x*(i+1)), p1.y+ (unit.y*(i+1)));
+        SDL_RenderDrawLineF(renderer, p1.x + (unit.x*i), p1.y+ (unit.y*i), p1.x + (unit.x*(i+1)), p1.y+ (unit.y*(i+1)));
         }
     }
 }

@@ -16,8 +16,9 @@ enum class cmd_KEY
     cmd_WINDOWSIZE,cmd_CONSOLE_SHOW, cmd_HOME_Pad, 
     cmd_HOME_Tall, cmd_WIN_ABOUT, cmd_CLEAR_Sel,
     cmd_CREATE_NODE_Point, cmd_CREATE_NODE_Point_M,
+    cmd_CREATE_POINT, cmd_GRID_SNAP_M,
     cmd_EditMode, cmd_EditMode_M, cmd_DisplayFlag, 
-    cmd_Message, cmd_QUIT
+    cmd_Message, cmd_QUIT, cmd_ZOOM_IN, cmd_ZOOM_OUT
     
 };
 

@@ -251,7 +251,8 @@ void Node::ProcessUserInputs(Telecontroller *controller, const Point2D<int> orig
             _center.x += (controller->GetMousePoint()->x - origin_s.x) - _clicked_old_pos.x;
             _center.y += (controller->GetMousePoint()->y - origin_s.y) - _clicked_old_pos.y;
 
-        }else
+        }
+        else
         {
             _ondrag = false;
         }
@@ -476,6 +477,7 @@ PointNode::PointNode(Point2D<double> drop_location, const Point2D<int>& origin_s
 
     _editable = true;
     _editing = false;
+    pt_onlysel = false;
 
 
     _name = "Point" + std::to_string(counter);
@@ -585,8 +587,6 @@ void PointNode::DrawNode(SDL_Renderer * renderer, std::shared_ptr<IconManager> I
     {
         n->Draw(renderer);
     }
-
-    
 }
 
 
@@ -596,19 +596,98 @@ void PointNode::DrawGeometry(SDL_Renderer* renderer, Point2D<int>& origin_s, int
     {
         for(auto& p : point_pool)
         {
-            if (_displaying)
+            if (_editing)
             {
-                p->Draw(renderer, origin_s, grid_size, 1);
+                p->Draw(renderer, origin_s, grid_size, 2);
+                
             }
             else
             {
-                p->Draw(renderer, origin_s, grid_size, 0);
+
+                if (_displaying)
+                {
+                    p->Draw(renderer, origin_s, grid_size, 1);
+                }
+                else
+                {
+                    p->Draw(renderer, origin_s, grid_size, 0);
+                }
+            }
+        }
+        if(_editing && point_pool.size()>1)
+        {
+            for(size_t i = 0; i< point_pool.size()-1; ++i)
+            {
+                SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+                SDL_SetRenderDrawColor(renderer, 255, 255, 255, 130);
+                DrawDashLine(renderer, point_pool[i + 1]->GetScreenLocation(origin_s, grid_size), point_pool[i]->GetScreenLocation(origin_s, grid_size), 7);
+                SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
             }
         }
     }
 }
 
+void PointNode::ProcessInput(Telecontroller *controller, const Point2D<int> origin, int grid_size)
+{
+    if (controller->GetCurrentPanel() == PanelID::ON_TALL)
+    {
+        if (!point_pool.empty())
+        {
+            for (auto &p : point_pool)
+            {
+                if ((p->IsSeleted() ||controller->GetMousePoint()->InBound(p->GetScreenLocation(origin, grid_size).x - 5, p->GetScreenLocation(origin, grid_size).y - 5, p->GetScreenLocation(origin, grid_size).x + 5, p->GetScreenLocation(origin, grid_size).y + 5))&&!pt_onlysel)
+                {
+                    p->SetAsPassing();
+                    
+                    if ((controller->MouseL_hold)&& !controller->xkey_hold)
+                    {
+                        p->SetAsSelected();
+                        pt_onlysel = true;
+                        p->SetLocation(-((double)(origin.x - controller->GetMousePoint()->x)) / ((double)grid_size), ((double)(origin.y - controller->GetMousePoint()->y)) / ((double)grid_size), 0);
+                    }
+                    else if ((controller->MouseL_hold)&&controller->xkey_hold)
+                    {
+                        p->SetAsSelected();
+                        pt_onlysel = true;
+                        p->SetLocation(round(-((double)(origin.x - controller->GetMousePoint()->x)) / ((double)grid_size)), round(((double)(origin.y - controller->GetMousePoint()->y)) / ((double)grid_size)), 0);
+                    }
+                    else
+                    {
+                        p->SetAsUnselected();
+                        pt_onlysel = false;
+                    }
+                }
+                else
+                {
+                    p->SetAsNormal();
+                }
+            }
+            pt_onlysel = false;
+        }
 
+        switch (controller->GetCommand())
+        {
+        case cmd_KEY::cmd_CREATE_POINT:
+            if (controller->xkey_hold)
+            {
+                point_pool.emplace_back(std::make_shared<Point3D>(round(-((double)(origin.x - controller->GetMousePoint()->x)) / ((double)grid_size)), round(((double)(origin.y - controller->GetMousePoint()->y)) / ((double)grid_size)), 0.0));
+            }
+            else
+            {
+                point_pool.emplace_back(std::make_shared<Point3D>(-((double)(origin.x - controller->GetMousePoint()->x)) / ((double)grid_size), ((double)(origin.y - controller->GetMousePoint()->y)) / ((double)grid_size), 0.0));
+            }
+            break;
+        case cmd_KEY::cmd_UNDO:
+            if (!point_pool.empty())
+            {
+                point_pool.pop_back();
+            }
+            break;
+        default:
+            break;
+        }
+    }
+}
 
 PointNode::~PointNode()
 {

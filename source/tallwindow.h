@@ -21,6 +21,7 @@ public:
     ~Tallwindow();
 
     void CaptureRenderNodes(const std::shared_ptr<Node>& node);
+    void CaptureEditNode(const std::shared_ptr<Node>& node);
     void Update(Telecontroller &controller);
 
     void Render(SDL_Renderer *renderer);
@@ -31,10 +32,13 @@ private:
     size_t win_height;
 
     bool gridSelected;
+    bool gridSnap;
     bool onTall;
+    bool mouseDown;
 
     //node that drawing:
-    std::vector<std::shared_ptr<Node>> nodes;
+    std::vector<std::shared_ptr<Node>> displaying_nodes;
+    std::shared_ptr<Node> editing_node;
 
     //The grid
     Point2D<int> origin;
@@ -45,6 +49,7 @@ private:
     Point2D<float> CalcLocalCord(const Point2D<int>& origin, const Point2D<int>& target);
 
     void MoveGrid(Telecontroller &controller, const int &x, const int &y);
+    void EditGeometry(Telecontroller *controller, const int &x, const int &y);
 
     ScreenText* cordText;
     SDL_Color text_color;

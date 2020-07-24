@@ -275,7 +275,8 @@ void TeleTall::ConstructMenu()
         "Undo                            Ctrl+Z",
         "Redo                            Ctrl+Y",
         "Edit Mode          Space/Return",
-        "Set DisplayFlag                   D "};
+        "Set DisplayFlag                   D ",
+        "Grid Snap                             X"};
     ColumnMenu *subm_Edit = new ColumnMenu(title_Edit, 200);
     __KeyList__ edit_keys= 
     {
@@ -286,7 +287,8 @@ void TeleTall::ConstructMenu()
         cmd_KEY::cmd_UNDO,
         cmd_KEY::cmd_REDO,
         cmd_KEY::cmd_EditMode_M,
-        cmd_KEY::cmd_DisplayFlag
+        cmd_KEY::cmd_DisplayFlag,
+        cmd_KEY::cmd_GRID_SNAP_M
     };
     subm_Edit->AddCommand(edit_keys);
 

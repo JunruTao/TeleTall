@@ -27,6 +27,7 @@ void Console::Init()
     cmd_dictionary[cmd_KEY::cmd_STARTUP] = "> Teletall: Program Init: SUCCESS - ";
     cmd_dictionary[cmd_KEY::cmd_CREATE_NODE_Point] = "> Create Node: Point Node";
     cmd_dictionary[cmd_KEY::cmd_CREATE_NODE_Point_M] = "> Create Node: Point Node";
+    cmd_dictionary[cmd_KEY::cmd_CREATE_POINT] = "> Create Point ";
     
 }
 

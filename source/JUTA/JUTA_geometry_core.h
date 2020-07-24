@@ -84,8 +84,8 @@ struct Point2D
 
     void MakeUnitVector()
     {
-        this->x = (var)(this->x/this->Length());
-        this->y = (var)(this->y/this->Length());
+        this->x = (var)((double)this->x/(double)this->Length());
+        this->y = (var)((double)this->y/(double)this->Length());
     }
 };
 
@@ -151,8 +151,23 @@ public:
     void Translate(const Vector3& motion);
     void Translate(Vector3&& motion);
 
+    //Getters
+    Vector3 GetLocation(){return *_pos;}
+    Point2D<int> GetScreenLocation(Point2D<int> origin, int grid_size);
+    bool IsSeleted(){return _selected;}
+    bool IsPassing(){return _passing;}
+
+    //Setters
+    void SetLocation(double x, double y, double z);
+    void SetAsSelected(){_selected = true;}
+    void SetAsUnselected(){_selected = false;}
+    void SetAsPassing(){_passing = true;}
+    void SetAsNormal(){_selected = false; _passing = false;}
+
 private:
     std::unique_ptr<Vector3> _pos;
+    bool _selected;
+    bool _passing;
 };
 
 
@@ -185,4 +200,17 @@ class Polyline: public GeoData
     private:
     std::vector<std::shared_ptr<Point3D>> points;
 };
+
+
+
+
+static int ScreenTransformX(double x, Point2D<int> origin, int grid_size)
+{
+    return (int)(((double)origin.x) + ((double)grid_size) * x);
+}
+
+static int ScreenTransformY(double y, Point2D<int> origin, int grid_size)
+{
+    return (int)(((double)origin.y) - ((double)grid_size) * y);
+}
 #endif
