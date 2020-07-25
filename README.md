@@ -84,6 +84,7 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
 |For each **Telenodes**, a `display flag` indicates whether this node is now rendering at `Tall`. There is only maximum _one_ display flag will be allowed in the telepad node-viewport.|
 
   * ⌨️"`D`" key: toggle on display, shift `display flag` from one to another.
+  * 🖱️`Left mouse button` **double-click on the node** to shift `display flag` from one to another.
 
 |<sup>:notebook: notes:</sup>|
 |:---|
@@ -176,6 +177,30 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
 ## :black_circle:Production Logs:
 #### :pushpin: Latest!!!: :arrow_down: :arrow_down: :arrow_down:
 
+
+
+:radio_button: &larr;- - - - :bookmark_tabs:
+* #### DAY 16 { <ins>7/24/2020</ins> } : Features
+**[11:20 AM] features/fixing**
+  
+  * double click on the node now you can switch the `display-flag` to on another.
+  * fixed a group selection bug;
+  * smart node connector adding interface;
+  * **'connecting nodes'** you can now connect and disconnect;
+  * fixing connection bugs.
+  * switch between 3-style of connection curves. hit keys `1` `2` `3` to swith between `Straight`, `Zig zag` and `Curved`
+  * **connect feature:** drag and link to **connect**, connection established. re-drag back to same target node-connector you can **disconnect**. 
+
+> build test
+
+  <img src=".markdown.images/20200725_NodeConnections1.png">
+
+> connection line styles
+
+  <img src=".markdown.images/20200725_NodeConnections2.png">
+
+
+----
 
 :radio_button: &larr;- - - - :bookmark_tabs:
 * #### DAY 16 { <ins>7/24/2020</ins> } : Features

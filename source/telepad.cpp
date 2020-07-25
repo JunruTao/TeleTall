@@ -321,7 +321,6 @@ void Telepad::Resize(Telecontroller &controller, const int &x, const int &y)
         SDL_ShowCursor(1);
         controller.current_panel = PanelID::ON_BAR;
         //changing cursor
-
     }
 
 
@@ -516,6 +515,8 @@ void Telepad::Select(Telecontroller *controller, int x, int y)
     int ondrags = 0;
     int onpass = 0;
     int onconnect = 0;
+    int connector_passing = 0;
+    std::shared_ptr<NodeConnector> passingcntrPtr = nullptr;
     if (!node_pool.empty())
     {
         for (auto &n : node_pool)
@@ -533,9 +534,13 @@ void Telepad::Select(Telecontroller *controller, int x, int y)
                 onconnect++;
                 _sel_connector = n->GetSelConnector();
             }
+            if(n->GetIfGoingtoConnect())
+            {
+                connector_passing++;
+                passingcntrPtr = n->GetPassingConnector();
+            }
         }
     }
-    
 
     if (onPad && onconnect != 0)
     {
@@ -544,7 +549,28 @@ void Telepad::Select(Telecontroller *controller, int x, int y)
     else
     {
         _connecting = false;
+
+        if (onPad && connector_passing != 0 && !controller->MouseL_hold)
+        {
+            if (passingcntrPtr != nullptr && _sel_connector!=nullptr && _sel_connector.get() != passingcntrPtr.get())
+            {
+                if (_sel_connector->IsInput())
+                {
+                    _sel_connector->EstablishConnection(passingcntrPtr);
+                }
+                else if (passingcntrPtr->IsInput())
+                {
+                    passingcntrPtr->EstablishConnection(_sel_connector);
+                }
+                _sel_connector = nullptr;
+            }
+        }
+        _sel_connector = nullptr;
     }
+
+    
+
+    
 
     Node::SetPassingCount(onpass);
 

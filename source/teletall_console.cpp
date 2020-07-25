@@ -28,6 +28,11 @@ void Console::Init()
     cmd_dictionary[cmd_KEY::cmd_CREATE_NODE_Point] = "> Create Node: Point Node";
     cmd_dictionary[cmd_KEY::cmd_CREATE_NODE_Point_M] = "> Create Node: Point Node";
     cmd_dictionary[cmd_KEY::cmd_CREATE_POINT] = "> Create Point ";
+
+
+    cmd_dictionary[cmd_KEY::cmd_CNLINE_1_LINE] = "> Telepad: Node Connection Drawing Mode : [STRAIGHT]";
+    cmd_dictionary[cmd_KEY::cmd_CNLINE_2_ZIG] = "> Telepad: Node Connection Drawing Mode : [ZIG_ZAG]";
+    cmd_dictionary[cmd_KEY::cmd_CNLINE_3_CURVE] = "> Telepad: Node Connection Drawing Mode : [CURVED]";
     
 }
 

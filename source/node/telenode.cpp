@@ -83,15 +83,16 @@ void NodeConnector::UpdateLocation(Point2D<double> location)
 
 
 
-NodeConnector::NodeConnector(Point2D<double> location, bool in_or_out, Node *parent) : _in_or_out(in_or_out),
+NodeConnector::NodeConnector(Point2D<double> location, bool in_or_out, Node *parent, DataType type) : _in_or_out(in_or_out),
                                                                                        _selected(false),
                                                                                        _passing(false),
                                                                                        _connecting_mode(false),
                                                                                        _parent(parent),
-                                                                                       _target(nullptr)
+                                                                                       _input_target(nullptr),
+                                                                                       _connected(false),
+                                                                                       _type(type)
 {
     UpdateLocation(location);
-
 }
 
 
@@ -109,8 +110,6 @@ void NodeConnector::Update(Telecontroller* controller, Point2D<double> location)
         _connecting_mode = false;
         _selected = false;
     }
-
-
     if(inbound)
     {
         _passing = true;
@@ -135,7 +134,6 @@ void NodeConnector::Update(Telecontroller* controller, Point2D<double> location)
 NodeConnector::~NodeConnector()
 {
     _parent = nullptr;
-    _target = nullptr;
     
 }
 
@@ -174,6 +172,102 @@ void NodeConnector::DrawDot8x8(SDL_Renderer *renderer)
 }
 
 
+void NodeConnector::EstablishConnection(std::shared_ptr<NodeConnector> target)
+{
+    if (this->_parent != target->_parent)
+    {
+        if (_in_or_out)
+        {
+            if (_input_target == nullptr)
+            {
+                ToggleConnect();
+                if (_connected)
+                {
+                    _input_target = target;
+                }
+                else
+                {
+                    _input_target = nullptr;
+                }
+            }
+            else if(_input_target == target)
+            {
+                _connected = false;
+                _input_target = nullptr;
+            }
+            else if (_connected)
+            {
+                _input_target = target;
+            }
+        }
+        else
+        {
+            if (target->_in_or_out)
+            {
+                if (target->_input_target == nullptr)
+                {
+                    target->ToggleConnect();
+                    if (target->_connected)
+                    {
+                        target->_input_target = target;
+                    }
+                    else
+                    {
+                        target->_input_target = nullptr;
+                    }
+                }
+                else if (target->_input_target == target)
+                {
+                    target->_connected = false;
+                    target->_input_target = nullptr;
+                }
+                else if (target->_connected)
+                {
+                    target->_input_target = target;
+                }
+            }
+        }
+    }
+}
+
+void NodeConnector::DrawConnection(SDL_Renderer *renderer, int mode)
+{
+    if (_connected)
+    {
+        if (_in_or_out && _input_target != nullptr)
+        {
+            
+            std::vector<Point2D<double>> pointlist;
+            pointlist.push_back(_pos);
+
+            if (mode != 1)
+            {
+                Point2D<double> midpt;
+                midpt.x = _pos.x;
+                double distp = abs((_pos.y - _input_target->_pos.y) * 0.4);
+                JUTA_Math::Clamp(distp, 0.0, 70.0);
+                midpt.y = _pos.y - distp;
+                pointlist.push_back(midpt);
+                midpt.x = _input_target->_pos.x;
+                midpt.y = _input_target->_pos.y + distp;
+                pointlist.emplace_back(std::move(midpt));
+                
+            }
+            pointlist.push_back(_input_target->_pos);
+
+            SDL_Color rendercolor = {230, 230, 230, 255};
+            if (mode == 3)
+            {
+                DrawNurbs(renderer, pointlist, 3, rendercolor);
+            }
+            else
+            {
+                DrawNurbs(renderer, pointlist, 1, rendercolor);
+            }
+        }
+    }
+}
+
 
 
 
@@ -195,6 +289,8 @@ SDL_Color Node::_selcolor = {255,255,0,255}; //outline
 SDL_Color Node::_passcolor = {200,200,200,255}; //outline
 SDL_Color Node::_textcolor = {120,120,120,255};
 
+int Node::connection_line_style = 3;
+
 SDL_Color Node::_editmode_color = {255,42,105,100};
 SDL_Color Node::_lockmode_color = {32,32,32,180};
 SDL_Color Node::_renderflag_color = {0,80,255,180};
@@ -203,6 +299,7 @@ void Node::ProcessUserInputs(Telecontroller *controller, const Point2D<int> orig
 {
     bool old_sel_status = _selected;
     bool inboud = controller->GetMousePoint()->InBoundWH(_node_rect.x, _node_rect.y, _node_rect.w, _node_rect.h);
+
 
     if(controller->GetEditMode())
     {
@@ -259,18 +356,15 @@ void Node::ProcessUserInputs(Telecontroller *controller, const Point2D<int> orig
     }
     else
     {
-        if (if_groupsel && selected_count > 1 && _selected && passing_count > 0 && controller->MouseL_hold && controller->Shared_Nevigation_Lock != MouseLockID::TELE_LOCKED)
+        if (if_groupsel && selected_count > 1 && _selected && passing_count > 0 && (controller->GetCommand() == cmd_KEY::cmd_LMB || controller->MouseL_hold) && controller->Shared_Nevigation_Lock != MouseLockID::TELE_LOCKED)
         {
             goto dragging;
-        }
-
-        _ondrag = false;
-        
-        if((controller->GetCommand() == cmd_KEY::cmd_LMB && controller->current_panel == PanelID::ON_PAD)) 
+        }else if(_selected && (controller->GetCommand() == cmd_KEY::cmd_LMB && controller->current_panel == PanelID::ON_PAD)) 
         {   
             _selected = false;
             if_groupsel = false;
         }
+        _ondrag = false;
 
      
     }
@@ -292,6 +386,11 @@ void Node::ProcessUserInputs(Telecontroller *controller, const Point2D<int> orig
 std::shared_ptr<NodeConnector> Node::GetSelConnector()
 {
     return _current_sel_connector;
+}
+
+std::shared_ptr<NodeConnector> Node::GetPassingConnector()
+{
+    return _current_pass_connector;
 }
 /*================================================================================================
 |
@@ -333,6 +432,7 @@ Node::Node()
     _running = false;
     _ondrag = false;
     _dragconnect_mode = false;
+    _attempt_got_connected = false;
     _displaying = false;
     _editing = false;
 
@@ -346,6 +446,101 @@ Node::Node()
 Node::~Node() //virtual destructor
 {
     node_counter--;
+}
+
+
+
+void Node::SetConnectorLocations(Telecontroller *controller, const Point2D<int> origin_s)
+{
+    /*
+               (i)   ______i______ center.x
+
+                    |  d  |  d  |  d  |  d = w/size+1
+               (ii)  _____1_____2_____  i1 = rect.x + d (i+1)
+                                        i2 = rect.x + d (i+1)
+    
+    */
+    for(int_fast16_t i = 0; i<_inputs.size();i++)
+    {
+        double d = (double)_node_width/(_inputs.size()+1);
+        Point2D<double> input_cloc(_node_rect.x + d*(i+1), _center.y-(_node_height/2) + origin_s.y);
+        _inputs[i]->Update(controller,input_cloc);
+    }
+
+    for(int_fast16_t i = 0; i<_outputs.size();i++)
+    {
+        double d = (double)_node_width/(_outputs.size()+1);
+        Point2D<double> output_cloc(_node_rect.x + d*(i+1), _center.y+(_node_height/2) + origin_s.y);
+        _outputs[i]->Update(controller,output_cloc);
+    }
+}
+
+void Node::UpdateConnectors(Telecontroller *controller, const Point2D<int> origin_s)
+{
+    
+    SetConnectorLocations(controller,origin_s);
+
+    switch (controller->GetCommand())
+    {
+    case cmd_KEY::cmd_CNLINE_1_LINE:
+        connection_line_style = 1;
+        break;
+    case cmd_KEY::cmd_CNLINE_2_ZIG:
+        connection_line_style = 2;
+        break;
+    case cmd_KEY::cmd_CNLINE_3_CURVE:
+        connection_line_style = 3;
+        break;
+    default:
+        break;
+    }
+    //connector section start
+    int connecting = 0;
+    int passing = 0;
+    for(auto& n : _inputs)
+    {  
+        if(n->GetOnConnectDragMode())
+        {
+            connecting++;
+            _current_sel_connector = n;
+        }
+        else if(n->IsPassing())
+        {
+            _current_pass_connector = n;
+            passing++;
+        }
+    }
+    for(auto& n : _outputs)
+    {  
+        if(n->GetOnConnectDragMode())
+        {
+            connecting++;
+            _current_sel_connector = n;
+        }
+        else if(n->IsPassing())
+        {
+            _current_pass_connector = n;
+            passing++;
+        }
+    }
+    
+    if(connecting>0)
+    {
+        _dragconnect_mode = true;
+    }else
+    {
+        _dragconnect_mode = false;
+    }
+
+    if(passing>0)
+    {
+        _attempt_got_connected = true;
+    }
+    else
+    {
+        _attempt_got_connected = false;
+    }
+    //connector section end
 }
 
 void Node::DrawDisplayRects(SDL_Renderer* renderer, std::string icon_name, std::shared_ptr<IconManager> Icm)
@@ -447,6 +642,25 @@ void Node::DrawDisplayRects(SDL_Renderer* renderer, std::string icon_name, std::
     }
 }
 
+void Node::DrawNodeConnectors(SDL_Renderer *renderer)
+{
+    for (auto &n : _inputs)
+    {
+        n->DrawConnection(renderer, connection_line_style);
+    }
+    for (auto &n : _outputs)
+    {
+        n->DrawConnection(renderer, connection_line_style);
+    }
+    for (auto &n : _inputs)
+    {
+        n->Draw(renderer);
+    }
+    for (auto &n : _outputs)
+    {
+        n->Draw(renderer);
+    }
+}
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++++++++++++++++++++== POINT NODE ==++++++++++++++++++++++++++++++++++++++++++
@@ -484,12 +698,12 @@ PointNode::PointNode(Point2D<double> drop_location, const Point2D<int>& origin_s
     _center = drop_location;
     _clicked_old_pos = _center;
 
-    Point2D<double> input_cloc(_center.x + origin_s.x, _center.y + (_node_height/2) + origin_s.y);
-    Point2D<double> output_cloc(_center.x + origin_s.x, _center.y - (_node_height/2) + origin_s.y);
-    
+    Point2D<double> loc;
     //Creating input buttons
-    _inputs.emplace_back(std::make_shared<NodeConnector>(input_cloc,true, this));
-    _outputs.emplace_back(std::make_shared<NodeConnector>(output_cloc,false, this));
+    _inputs.emplace_back(std::make_shared<NodeConnector>(loc, true, this, DataType::Point));
+    _inputs.emplace_back(std::make_shared<NodeConnector>(loc, true, this, DataType::Point));
+    _inputs.emplace_back(std::make_shared<NodeConnector>(loc, true, this, DataType::Point));
+    _outputs.emplace_back(std::make_shared<NodeConnector>(loc, false, this, DataType::Point));
 
     ScreenTransform(origin_s,scale);
     _textdisplay = std::make_unique<ScreenText>();
@@ -509,46 +723,7 @@ void PointNode::Update(Telecontroller *controller, const Point2D<int> origin_s, 
     ProcessUserInputs(controller,origin_s,scale);
     ScreenTransform(origin_s,scale);
 
-
-
-    Point2D<double> input_cloc(_center.x + origin_s.x, _center.y-(_node_height/2) + origin_s.y);
-    Point2D<double> output_cloc(_center.x + origin_s.x, _center.y+(_node_height/2) + origin_s.y);
-
-
-    for(auto& n:_inputs)
-    {
-        n->Update(controller,input_cloc);
-    }
-    for(auto& n:_outputs)
-    {
-        n->Update(controller,output_cloc);
-    }
-
-    int connecting = 0;
-    for(auto& n : _inputs)
-    {  
-        if(n->GetOnConnectDragMode())
-        {
-            connecting++;
-            _current_sel_connector = n;
-        }
-    }
-    for(auto& n : _outputs)
-    {  
-        if(n->GetOnConnectDragMode())
-        {
-            connecting++;
-            _current_sel_connector = n;
-        }
-    }
-    
-    if(connecting>0)
-    {
-        _dragconnect_mode = true;
-    }else
-    {
-        _dragconnect_mode = false;
-    }
+    UpdateConnectors(controller,origin_s);
 
     if (controller->GetEditMode())
     {
@@ -577,16 +752,7 @@ void PointNode::DrawNode(SDL_Renderer * renderer, std::shared_ptr<IconManager> I
 {
 
     DrawDisplayRects(renderer, "pointnode", Icm);
-
-
-    for(auto& n:_inputs)
-    {
-        n->Draw(renderer);
-    }
-    for(auto& n:_outputs)
-    {
-        n->Draw(renderer);
-    }
+    DrawNodeConnectors(renderer);
 }
 
 

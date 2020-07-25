@@ -12,6 +12,9 @@
 #include "JUTA/JUTA_math.h"
 #include "teletall_control.h"
 
+
+enum class DataType{Data, Geometry, Point, Vector, Line, Polyline, Color};
+
 class Node;
 
 
@@ -31,22 +34,32 @@ struct IconManager
 class NodeConnector
 {
 public:
-    NodeConnector(Point2D<double> location, bool in_or_out, Node* parent);
+    NodeConnector(Point2D<double> location, bool in_or_out, Node* parent, DataType type);
     ~NodeConnector();
     void Update(Telecontroller* controller, Point2D<double> location);
     Point2D<double> GetLocation(){return _pos;}
+
+    //getters
     bool IsInput(){return _in_or_out;}
+    bool IsPassing(){return _passing;}
+    bool IsConnected(){return _connected;}
+    bool IsSeleted(){return _selected;}
+    bool IsConnectingMode(){return _connecting_mode;}
     
-    void EstablishConnection(NodeConnector *target);
+    void EstablishConnection(std::shared_ptr<NodeConnector> target);
+    
     void Draw(SDL_Renderer *renderer);
-    void DrawConnection(SDL_Renderer *renderer);
+    void DrawConnection(SDL_Renderer *renderer, int mode);
     bool GetOnConnectDragMode(){return _connecting_mode;}
+    void ToggleConnect(){_connected = !_connected;}
 
 private:
     Node *_parent;
-    Node *_target;
+    std::shared_ptr<NodeConnector> _input_target;
     Point2D<double> _pos;
     SDL_Rect _rect;
+
+    DataType _type;
 
     void UpdateLocation(Point2D<double> location);
     void DrawDot8x8(SDL_Renderer *renderer);
@@ -55,6 +68,7 @@ private:
     bool _passing;
     bool _selected;
     bool _connecting_mode;
+    bool _connected;
     //graphics
     static int _size;
     static SDL_Color _norcolor;
@@ -76,20 +90,22 @@ public:
     virtual void DrawNode(SDL_Renderer *, std::shared_ptr<IconManager>)= 0;
     virtual void DrawGeometry(SDL_Renderer *, Point2D<int>& origin_s, int grid_size) const = 0;
     //this function only for editable node objects
-    virtual void ProcessInput(Telecontroller *controller, const Point2D<int> origin, int grid_size) = 0;;
+    virtual void ProcessInput(Telecontroller *controller, const Point2D<int> origin, int grid_size) = 0;
     virtual void RecieveData() = 0;
     virtual void ProcessData() = 0;
-    virtual void SendData() = 0;
+    virtual void GetOutputData() = 0;
 
     //setters and getters for all the node objects
     bool GetIfDrag(){return _ondrag;}
     bool GetIfPass(){return _passing;}
     bool GetIfConnecting(){return _dragconnect_mode;}
+    bool GetIfGoingtoConnect(){return _attempt_got_connected;}
     bool GetIsSelected(){return _selected;}
     bool GetIsEditable(){return _editable;};
     bool GetIsDisplay(){return _displaying;}
     Point2D<double> GetLocation(){return _center;}
     std::shared_ptr<NodeConnector> GetSelConnector();
+    std::shared_ptr<NodeConnector> GetPassingConnector();
 
     static size_t GetSelectionCount(){return selected_count;}
     static void SetSelectedCount(int count){selected_count = count;} 
@@ -109,6 +125,7 @@ protected:
     bool _running;
     bool _ondrag;
     bool _dragconnect_mode;
+    bool _attempt_got_connected;
     bool _editable;
     bool _displaying;
     bool _editing;
@@ -138,9 +155,15 @@ protected:
     SDL_Rect _icon_rect;
     SDL_Rect _node_rect;
 
+    //connectors
+    void UpdateConnectors(Telecontroller *controller, const Point2D<int> origin_s);
+    void SetConnectorLocations(Telecontroller *controller, const Point2D<int> origin_s);
+    void DrawNodeConnectors(SDL_Renderer* renderer);
     std::vector<std::shared_ptr<NodeConnector>> _inputs;
     std::vector<std::shared_ptr<NodeConnector>> _outputs;
     std::shared_ptr<NodeConnector> _current_sel_connector;
+    std::shared_ptr<NodeConnector> _current_pass_connector;
+    static int connection_line_style;
     
     std::string _name;
     std::unique_ptr<ScreenText> _textdisplay;
@@ -179,7 +202,7 @@ public:
 
     void RecieveData() override { };
     void ProcessData() override { };
-    void SendData() override { };
+    void GetOutputData() override { };
 
 private:
     //Data field
@@ -208,7 +231,7 @@ public:
     void ProcessInput(Telecontroller *controller, const Point2D<int> origin, int grid_size)override{};
     void RecieveData()override{}
     void ProcessData()override{}
-    void SendData()override{}
+    void GetOutputData()override{}
 };
 
 class PolylineNode : public Node

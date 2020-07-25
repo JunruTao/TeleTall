@@ -18,7 +18,8 @@ enum class cmd_KEY
     cmd_CREATE_NODE_Point, cmd_CREATE_NODE_Point_M,
     cmd_CREATE_POINT, cmd_GRID_SNAP_M,
     cmd_EditMode, cmd_EditMode_M, cmd_DisplayFlag, 
-    cmd_Message, cmd_QUIT, cmd_ZOOM_IN, cmd_ZOOM_OUT
+    cmd_Message, cmd_QUIT, cmd_ZOOM_IN, cmd_ZOOM_OUT,
+    cmd_CNLINE_1_LINE, cmd_CNLINE_2_ZIG, cmd_CNLINE_3_CURVE
     
 };
 

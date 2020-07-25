@@ -119,11 +119,17 @@ void Telecontroller::ProcessInput(bool &running)
             if (EditMode && event.button.clicks == 2)
             {
                 cmd = cmd_KEY::cmd_CREATE_POINT;
+            }else if(_selected_nodes != 0 && event.button.clicks == 2)
+            {
+                cmd = cmd_KEY::cmd_DisplayFlag;
             }
             else
             {
-                MouseL_hold = true;
                 cmd = cmd_KEY::cmd_LMB;
+                if (!MouseL_hold)
+                {
+                    MouseL_hold = true;
+                }
             }
             break;
         case SDL_BUTTON_RIGHT:
@@ -251,6 +257,15 @@ void Telecontroller::ProcessInput(bool &running)
             {
                 cmd = cmd_KEY::cmd_UNDO;
             }
+            break;
+        case SDLK_1:
+            cmd = cmd_KEY::cmd_CNLINE_1_LINE;
+            break;
+        case SDLK_2:
+            cmd = cmd_KEY::cmd_CNLINE_2_ZIG;
+            break;
+        case SDLK_3:
+            cmd = cmd_KEY::cmd_CNLINE_3_CURVE;
             break;
         default:
             break;
