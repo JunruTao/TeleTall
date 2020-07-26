@@ -43,9 +43,9 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
 > * ✔️ (Mixed) The project uses smart pointers instead of raw pointers.
 
 > **4. Concurrency**
-> * ⚪ The project uses multithreading.
+> * ✔️ The project uses multithreading.
 > * ⚪ A promise and future is used in the project.
-> * ⚪ A mutex or lock is used in the project.
+> * ✔️ A mutex or lock is used in the project.
 > * ⚪ A condition variable is used in the project.
 ***
 
@@ -178,9 +178,24 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
 #### :pushpin: Latest!!!: :arrow_down: :arrow_down: :arrow_down:
 
 
-
 :radio_button: &larr;- - - - :bookmark_tabs:
-* #### DAY 16 { <ins>7/24/2020</ins> } : Features
+* #### DAY 18 { <ins>7/26/2020</ins> } : Features
+**[10:20 AM] addings and issues**
+  1. planning on creating a worker thread in Telepad, idea diagrams:
+
+  <img src=".markdown.images/20200726_node_process_threadmodel_idea2.png">
+
+  <img src=".markdown.images/20200726_node_process_threadmodel_idea1.png">
+
+  2. added a new feature. All nodes now will have a unique name. with a unique name generator function in Node class.
+
+  3. <s>**issue** unsolved: when deleting a outputing node. the reciever will still drawing the connections without any reason.</s> 
+  
+  [ 3 ] **solved✔️** by checking the unique name is still in the namepool. quite expensive though however because of using shared_pointers this problem can not be solved by resetting deleted node. somehow it leads to issues that inputs still holding the data of upper connector.
+
+-----
+:radio_button: &larr;- - - - :bookmark_tabs:
+* #### DAY 17 { <ins>7/25/2020</ins> } : Features
 **[11:20 AM] features/fixing**
   
   * double click on the node now you can switch the `display-flag` to on another.

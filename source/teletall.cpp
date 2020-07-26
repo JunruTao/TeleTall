@@ -83,6 +83,7 @@ void TeleTall::Run(
 
     //this bridges telepad to tall, to send geometry data.
     telepad.LinkTall(&tallwindow);
+    telepad.StartNodeProcessThread();
 
     //Field For time measuring
     Uint32 time_stamp = SDL_GetTicks();

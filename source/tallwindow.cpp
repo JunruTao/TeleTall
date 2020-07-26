@@ -193,7 +193,7 @@ void Tallwindow::Update(Telecontroller &controller)
             if(n->GetIsEditable() && n->GetIsSelected())
             {
                 editing_node = n;
-                editing_node->ProcessInput(&controller,origin,grid_size);
+                editing_node->ProcessEditModeInput(&controller,origin,grid_size);
             }
         }
     }

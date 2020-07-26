@@ -20,6 +20,7 @@ public:
     void Update(Telecontroller &controller);
     void Render(SDL_Renderer *renderer);
     void AssignIconManager(std::shared_ptr<IconManager>& Icm);
+    void StartNodeProcessThread();
     void LinkTall(Tallwindow* htall){_tall = htall;}
     Point2D<int>* GetOrigin();
 
@@ -73,6 +74,11 @@ private:
 
     //geometry renderer
     Tallwindow* _tall;
+
+    //working thread
+    std::thread* worker_thread;
+    void ProcessNodesIO();
+    bool stop_thread;
 
 };
 

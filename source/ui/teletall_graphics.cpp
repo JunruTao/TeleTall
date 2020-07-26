@@ -155,12 +155,12 @@ void DrawNurbs(SDL_Renderer* renderer, std::vector<Point2D<double>> points, int 
                 Point2D<double> oneQ;
                 oneQ.x = ((((double)tempList[i].x) * 0.5f) + (((double)tempList[i + 1].x) * 0.5f));
                 oneQ.y = ((((double)tempList[i].y) * 0.5f) + (((double)tempList[i + 1].y) * 0.5f));
-                //tempList.erase(tempList.begin());
+
                 tempList2.emplace_back(std::move(oneQ));
                 Point2D<double> threeQ;
                 threeQ.x = (((double)tempList[i].x) * 0.125f + ((double)tempList[i + 1].x) * 0.75f + ((double)tempList[i + 2].x) * 0.125f);
                 threeQ.y = (((double)tempList[i].y) * 0.125f + ((double)tempList[i + 1].y) * 0.75f + ((double)tempList[i + 2].y) * 0.125f);
-                //tempList.erase(tempList.begin());
+
                 tempList2.emplace_back(std::move(threeQ));
                 Point2D<double> fQ;
                 fQ.x = ((((double)tempList[i + 1].x) * 0.5f) + (((double)tempList[i + 2].x) * 0.5f));
@@ -176,6 +176,8 @@ void DrawNurbs(SDL_Renderer* renderer, std::vector<Point2D<double>> points, int 
             tempList = tempList2;
         }
     }
+
+
 
     for (size_t i = 0; i < tempList.size() -1; ++i)
         {
@@ -217,12 +219,6 @@ void DrawNurbs(SDL_Renderer* renderer, std::vector<Point2D<double>> points, int 
             vecperp1 *= -1;
             SDL_RenderDrawLineF(renderer, (double)tempList[i].x + vecperp1.x, (double)tempList[i].y + vecperp1.y, (double)tempList[i + 1].x + vecperp1.x, (double)tempList[i + 1].y  + vecperp1.y);
 
-            // vecperp2.MakeUnitVector();
-            // vecperp2 *= 0.8;
-            // SDL_SetRenderDrawColor(renderer, rendercolor.r, rendercolor.g, rendercolor.b ,40);
-            // SDL_RenderDrawLineF(renderer, (double)tempList[i].x + vecperp2.x, (double)tempList[i].y + vecperp2.y, (double)tempList[i + 1].x + vecperp2.x, (double)tempList[i + 1].y  + vecperp2.y);
-            // vecperp2 *= -1;
-            // SDL_RenderDrawLineF(renderer, (double)tempList[i].x + vecperp2.x, (double)tempList[i].y + vecperp2.y, (double)tempList[i + 1].x + vecperp2.x, (double)tempList[i + 1].y  + vecperp2.y);
 
 
             SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);

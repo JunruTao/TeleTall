@@ -49,6 +49,9 @@ Telepad::Telepad(
     _selecting = false;
 
 
+    stop_thread = false;
+
+
 }
 /*
 #[[[[[[[[[[[]]]]]]]]]]]
@@ -57,6 +60,11 @@ Telepad::Telepad(
 //--------------------------------------------------------------------------------------
 Telepad::~Telepad()
 {
+    stop_thread = true;
+    if(worker_thread->joinable())
+    {
+        worker_thread->join();
+    }
 }
 /*
 #[[[[[[[[[[[]]]]]]]]]]]
@@ -729,4 +737,20 @@ void Telepad::DrawConnectCurve(SDL_Renderer* renderer)
 void Telepad::SendNodesToTall(std::shared_ptr<Node>& node_to_tall)
 {
     _tall->CaptureRenderNodes(node_to_tall);
+}
+
+
+void Telepad::ProcessNodesIO()
+{
+    while(!stop_thread)
+    {
+        std::vector<std::shared_ptr<Node>> nodeque = node_pool;
+        std::this_thread::sleep_for(std::chrono::milliseconds(300));
+    }
+}
+
+
+void Telepad::StartNodeProcessThread()
+{
+    worker_thread = new std::thread(&Telepad::ProcessNodesIO, this);
 }

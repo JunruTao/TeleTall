@@ -126,15 +126,25 @@ void NodeConnector::Update(Telecontroller* controller, Point2D<double> location)
     {
         _passing = false;
     }
-    skip:
-    {}
+skip:
+{
+}
+    if (_input_target == nullptr)
+    {
+        Disconnect();
+    }
+    else if (_input_target->_type != this->_type)
+    {
+        Disconnect();
+    }
 }
 
 
 NodeConnector::~NodeConnector()
 {
     _parent = nullptr;
-    
+    _input_target = nullptr;
+    _type = DataType::Invalid;
 }
 
 void NodeConnector::Draw(SDL_Renderer *renderer)
@@ -234,7 +244,7 @@ void NodeConnector::DrawConnection(SDL_Renderer *renderer, int mode)
 {
     if (_connected)
     {
-        if (_in_or_out && _input_target != nullptr)
+        if (_in_or_out && _input_target != nullptr && _input_target->_parent != nullptr)
         {
             
             std::vector<Point2D<double>> pointlist;
@@ -254,15 +264,13 @@ void NodeConnector::DrawConnection(SDL_Renderer *renderer, int mode)
                 
             }
             pointlist.push_back(_input_target->_pos);
-
-            SDL_Color rendercolor = {230, 230, 230, 255};
             if (mode == 3)
             {
-                DrawNurbs(renderer, pointlist, 3, rendercolor);
+                DrawNurbs(renderer, pointlist, 3, _norcolor);
             }
             else
             {
-                DrawNurbs(renderer, pointlist, 1, rendercolor);
+                DrawNurbs(renderer, pointlist, 1, _norcolor);
             }
         }
     }
@@ -295,8 +303,11 @@ SDL_Color Node::_editmode_color = {255,42,105,100};
 SDL_Color Node::_lockmode_color = {32,32,32,180};
 SDL_Color Node::_renderflag_color = {0,80,255,180};
 
+std::vector<std::string> Node::_name_pool = { };
+
 void Node::ProcessUserInputs(Telecontroller *controller, const Point2D<int> origin_s, double scale)
 {
+
     bool old_sel_status = _selected;
     bool inboud = controller->GetMousePoint()->InBoundWH(_node_rect.x, _node_rect.y, _node_rect.w, _node_rect.h);
 
@@ -446,6 +457,27 @@ Node::Node()
 Node::~Node() //virtual destructor
 {
     node_counter--;
+    if (!_name_pool.empty())
+    {
+        for (size_t i = 0; i < _name_pool.size(); i++)
+        {
+            if (_name_pool[i] == _name)
+            {
+                _name_pool.erase(_name_pool.begin() + i);
+                break;
+            }
+        }
+    }
+    for(auto& i : _inputs)
+    {
+        i.reset();
+        i = nullptr;
+    }
+    for(auto& i : _outputs)
+    {
+        i.reset();
+        i = nullptr;
+    }
 }
 
 
@@ -477,7 +509,6 @@ void Node::SetConnectorLocations(Telecontroller *controller, const Point2D<int> 
 
 void Node::UpdateConnectors(Telecontroller *controller, const Point2D<int> origin_s)
 {
-    
     SetConnectorLocations(controller,origin_s);
 
     switch (controller->GetCommand())
@@ -662,6 +693,88 @@ void Node::DrawNodeConnectors(SDL_Renderer *renderer)
     }
 }
 
+
+
+bool Node::HasInputLink()
+{
+    int_fast8_t connectlock = 0;
+    for (auto &i : _inputs)
+    {
+        if (i->IsConnected())connectlock++;
+    }
+    if(connectlock>0)
+    {
+        return true;
+    }else
+    {
+        return false;
+    }
+}
+
+
+std::vector<std::shared_ptr<Node>> Node::GetInputParents(std::vector<std::shared_ptr<Node>> node_pool)
+{
+    std::vector<std::shared_ptr<Node>> names;
+    for (auto &i : _inputs)
+    {
+        int x = 0;
+    }
+}
+
+void Node::GetNonDuplicatedNames(std::string NODE_name)
+{
+    if (_name_pool.empty())
+    {
+        _name = NODE_name + "1";
+        _name_pool.push_back(_name);
+    }
+    else
+    {
+        int local_counter = 0;
+        std::string tempname = NODE_name + std::to_string(local_counter);;
+        bool check = true;
+        while (check)
+        {
+            local_counter++;
+            tempname = NODE_name + std::to_string(local_counter);
+
+            size_t checker = 0;
+            for (auto &n : _name_pool)
+            {
+                if (tempname == n)
+                {
+                    checker++;
+                }
+            }
+            if(checker == 0)
+            {
+                check = false;
+            }  
+        }
+
+        //tempname = NODE_name + std::to_string(local_counter);
+        _name = tempname;
+        _name_pool.push_back(tempname);
+    }
+}
+
+
+bool Node::GetIsNodeExist(std::string name)
+{
+    if (!_name_pool.empty())
+    {
+        for (size_t i = 0; i < _name_pool.size(); i++)
+        {
+            if (_name_pool[i] == name)
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++++++++++++++++++++== POINT NODE ==++++++++++++++++++++++++++++++++++++++++++
 //_____________________________________________________________________________________
@@ -689,19 +802,21 @@ PointNode::PointNode(Point2D<double> drop_location, const Point2D<int>& origin_s
 {
     counter++;
 
+    //native attributs
     _editable = true;
     _editing = false;
+
+    //point node's edit mode attribute
     pt_onlysel = false;
 
+    std::string NODE_name = "Point";
+    GetNonDuplicatedNames(NODE_name);
 
-    _name = "Point" + std::to_string(counter);
     _center = drop_location;
     _clicked_old_pos = _center;
 
     Point2D<double> loc;
     //Creating input buttons
-    _inputs.emplace_back(std::make_shared<NodeConnector>(loc, true, this, DataType::Point));
-    _inputs.emplace_back(std::make_shared<NodeConnector>(loc, true, this, DataType::Point));
     _inputs.emplace_back(std::make_shared<NodeConnector>(loc, true, this, DataType::Point));
     _outputs.emplace_back(std::make_shared<NodeConnector>(loc, false, this, DataType::Point));
 
@@ -719,29 +834,70 @@ PointNode::PointNode(Point2D<double> drop_location, const Point2D<int>& origin_s
 
 void PointNode::Update(Telecontroller *controller, const Point2D<int> origin_s, double scale)
 {
-    
+    //lock mutex here
+    std::lock_guard<std::mutex> glock(_mutex);
+
     ProcessUserInputs(controller,origin_s,scale);
     ScreenTransform(origin_s,scale);
 
     UpdateConnectors(controller,origin_s);
 
-    if (controller->GetEditMode())
-    {
-        is_editing_mode = true;
 
-        if (_selected && controller->GetSeletedNodesCount() == 1)
+    //Here if this point node's input is connected to another point node, then it can not be edited
+    int_fast8_t connectlock = 0;
+    for(auto& i: _inputs)
+    {
+        if(i->IsConnected())
         {
-            _editing = true;           
-        }
-        else
-        {
-            _editing = false;
-        }
+            if (i->GetDataType() != i->GetTargetType())
+            {
+                i->Disconnect();
+            }
+            else if(i->GetTargetParent() == nullptr)
+            {
+                i->Disconnect();
+            }
+            else if(!GetIsNodeExist(i->GetTargetParent()->GetName()))
+            {
+                i->Disconnect();
+            }
+            else
+            {
+            connectlock++;
+            }
+        }  
+    }
+    if(connectlock>0)
+    {
+        _editable = false;
     }
     else
     {
-        is_editing_mode = false;
-        _editing = false;
+        _editable = true;
+    }
+
+
+//Edit Mode, is able to add and delete points
+    if (_editable)
+    {
+        if (controller->GetEditMode())
+        {
+            is_editing_mode = true;
+
+            if (_selected && controller->GetSeletedNodesCount() == 1)
+            {
+                _editing = true;
+            }
+            else
+            {
+                _editing = false;
+            }
+        }
+        else
+        {
+            is_editing_mode = false;
+            _editing = false;
+        }
     }
 }
 
@@ -793,8 +949,10 @@ void PointNode::DrawGeometry(SDL_Renderer* renderer, Point2D<int>& origin_s, int
     }
 }
 
-void PointNode::ProcessInput(Telecontroller *controller, const Point2D<int> origin, int grid_size)
+void PointNode::ProcessEditModeInput(Telecontroller *controller, const Point2D<int> origin, int grid_size)
 {
+    //lock mutex here
+    std::lock_guard<std::mutex> glock(_mutex);
     if (controller->GetCurrentPanel() == PanelID::ON_TALL)
     {
         if (!point_pool.empty())
@@ -858,4 +1016,7 @@ void PointNode::ProcessInput(Telecontroller *controller, const Point2D<int> orig
 PointNode::~PointNode()
 {
     counter--;
+
 }
+
+

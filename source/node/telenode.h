@@ -13,7 +13,7 @@
 #include "teletall_control.h"
 
 
-enum class DataType{Data, Geometry, Point, Vector, Line, Polyline, Color};
+enum class DataType{Invalid, Data, Geometry, Point, Vector, Line, Polyline, Color};
 
 class Node;
 
@@ -45,13 +45,16 @@ public:
     bool IsConnected(){return _connected;}
     bool IsSeleted(){return _selected;}
     bool IsConnectingMode(){return _connecting_mode;}
-    
     void EstablishConnection(std::shared_ptr<NodeConnector> target);
-    
+    void Disconnect(){_input_target = nullptr; _connected = false;};
     void Draw(SDL_Renderer *renderer);
     void DrawConnection(SDL_Renderer *renderer, int mode);
     bool GetOnConnectDragMode(){return _connecting_mode;}
     void ToggleConnect(){_connected = !_connected;}
+
+    DataType GetDataType(){return _type;}
+    DataType GetTargetType(){return _input_target->GetDataType();}
+    Node* GetTargetParent(){return _input_target->_parent;}
 
 private:
     Node *_parent;
@@ -90,7 +93,7 @@ public:
     virtual void DrawNode(SDL_Renderer *, std::shared_ptr<IconManager>)= 0;
     virtual void DrawGeometry(SDL_Renderer *, Point2D<int>& origin_s, int grid_size) const = 0;
     //this function only for editable node objects
-    virtual void ProcessInput(Telecontroller *controller, const Point2D<int> origin, int grid_size) = 0;
+    virtual void ProcessEditModeInput(Telecontroller *controller, const Point2D<int> origin, int grid_size) = 0;
     virtual void RecieveData() = 0;
     virtual void ProcessData() = 0;
     virtual void GetOutputData() = 0;
@@ -103,9 +106,13 @@ public:
     bool GetIsSelected(){return _selected;}
     bool GetIsEditable(){return _editable;};
     bool GetIsDisplay(){return _displaying;}
+    bool GetIsNodeExist(std::string name);
     Point2D<double> GetLocation(){return _center;}
     std::shared_ptr<NodeConnector> GetSelConnector();
     std::shared_ptr<NodeConnector> GetPassingConnector();
+
+    bool HasInputLink();
+    std::vector<std::shared_ptr<Node>> GetInputParents(std::vector<std::shared_ptr<Node>> node_pool);
 
     static size_t GetSelectionCount(){return selected_count;}
     static void SetSelectedCount(int count){selected_count = count;} 
@@ -117,6 +124,7 @@ public:
     void SetNondisplay(){_displaying = false;}
     int GetWidth(){return _node_width;}
     int GetHeight(){return _node_height;}
+    std::string GetName(){return _name;}
     
 
 protected:
@@ -166,11 +174,18 @@ protected:
     static int connection_line_style;
     
     std::string _name;
+    static std::vector<std::string> _name_pool;
+    void GetNonDuplicatedNames(std::string NODE_name);
+    
     std::unique_ptr<ScreenText> _textdisplay;
 
     void ProcessUserInputs(Telecontroller *controller, const Point2D<int> origin_s, double scale);
     void ScreenTransform(const Point2D<int>& origin_s, double scale); 
     void DrawDisplayRects(SDL_Renderer* renderer, std::string icon_name, std::shared_ptr<IconManager> Icon_manager);
+
+    //thread protect:
+    std::mutex _mutex;
+    
 };
 
 //need a resource manager to hold all the texture data, 
@@ -195,7 +210,7 @@ public:
 
     void Update(Telecontroller *controller, const Point2D<int> origin_s, double scale) override;
     //this function only for editable node objects
-    void ProcessInput(Telecontroller *controller, const Point2D<int> origin, int grid_size)override;
+    void ProcessEditModeInput(Telecontroller *controller, const Point2D<int> origin, int grid_size)override;
     void DrawNode(SDL_Renderer * renderer, std::shared_ptr<IconManager> Icm)override;
     void DrawGeometry(SDL_Renderer *renderer, Point2D<int>& origin_s, int grid_size) const override;
     void CreatePoints(double x, double y, double z);
@@ -207,6 +222,8 @@ public:
 private:
     //Data field
     std::vector<std::shared_ptr<Point3D>> point_pool;
+
+
 
     static size_t counter;
     bool pt_onlysel;
@@ -228,7 +245,7 @@ public:
     void Update(Telecontroller *controller, const Point2D<int> origin_s, double scale)override{}
     void DrawNode(SDL_Renderer *, std::shared_ptr<IconManager>)override{}
     void DrawGeometry(SDL_Renderer *, Point2D<int>& origin_s, int grid_size)const override{}
-    void ProcessInput(Telecontroller *controller, const Point2D<int> origin, int grid_size)override{};
+    void ProcessEditModeInput(Telecontroller *controller, const Point2D<int> origin, int grid_size)override{};
     void RecieveData()override{}
     void ProcessData()override{}
     void GetOutputData()override{}
