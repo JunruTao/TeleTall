@@ -145,9 +145,8 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
 
   | list |     Code Needed to Adjust              |    to  | Changed           |
   | :---  | ------------------------------------- | ---    | ----              |
-  |  1.  | Change all the `#include <SDL2/...>`| &rarr; | `#include <SDL.h>` or so|
-  | 2.  | under`source/` in `x_sld2headers` and `x_threadheaders.h`, change all  **`#define _WINUSER_ `<s>`1`</s>** | &rarr; | `#define _WINUSER_ 0` |
-  | 3. | in `CMakeLists.txt`'s `TARGET_LINK_LIBRARIES(teletall...` , **remove** | &rarr;|<s> `-lmingw32`</s> |
+  | 1.  | under`source/` in `x_sld2headers` and `x_threadheaders.h`, change all  **`#define _WINUSER_ `<s>`1`</s>** | &rarr; | `#define _WINUSER_ 0` |
+  | 2. | in `CMakeLists.txt`'s `TARGET_LINK_LIBRARIES(teletall...` , **remove** | &rarr;|<s> `-lmingw32`</s> |
 
 * **Windows:**
   1. Clone this repo.
