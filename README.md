@@ -177,6 +177,19 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
 #### :pushpin: Latest!!!: :arrow_down: :arrow_down: :arrow_down:
 
 
+
+
+:radio_button: &larr;- - - - :bookmark_tabs:
+* #### DAY 19 { <ins>7/27/2020</ins> } : Threading Model Test
+**[2:03 AM] Start a new thread in Telepad and process input tree**
+
+This is a important update, finally cracked the bottom-up node process tree and processing the inputs and outputs in another thread.
+here is a test which highlighting all the nodes that being processed if related to the display-flagged(renderer) node:
+
+  <img src=".markdown.images/20200727_node_process_threadmodel_test.gif">
+
+
+----
 :radio_button: &larr;- - - - :bookmark_tabs:
 * #### DAY 18 { <ins>7/26/2020</ins> } : Features
 **[10:20 AM] addings and issues**

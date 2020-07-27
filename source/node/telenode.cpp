@@ -470,13 +470,11 @@ Node::~Node() //virtual destructor
     }
     for(auto& i : _inputs)
     {
-        i.reset();
-        i = nullptr;
+        i->~NodeConnector();
     }
     for(auto& i : _outputs)
     {
-        i.reset();
-        i = nullptr;
+        i->~NodeConnector();
     }
 }
 
@@ -712,13 +710,17 @@ bool Node::HasInputLink()
 }
 
 
-std::vector<std::shared_ptr<Node>> Node::GetInputParents(std::vector<std::shared_ptr<Node>> node_pool)
+ std::vector<std::string> Node::GetInputParents()
 {
-    std::vector<std::shared_ptr<Node>> names;
+    std::vector<std::string> names;
     for (auto &i : _inputs)
     {
-        int x = 0;
+        if(i->IsConnected())
+        {
+            names.push_back(i->GetTargetParent()->GetName());
+        }
     }
+    return names;
 }
 
 void Node::GetNonDuplicatedNames(std::string NODE_name)
@@ -806,6 +808,8 @@ PointNode::PointNode(Point2D<double> drop_location, const Point2D<int>& origin_s
     _editable = true;
     _editing = false;
 
+    process_test = false;
+
     //point node's edit mode attribute
     pt_onlysel = false;
 
@@ -818,6 +822,8 @@ PointNode::PointNode(Point2D<double> drop_location, const Point2D<int>& origin_s
     Point2D<double> loc;
     //Creating input buttons
     _inputs.emplace_back(std::make_shared<NodeConnector>(loc, true, this, DataType::Point));
+    _inputs.emplace_back(std::make_shared<NodeConnector>(loc, true, this, DataType::Point));
+
     _outputs.emplace_back(std::make_shared<NodeConnector>(loc, false, this, DataType::Point));
 
     ScreenTransform(origin_s,scale);
@@ -857,9 +863,13 @@ void PointNode::Update(Telecontroller *controller, const Point2D<int> origin_s, 
             {
                 i->Disconnect();
             }
-            else if(!GetIsNodeExist(i->GetTargetParent()->GetName()))
+            else if(i->GetInputTargetAddress() == nullptr)
             {
                 i->Disconnect();
+            }
+            else if(!GetIsNodeExist(i->GetTargetParent()->GetName()))
+            {
+                 i->Disconnect();
             }
             else
             {
@@ -909,6 +919,13 @@ void PointNode::DrawNode(SDL_Renderer * renderer, std::shared_ptr<IconManager> I
 
     DrawDisplayRects(renderer, "pointnode", Icm);
     DrawNodeConnectors(renderer);
+
+    if(process_test)
+    {
+        SDL_SetRenderDrawColor(renderer, 255,0,0,255);
+        SDL_RenderFillRect(renderer, &_node_rect);
+        process_test = false;
+    }
 }
 
 
@@ -1019,4 +1036,9 @@ PointNode::~PointNode()
 
 }
 
-
+void PointNode::ProcessData()
+{
+    //lock mutex here
+    std::lock_guard<std::mutex> glock(_mutex);
+    process_test = true;
+}

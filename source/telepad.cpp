@@ -121,17 +121,17 @@ void Telepad::Update(Telecontroller &controller)
             controller.Shared_Nevigation_Lock = MouseLockID::FREE;
         }
 
+        if (controller.GetCommand() == cmd_KEY::cmd_Delete)
+        {
+            DeleteNode();
+        }
         
         UpdateNode(&controller);
         Select(&controller, x, y);
 
         
 
-        if (controller.GetCommand() == cmd_KEY::cmd_Delete)
-        {
-            DeleteNode();
-            controller.SendCommandEx(cmd_KEY::cmd_EMPTY, " ");
-        }
+
     }
     else
     {
@@ -477,6 +477,8 @@ void Telepad::DeleteNode()
 {
     if(!node_pool.empty())
     {
+        _sel_nodes.clear();
+        _sel_connector = nullptr;
         for(size_t i = 0; i < node_pool.size(); i++)
         {
             if(node_pool[i]->GetIsSelected())
@@ -575,7 +577,11 @@ void Telepad::Select(Telecontroller *controller, int x, int y)
         }
         _sel_connector = nullptr;
     }
-
+    
+    if(!controller->MouseL_hold)
+    {
+        _sel_connector = nullptr;
+    }
     
 
     
@@ -740,13 +746,97 @@ void Telepad::SendNodesToTall(std::shared_ptr<Node>& node_to_tall)
 }
 
 
+
+
+
+
+
 void Telepad::ProcessNodesIO()
 {
     while(!stop_thread)
     {
-        std::vector<std::shared_ptr<Node>> nodeque = node_pool;
-        std::this_thread::sleep_for(std::chrono::milliseconds(300));
-    }
+        if (!node_pool.empty())
+        {
+            std::vector<std::string> process_names = {};
+            std::vector<std::shared_ptr<Node>> tempnodes;
+            //find the node displaying
+            for (auto &n : node_pool)
+            {
+                if (n->GetIsDisplay())
+                {
+                    process_names.push_back(n->GetName());
+                    tempnodes.push_back(n);
+                    break;
+                }
+            }
+            //The first one: the displaying node has a input flag
+            bool hasinput = tempnodes[0]->HasInputLink();
+
+            while (hasinput)
+            {
+                int inputhasinput = 0;
+                int tempsize = tempnodes.size();
+
+                if (tempsize != 0)
+                {
+                    for (auto &inode : tempnodes)
+                    {
+                        if (inode->HasInputLink())
+                        {
+                            inputhasinput++;
+                            std::vector<std::string> temp_names = inode->GetInputParents();
+                            process_names.insert(process_names.begin(), temp_names.begin(), temp_names.end());
+
+                            //here, search for all the nodes in temp_names, get the shared pointers from node;
+                            for(auto n : temp_names)
+                            {
+                                for (auto &node : node_pool)
+                                {
+                                    if(node->GetName() == n)
+                                    {
+                                        tempnodes.push_back(node);
+                                        break;
+                                    }
+                                }
+                            }
+                            
+                        }
+                    }
+                    //here remove old nodes' names
+                    tempnodes.erase(tempnodes.begin(), tempnodes.begin() + tempsize);
+                }
+
+                if(inputhasinput == 0)
+                {
+                    hasinput = false;
+                    break;
+                }
+            }//end of input find while loop
+
+            tempnodes.clear();
+
+            //cull the duplicates of names
+            std::vector<std::string>::iterator stringp;
+            stringp = std::unique(process_names.begin(),process_names.begin() + process_names.size());
+            process_names.resize(std::distance(process_names.begin(), stringp));
+
+            
+            for(size_t i = 0; i<process_names.size(); i++)
+            {
+                for (auto &node : node_pool)
+                {
+                    if (node->GetName() == process_names[i])
+                    {
+                        node->ProcessData();
+                        break;
+                    }
+                }
+            }
+
+        }
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }//end of main while loop
 }
 
 

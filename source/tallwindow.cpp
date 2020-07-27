@@ -303,5 +303,6 @@ void Tallwindow::EditGeometry(Telecontroller *controller, const int &x, const in
     else
     {
         editing_node.reset();
+        editing_node = nullptr;
     }
 }

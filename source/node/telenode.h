@@ -55,6 +55,7 @@ public:
     DataType GetDataType(){return _type;}
     DataType GetTargetType(){return _input_target->GetDataType();}
     Node* GetTargetParent(){return _input_target->_parent;}
+    NodeConnector* GetInputTargetAddress(){return _input_target.get();}
 
 private:
     Node *_parent;
@@ -112,7 +113,7 @@ public:
     std::shared_ptr<NodeConnector> GetPassingConnector();
 
     bool HasInputLink();
-    std::vector<std::shared_ptr<Node>> GetInputParents(std::vector<std::shared_ptr<Node>> node_pool);
+    std::vector<std::string> GetInputParents();
 
     static size_t GetSelectionCount(){return selected_count;}
     static void SetSelectedCount(int count){selected_count = count;} 
@@ -185,6 +186,8 @@ protected:
 
     //thread protect:
     std::mutex _mutex;
+
+    bool process_test;
     
 };
 
@@ -216,7 +219,7 @@ public:
     void CreatePoints(double x, double y, double z);
 
     void RecieveData() override { };
-    void ProcessData() override { };
+    void ProcessData() override;
     void GetOutputData() override { };
 
 private:
