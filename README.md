@@ -176,7 +176,16 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
 ## :black_circle:Production Logs:
 #### :pushpin: Latest!!!: :arrow_down: :arrow_down: :arrow_down:
 
+:radio_button: &larr;- - - - :bookmark_tabs:
+* #### DAY 20 { <ins>7/28/2020</ins> } : Merge Node
+**[2:03 AM] Added Merge Node, Node Geo's Polymorphism**
+The problem I was having was how to pass data properly from a node to a different node? Luckly I realised that my `Point3D` Geometry type is derived from `GeoData` which is a virtual class and I can simply define `std::vector<std::shared_ptr<GeoData>> GetOutputData` as a node's uniformed virtual function so that each node overrides it and cast its `data pool` into `Geo Data` vector and then pass it down to the next node. So for `point nodes`, I used `std::shared_ptr<Point3D> points = std::dynamic_pointer_cast<Point3D>(data)` to recieve the `GeoData` package from upper stream. 
 
+* The **<img src=".package.extra.merge/tltl_node_icon/mergenode.bmp"> Merge Node :**, which holds data as `GeoData` type, so even if the inputs are lines or curves, they will still draw themselves in one node.
+
+<img src=".markdown.images/20200729_mergeNode.png">
+
+--------
 
 
 :radio_button: &larr;- - - - :bookmark_tabs:
