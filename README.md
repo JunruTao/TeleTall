@@ -1,6 +1,6 @@
 # :radio_button: TeleTall 
 
-This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](https://www.udacity.com/course/c-plus-plus-nanodegree--nd213). The Capstone Project is a chance to integrate what I've learned throughout this program. 
+This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](https://www.udacity.com/course/c-plus-plus-nanodegree--nd213). The Capstone Project is a chance to integrate what I've learned throughout this program. Find all the info on website:**[Teletall's Wiki](https://github.com/JunruTao/Udacity.Cpp.Capstone.Project/wiki)**
 * :pushpin:**Capstone Option:** :one: + :two:
   * <sup>The type:</sup> 
   
@@ -9,12 +9,20 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
 
 * :pushpin:**Program Preview:**
 
-  |<img src=".markdown.images\20200721_Telenodes_move_drag.gif"/> |
+  |<img src=".markdown.images/20200729_194545.gif"/> |
   |---|
+  | watch the demo video of TeleTall v0.2.4 here &darr;|
+  |[![TeleTall v0.2.4 Demo Video](.markdown.images/20200729_vimeo.png)](https://vimeo.com/442819000 "TeleTall v0.2.4 Demo Video")|
 
-* :pushpin:**Program Structure:**
-> .
-> .
+
+  
+
+* :pushpin:**Program Structure:** _* partial_
+> 1. Initial Design
+> <img src=".markdown.images/20200711_structure_diagram1.png"/>
+
+> 2. Detail Diagram explaining the nodes and thread
+> <img src=".markdown.images/20200726_node_process_threadmodel_idea1.png">
 
 * :pushpin:**Rubric Points addressed:**
 
@@ -110,8 +118,12 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
 
 |<sup>:notebook: notes:</sup>|
 |:---|
-| |
-
+| You can create all the node from the menu tab `menu`&rarr;`Nodes`&rarr;`Point Node ...`. The current version which is `v.0.2.4` has very basic node category. They are listed down below. |
+  * **<img src=".package.extra.merge/tltl_node_icon/pointnode.bmp"> Point Node** creates points in the tall viewport. Point data will be stored in this node.
+  * **<img src=".package.extra.merge/tltl_node_icon/mergenode.bmp"> Merge Node** Theoretically, merge node can merge any node type's outputs, however here is a bug not yet fixed in `v0.2.4` of teletall. It will not crash merging points, however if merging different types or other types more than 2 entries, the program will crash. If you do have the solution, please comment below in the issue section.
+  * **<img src=".package.extra.merge/tltl_node_icon/linenode.bmp"> Line Node** Takes 2 inputs `A` & `B` entries, both should be point type. The ideal design is a "Long List" solution, that a shorter list of points will repeat its last item and link to the remained points in the longer list. However, too much amount of point data will also crash so how. This issue is not yet fixed in `v0.2.4`. 
+  * **<img src=".package.extra.merge/tltl_node_icon/polylinenode.bmp"> Polyline Node** interpolate a group of points into polyline. One input allowed.
+  * **<img src=".package.extra.merge/tltl_node_icon/curvenode.bmp"> Curve Node** interpolate a group of points into cubic b-spline curve. One input allowed.
 ***
 
 
@@ -153,7 +165,6 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
   | list |     Code Needed to Adjust              |    to  | Changed           |
   | :---  | ------------------------------------- | ---    | ----              |
   | 1.  | under`source/` in `x_sld2headers` and `x_threadheaders.h`, change all  **`#define _WINUSER_ `<s>`1`</s>** | &rarr; | `#define _WINUSER_ 0` |
-  | 2. | in `CMakeLists.txt`'s `TARGET_LINK_LIBRARIES(teletall...` , **remove** | &rarr;|<s> `-lmingw32`</s> |
 
 * **Windows:**
   1. Clone this repo.
@@ -161,6 +172,9 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
   3. Compile: `cmake.exe -G "MinGW Makefiles" .. `
   4. Build(make): `mingw32-make` 
   5. Run it: `./${ProjectName}`
+    ___
+
+* :warning: ***After successfully built, please copy all the subfolders in `.package.extra.merge` folder which contains the fonts and icons into your build directory.***
 
 
 
@@ -174,6 +188,7 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
 ----------------------------------------------------------------
 
 ### :white_circle:Releases
+* [32bit win TeleTall Beta Version -v0.2.4](https://github.com/JunruTao/Udacity.Cpp.Capstone.Project/releases/tag/v0.2.4)
 * [32bit win TeleTall Beta Version -v0.2.0](https://github.com/JunruTao/Udacity.Cpp.Capstone.Project/releases/tag/v0.2)
 * [32bit win TeleTall Beta Version -v0.1.0](https://github.com/JunruTao/Udacity.Cpp.Capstone.Project/releases/tag/v0.1)
 
@@ -181,6 +196,20 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
 
 *****************************************************************
 ## :black_circle:Production Logs:
+
+You can find the log in [Teletall's Wiki](https://github.com/JunruTao/Udacity.Cpp.Capstone.Project/wiki)
+
+| Sun | Mon | Tue | Wed | Thu | Fri | Sat |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+|    |   |    |     |<sup>1</sup> ✔️[20/7/9](https://github.com/JunruTao/Udacity.Cpp.Capstone.Project/wiki/Log-DAY-1) | <sup>2</sup>✔️[20/7/10](https://github.com/JunruTao/Udacity.Cpp.Capstone.Project/wiki/Log---DAY-2) |<sup>3</sup>✔️[20/7/11](https://github.com/JunruTao/Udacity.Cpp.Capstone.Project/wiki/Log--DAY-3) |
+| <sup>4</sup>✔️[20/7/12](https://github.com/JunruTao/Udacity.Cpp.Capstone.Project/wiki/Log-DAY-4) | <sup>5</sup>✔️[20/7/13](https://github.com/JunruTao/Udacity.Cpp.Capstone.Project/wiki/Log-DAY-5) |<sup>6</sup>✔️[20/7/14](https://github.com/JunruTao/Udacity.Cpp.Capstone.Project/wiki/Log-Day-6) | <sup>7</sup>✔️[20/7/15](https://github.com/JunruTao/Udacity.Cpp.Capstone.Project/wiki/Log-Day-7) |        <sup>8</sup>✔️[20/7/16](https://github.com/JunruTao/Udacity.Cpp.Capstone.Project/wiki/Log-Day-8) |    <sup>9</sup>20/7/17 |      <sup>10</sup>✔️[20/7/18](https://github.com/JunruTao/Udacity.Cpp.Capstone.Project/wiki/Log-Day-10) |
+|      <sup>11</sup>✔️[20/7/19](https://github.com/JunruTao/Udacity.Cpp.Capstone.Project/wiki/Log-Day-11) |        <sup>12</sup>✔️[20/7/20](https://github.com/JunruTao/Udacity.Cpp.Capstone.Project/wiki/Log-Day-12) |      <sup>13</sup>✔️[20/7/21](https://github.com/JunruTao/Udacity.Cpp.Capstone.Project/wiki/Log-Day-13) |    <sup>14</sup>✔️[20/7/22](https://github.com/JunruTao/Udacity.Cpp.Capstone.Project/wiki/Log-Day-14) |     <sup>15</sup>✔️[20/7/23](https://github.com/JunruTao/Udacity.Cpp.Capstone.Project/wiki/Log-Day-15) |        <sup>16</sup>✔️[20/7/24](https://github.com/JunruTao/Udacity.Cpp.Capstone.Project/wiki/Log-Day-16) |      <sup>17</sup>✔️[20/7/25](https://github.com/JunruTao/Udacity.Cpp.Capstone.Project/wiki/Log-Day-17) |
+| <sup>18</sup>✔️[20/7/26](https://github.com/JunruTao/Udacity.Cpp.Capstone.Project/wiki/Log-Day-18) | <sup>19</sup>✔️[20/7/27](https://github.com/JunruTao/Udacity.Cpp.Capstone.Project/wiki/Log-Day-19) | <sup>20</sup>✔️[20/7/28](https://github.com/JunruTao/Udacity.Cpp.Capstone.Project/wiki/Log-Day-20) | <sup>21</sup>✔️[20/7/29](https://github.com/JunruTao/Udacity.Cpp.Capstone.Project/wiki/Log-Day-21) |  |  |  |
+
+
+And all the logs are appended down in this readme file.
+
+-----
 #### :pushpin: Latest!!!: :arrow_down: :arrow_down: :arrow_down:
 
 :radio_button: &larr;- - - - :bookmark_tabs:
