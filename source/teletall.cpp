@@ -312,8 +312,11 @@ void TeleTall::ConstructMenu()
     subm_View->AddCommand(viewtab_cmds);
 
 
-    NameList node_title = {"Point Node"};
-    __KeyList__ node_cmds = {cmd_KEY::cmd_CREATE_NODE_Point_M};
+    NameList node_title = {"Point Node", "Merge Node"};
+    __KeyList__ node_cmds = {
+        cmd_KEY::cmd_CREATE_NODE_Point_M,
+        cmd_KEY::cmd_CREATE_NODE_Merge_M
+    };
     ColumnMenu *subm_Nodes = new ColumnMenu(node_title, 200);
     subm_Nodes->AddCommand(node_cmds);
 

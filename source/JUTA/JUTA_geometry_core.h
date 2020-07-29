@@ -213,4 +213,5 @@ static int ScreenTransformY(double y, Point2D<int> origin, int grid_size)
 {
     return (int)(((double)origin.y) - ((double)grid_size) * y);
 }
+
 #endif

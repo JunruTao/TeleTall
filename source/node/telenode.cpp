@@ -6,7 +6,8 @@ void IconManager::LoadIcons(SDL_Renderer* renderer)
     std::string icon_dir = "tltl_node_icon/"; 
     std::vector<std::string> names = 
     {
-        "pointnode"
+        "pointnode",
+        "mergenode"
     };
 
     for(auto e : names)
@@ -133,7 +134,7 @@ skip:
     {
         Disconnect();
     }
-    else if (_input_target->_type != this->_type)
+    else if (_input_target->_type == DataType::Invalid)
     {
         Disconnect();
     }
@@ -808,8 +809,6 @@ PointNode::PointNode(Point2D<double> drop_location, const Point2D<int>& origin_s
     _editable = true;
     _editing = false;
 
-    process_test = false;
-
     //point node's edit mode attribute
     pt_onlysel = false;
 
@@ -822,20 +821,12 @@ PointNode::PointNode(Point2D<double> drop_location, const Point2D<int>& origin_s
     Point2D<double> loc;
     //Creating input buttons
     _inputs.emplace_back(std::make_shared<NodeConnector>(loc, true, this, DataType::Point));
-    _inputs.emplace_back(std::make_shared<NodeConnector>(loc, true, this, DataType::Point));
-
     _outputs.emplace_back(std::make_shared<NodeConnector>(loc, false, this, DataType::Point));
 
     ScreenTransform(origin_s,scale);
     _textdisplay = std::make_unique<ScreenText>();
     
 }
-
-
-
-
-
-
 
 
 void PointNode::Update(Telecontroller *controller, const Point2D<int> origin_s, double scale)
@@ -855,11 +846,7 @@ void PointNode::Update(Telecontroller *controller, const Point2D<int> origin_s, 
     {
         if(i->IsConnected())
         {
-            if (i->GetDataType() != i->GetTargetType())
-            {
-                i->Disconnect();
-            }
-            else if(i->GetTargetParent() == nullptr)
+            if(i->GetTargetParent() == nullptr)
             {
                 i->Disconnect();
             }
@@ -877,6 +864,7 @@ void PointNode::Update(Telecontroller *controller, const Point2D<int> origin_s, 
             }
         }  
     }
+
     if(connectlock>0)
     {
         _editable = false;
@@ -919,13 +907,6 @@ void PointNode::DrawNode(SDL_Renderer * renderer, std::shared_ptr<IconManager> I
 
     DrawDisplayRects(renderer, "pointnode", Icm);
     DrawNodeConnectors(renderer);
-
-    if(process_test)
-    {
-        SDL_SetRenderDrawColor(renderer, 255,0,0,255);
-        SDL_RenderFillRect(renderer, &_node_rect);
-        process_test = false;
-    }
 }
 
 
@@ -938,11 +919,9 @@ void PointNode::DrawGeometry(SDL_Renderer* renderer, Point2D<int>& origin_s, int
             if (_editing)
             {
                 p->Draw(renderer, origin_s, grid_size, 2);
-                
             }
             else
             {
-
                 if (_displaying)
                 {
                     p->Draw(renderer, origin_s, grid_size, 1);
@@ -1033,12 +1012,168 @@ void PointNode::ProcessEditModeInput(Telecontroller *controller, const Point2D<i
 PointNode::~PointNode()
 {
     counter--;
-
 }
 
 void PointNode::ProcessData()
 {
     //lock mutex here
     std::lock_guard<std::mutex> glock(_mutex);
-    process_test = true;
+    if(_inputs[0]->IsConnected())
+    {
+        point_pool.clear();
+        std::vector<std::shared_ptr<GeoData>> data = _inputs[0]->GetTargetParent()->GetOutputData();
+        for(auto& d: data)
+        {
+            if (std::shared_ptr<Point3D> p = std::dynamic_pointer_cast<Point3D>(d))
+            {
+                point_pool.push_back(p);
+            }
+            else
+            {
+                _inputs[0]->Disconnect();
+                break;
+            }
+        }
+    }
+}
+
+
+std::vector<std::shared_ptr<GeoData>> PointNode::GetOutputData()
+{
+    std::vector<std::shared_ptr<GeoData>> data;
+    for(auto p : point_pool)
+    {
+        data.push_back(std::dynamic_pointer_cast<GeoData>(p));
+    }
+    return data;
+}
+
+
+
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//++++++++++++++++++++++++++++++== MERGE NODE ==++++++++++++++++++++++++++++++++++++++++++
+//________________________________________________________________________________________
+size_t MergeNode::counter = 0;
+MergeNode::MergeNode(Point2D<double> drop_location, const Point2D<int> &origin_s, double scale)
+{
+    counter++;
+
+    //native attributs
+    _editable = false;
+    _editing = false;
+
+    std::string NODE_name = "Merge";
+    GetNonDuplicatedNames(NODE_name);
+
+    _center = drop_location;
+    _clicked_old_pos = _center;
+
+    Point2D<double> loc;
+    //Creating input buttons
+    _inputs.emplace_back(std::make_shared<NodeConnector>(loc, true, this, DataType::Data));
+    _inputs.emplace_back(std::make_shared<NodeConnector>(loc, true, this, DataType::Data));
+    _outputs.emplace_back(std::make_shared<NodeConnector>(loc, false, this, DataType::Data));
+
+    ScreenTransform(origin_s, scale);
+    _textdisplay = std::make_unique<ScreenText>();
+}
+
+MergeNode::~MergeNode()
+{
+    counter--;
+}
+
+void MergeNode::Update(Telecontroller *controller, const Point2D<int> origin_s, double scale)
+{
+    //lock mutex here
+    std::lock_guard<std::mutex> glock(_mutex);
+
+    ProcessUserInputs(controller, origin_s, scale);
+    ScreenTransform(origin_s, scale);
+
+    UpdateConnectors(controller, origin_s);
+
+    int connectlock = 0;
+    for (auto &i : _inputs)
+    {
+        if (i->IsConnected())
+        {
+            if (i->GetTargetParent() == nullptr)
+            {
+                i->Disconnect();
+            }
+            else if (i->GetInputTargetAddress() == nullptr)
+            {
+                i->Disconnect();
+            }
+            else if (!GetIsNodeExist(i->GetTargetParent()->GetName()))
+            {
+                i->Disconnect();
+            }
+            else
+            {
+                connectlock++;
+            }
+        }
+    }
+    if(connectlock == _inputs.size())
+    {
+        Point2D<double> loc;
+        _inputs.emplace_back(std::make_shared<NodeConnector>(loc, true, this, DataType::Data));
+    }else if(_inputs.size() == connectlock+2 && connectlock > 0)
+    {
+        for (size_t i = 0; i<_inputs.size(); ++i)
+        {
+            if (!_inputs[i]->IsConnected())
+            {
+                _inputs.erase(_inputs.begin() +i);
+                break;
+            }
+        }
+    }
+    _editing = false;
+}
+
+
+void MergeNode::DrawNode(SDL_Renderer *renderer, std::shared_ptr<IconManager> Icm)
+{
+    DrawDisplayRects(renderer, "mergenode", Icm);
+    DrawNodeConnectors(renderer);
+}
+
+void MergeNode::DrawGeometry(SDL_Renderer *renderer, Point2D<int> &origin_s, int grid_size) const
+{
+    if (!geo_pool.empty())
+    {
+        for (auto &g : geo_pool)
+        {
+            if (_displaying)
+            {
+                g->Draw(renderer, origin_s, grid_size, 1);
+            }
+            else
+            {
+                g->Draw(renderer, origin_s, grid_size, 0);
+            }
+        }
+    }
+}
+
+void MergeNode::ProcessData()
+{
+    std::lock_guard<std::mutex> glock(_mutex);
+    geo_pool.clear();
+    for (size_t i = 0; i < _inputs.size(); ++i)
+    {
+        if (_inputs[i]->IsConnected())
+        {
+            std::vector<std::shared_ptr<GeoData>> data = _inputs[i]->GetTargetParent()->GetOutputData();
+            geo_pool.insert(geo_pool.end(), data.begin(), data.end());
+        }
+    }
+}
+
+std::vector<std::shared_ptr<GeoData>> MergeNode::GetOutputData()
+{ 
+    return geo_pool;
 }

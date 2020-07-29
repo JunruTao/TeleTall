@@ -113,7 +113,7 @@ void Point3D::Draw(SDL_Renderer *renderer, Point2D<int> origin, int gridscale, i
     int x = ScreenTransformX(_pos->x,origin,gridscale);
     int y = ScreenTransformY(_pos->y,origin,gridscale);
 
-    if (_passing)
+    if (_passing && mode == 2)
     {
         SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
         SDL_SetRenderDrawColor(renderer, 0, 255, 138, 150);
@@ -187,3 +187,9 @@ void Point3D::SetLocation(double x, double y, double z)
     this->_pos->y = y;
     this->_pos->z = z;
 }
+
+
+
+//_________________________________________________ 1
+//Line Constructor
+Line::Line(std::shared_ptr<Point3D> a, std::shared_ptr<Point3D> b) : A(a), B(b){}

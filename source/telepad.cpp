@@ -94,21 +94,7 @@ void Telepad::Update(Telecontroller &controller)
         gridcolor = {50,50,50,255};
         MoveGrid(controller, x, y);
 
-        if ((controller.GetCommand() == cmd_KEY::cmd_CREATE_NODE_Point) && (controller.GetCurrentPanel() == PanelID::ON_PAD))
-        {
-            CreateNode(x, y);
-        }
-        else if (controller.GetCommand() == cmd_KEY::cmd_CREATE_NODE_Point_M)
-        {
-            if (node_pool.empty())
-            {
-                CreateNode(controller.GetPadRect()->x + (controller.GetPadRect()->w / 2), controller.GetPadRect()->y + (controller.GetPadRect()->h / 2));
-            }
-            else
-            {
-                CreateNode(node_pool[node_pool.size() - 1]->GetLocation().x + origin.x + 50, node_pool[node_pool.size() - 1]->GetLocation().y + origin.y + 50);
-            }
-        }
+        CreateNode(controller,x,y);
 
 
         if (_selecting)
@@ -462,10 +448,44 @@ void Telepad::MoveGrid(Telecontroller &controller, const int &x, const int &y)
 
 
 
-void Telepad::CreateNode(int x, int y)
+void Telepad::CreateNode(Telecontroller& controller, int x, int y)
 {
     Point2D<double> loc(x - origin.x, y- origin.y);
-    node_pool.emplace_back(std::make_shared<PointNode>(loc, origin, 1.0));
+
+    if ((controller.GetCommand() == cmd_KEY::cmd_CREATE_NODE_Point) && (controller.GetCurrentPanel() == PanelID::ON_PAD))
+    {
+        node_pool.emplace_back(std::make_shared<PointNode>(loc, origin, 1.0));
+    }
+    else if (controller.GetCommand() == cmd_KEY::cmd_CREATE_NODE_Point_M)
+    {
+        if (node_pool.empty())
+        {
+            loc.x = controller.GetPadRect()->x + (controller.GetPadRect()->w / 2)- origin.x;
+            loc.y = controller.GetPadRect()->y + (controller.GetPadRect()->h / 2)- origin.y;
+            node_pool.emplace_back(std::make_shared<PointNode>(loc, origin, 1.0));
+        }
+        else
+        {
+            loc.x = node_pool[node_pool.size() - 1]->GetLocation().x+ 50;
+            loc.y = node_pool[node_pool.size() - 1]->GetLocation().y+ 50;
+            node_pool.emplace_back(std::make_shared<PointNode>(loc, origin, 1.0));
+        }
+    }
+    else if (controller.GetCommand() == cmd_KEY::cmd_CREATE_NODE_Merge_M)
+    {
+        if (node_pool.empty())
+        {
+            loc.x = controller.GetPadRect()->x + (controller.GetPadRect()->w / 2)- origin.x;
+            loc.y = controller.GetPadRect()->y + (controller.GetPadRect()->h / 2)- origin.y;
+            node_pool.emplace_back(std::make_shared<MergeNode>(loc, origin, 1.0));
+        }
+        else
+        {
+            loc.x = node_pool[node_pool.size() - 1]->GetLocation().x+ 50;
+            loc.y = node_pool[node_pool.size() - 1]->GetLocation().y+ 50;
+            node_pool.emplace_back(std::make_shared<MergeNode>(loc, origin, 1.0));
+        }
+    }
 }
 
 
@@ -828,6 +848,7 @@ void Telepad::ProcessNodesIO()
                     if (node->GetName() == process_names[i])
                     {
                         node->ProcessData();
+                        std::this_thread::sleep_for(std::chrono::milliseconds(2));
                         break;
                     }
                 }
@@ -835,7 +856,7 @@ void Telepad::ProcessNodesIO()
 
         }
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }//end of main while loop
 }
 

@@ -29,6 +29,10 @@ void Console::Init()
     cmd_dictionary[cmd_KEY::cmd_CREATE_NODE_Point_M] = "> Create Node: Point Node";
     cmd_dictionary[cmd_KEY::cmd_CREATE_POINT] = "> Create Point ";
 
+    cmd_dictionary[cmd_KEY::cmd_CREATE_NODE_Merge_M] = "> Create Node: Merge Node";
+    cmd_dictionary[cmd_KEY::cmd_CREATE_NODE_Line_M] = "> Create Node: Line Node";
+    cmd_dictionary[cmd_KEY::cmd_CREATE_NODE_Polyline_M] = "> Create Node: Polyline Node";
+    cmd_dictionary[cmd_KEY::cmd_CREATE_NODE_Curve_M] = "> Create Node: Curve Node";
 
     cmd_dictionary[cmd_KEY::cmd_CNLINE_1_LINE] = "> Telepad: Node Connection Drawing Mode : [STRAIGHT]";
     cmd_dictionary[cmd_KEY::cmd_CNLINE_2_ZIG] = "> Telepad: Node Connection Drawing Mode : [ZIG_ZAG]";

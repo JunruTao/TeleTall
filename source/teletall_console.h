@@ -15,11 +15,14 @@ enum class cmd_KEY
     cmd_UNDO, cmd_REDO,cmd_COPY,cmd_PASTE, cmd_CUT, cmd_Delete,
     cmd_WINDOWSIZE,cmd_CONSOLE_SHOW, cmd_HOME_Pad, 
     cmd_HOME_Tall, cmd_WIN_ABOUT, cmd_CLEAR_Sel,
-    cmd_CREATE_NODE_Point, cmd_CREATE_NODE_Point_M,
     cmd_CREATE_POINT, cmd_GRID_SNAP_M,
     cmd_EditMode, cmd_EditMode_M, cmd_DisplayFlag, 
     cmd_Message, cmd_QUIT, cmd_ZOOM_IN, cmd_ZOOM_OUT,
-    cmd_CNLINE_1_LINE, cmd_CNLINE_2_ZIG, cmd_CNLINE_3_CURVE
+    cmd_CNLINE_1_LINE, cmd_CNLINE_2_ZIG, cmd_CNLINE_3_CURVE,
+
+    cmd_CREATE_NODE_Point, cmd_CREATE_NODE_Point_M,
+    cmd_CREATE_NODE_Merge_M, cmd_CREATE_NODE_Line_M,
+    cmd_CREATE_NODE_Polyline_M, cmd_CREATE_NODE_Curve_M
     
 };
 

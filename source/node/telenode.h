@@ -17,8 +17,10 @@ enum class DataType{Invalid, Data, Geometry, Point, Vector, Line, Polyline, Colo
 
 class Node;
 
-
-
+//need a resource manager to hold all the texture data, 
+//for eachnode, you need 1. rectangle for render copy
+//2. relative pointer pointing to the texture.
+// >>>>> SDL_RenderCopy(renderer, texture, NULL, &dstrect);
 struct IconManager
 {
     IconManager(SDL_Renderer* renderer);
@@ -95,9 +97,9 @@ public:
     virtual void DrawGeometry(SDL_Renderer *, Point2D<int>& origin_s, int grid_size) const = 0;
     //this function only for editable node objects
     virtual void ProcessEditModeInput(Telecontroller *controller, const Point2D<int> origin, int grid_size) = 0;
-    virtual void RecieveData() = 0;
+
     virtual void ProcessData() = 0;
-    virtual void GetOutputData() = 0;
+    virtual std::vector<std::shared_ptr<GeoData>> GetOutputData() = 0;
 
     //setters and getters for all the node objects
     bool GetIfDrag(){return _ondrag;}
@@ -185,16 +187,10 @@ protected:
     void DrawDisplayRects(SDL_Renderer* renderer, std::string icon_name, std::shared_ptr<IconManager> Icon_manager);
 
     //thread protect:
-    std::mutex _mutex;
-
-    bool process_test;
-    
+    std::mutex _mutex;    
 };
 
-//need a resource manager to hold all the texture data, 
-//for eachnode, you need 1. rectangle for render copy
-//2. relative pointer pointing to the texture.
-// >>>>> SDL_RenderCopy(renderer, texture, NULL, &dstrect);
+
 
 
 
@@ -218,15 +214,12 @@ public:
     void DrawGeometry(SDL_Renderer *renderer, Point2D<int>& origin_s, int grid_size) const override;
     void CreatePoints(double x, double y, double z);
 
-    void RecieveData() override { };
     void ProcessData() override;
-    void GetOutputData() override { };
+    std::vector<std::shared_ptr<GeoData>> GetOutputData() override;
 
 private:
     //Data field
     std::vector<std::shared_ptr<Point3D>> point_pool;
-
-
 
     static size_t counter;
     bool pt_onlysel;
@@ -234,7 +227,25 @@ private:
 
 
 
+class MergeNode : public Node
+{
+public:
 
+    MergeNode(Point2D<double> drop_location, const Point2D<int>& origin_s, double scale);
+    ~MergeNode();
+
+    void Update(Telecontroller *controller, const Point2D<int> origin_s, double scale)override;
+    void DrawNode(SDL_Renderer *renderer, std::shared_ptr<IconManager> Icm)override;
+    void DrawGeometry(SDL_Renderer *renderer, Point2D<int>& origin_s, int grid_size)const override;
+    void ProcessEditModeInput(Telecontroller *controller, const Point2D<int> origin, int grid_size)override{};
+    void ProcessData()override;
+    std::vector<std::shared_ptr<GeoData>> GetOutputData()override;
+
+    
+private:
+    std::vector<std::shared_ptr<GeoData>> geo_pool;
+    static size_t counter;
+};
 
 
 
@@ -244,20 +255,28 @@ private:
 class LineNode : public Node
 {
 public:
-
     void Update(Telecontroller *controller, const Point2D<int> origin_s, double scale)override{}
     void DrawNode(SDL_Renderer *, std::shared_ptr<IconManager>)override{}
     void DrawGeometry(SDL_Renderer *, Point2D<int>& origin_s, int grid_size)const override{}
     void ProcessEditModeInput(Telecontroller *controller, const Point2D<int> origin, int grid_size)override{};
-    void RecieveData()override{}
+
     void ProcessData()override{}
-    void GetOutputData()override{}
+    std::vector<std::shared_ptr<GeoData>> GetOutputData()override;
 };
+
+
+
+
+
 
 class PolylineNode : public Node
 {
 
 };
+
+
+
+
 
 class NurbsCurveNode : public Node
 {

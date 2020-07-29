@@ -54,7 +54,7 @@ private:
     //Send render lists to tall:
     void SendNodesToTall(std::shared_ptr<Node>& node_to_tall);
 
-    void CreateNode(int x, int y);
+    void CreateNode(Telecontroller& controller, int x, int y);
     void DeleteNode();
     void UpdateNode(Telecontroller* controller);
     void Simulate(){};
