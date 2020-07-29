@@ -187,13 +187,8 @@ protected:
     void DrawDisplayRects(SDL_Renderer* renderer, std::string icon_name, std::shared_ptr<IconManager> Icon_manager);
 
     //thread protect:
-    std::mutex _mutex;    
+    static std::mutex _mutex;    
 };
-
-
-
-
-
 
 
 
@@ -243,8 +238,8 @@ public:
 
     
 private:
-    std::vector<std::shared_ptr<GeoData>> geo_pool;
     static size_t counter;
+    std::vector<std::shared_ptr<GeoData>> geo_pool;
 };
 
 
@@ -255,13 +250,17 @@ private:
 class LineNode : public Node
 {
 public:
-    void Update(Telecontroller *controller, const Point2D<int> origin_s, double scale)override{}
-    void DrawNode(SDL_Renderer *, std::shared_ptr<IconManager>)override{}
-    void DrawGeometry(SDL_Renderer *, Point2D<int>& origin_s, int grid_size)const override{}
+    LineNode(Point2D<double> drop_location, const Point2D<int>& origin_s, double scale);
+    ~LineNode();
+    void Update(Telecontroller *controller, const Point2D<int> origin_s, double scale)override;
+    void DrawNode(SDL_Renderer *renderer, std::shared_ptr<IconManager> Icm)override;
+    void DrawGeometry(SDL_Renderer *renderer, Point2D<int>& origin_s, int grid_size)const override;
     void ProcessEditModeInput(Telecontroller *controller, const Point2D<int> origin, int grid_size)override{};
-
-    void ProcessData()override{}
+    void ProcessData()override;
     std::vector<std::shared_ptr<GeoData>> GetOutputData()override;
+private:
+    std::vector<std::shared_ptr<Line>> line_pool;
+    static size_t counter;
 };
 
 
@@ -271,16 +270,39 @@ public:
 
 class PolylineNode : public Node
 {
+public:
+    PolylineNode(Point2D<double> drop_location, const Point2D<int>& origin_s, double scale);
+    ~PolylineNode();
+    void Update(Telecontroller *controller, const Point2D<int> origin_s, double scale) override;
+    void DrawNode(SDL_Renderer *renderer, std::shared_ptr<IconManager> Icm) override;
+    void DrawGeometry(SDL_Renderer *renderer, Point2D<int> &origin_s, int grid_size) const override;
+    void ProcessEditModeInput(Telecontroller *controller, const Point2D<int> origin, int grid_size) override{};
+    void ProcessData() override;
+    std::vector<std::shared_ptr<GeoData>> GetOutputData() override;
 
+private:
+    std::vector<std::shared_ptr<Curve>> geo_pool;
+    static size_t counter;
 };
 
 
 
 
 
-class NurbsCurveNode : public Node
+class CurveNode : public Node
 {
-
+public:
+    CurveNode(Point2D<double> drop_location, const Point2D<int>& origin_s, double scale);
+    ~CurveNode();
+    void Update(Telecontroller *controller, const Point2D<int> origin_s, double scale)override;
+    void DrawNode(SDL_Renderer *renderer, std::shared_ptr<IconManager> Icm)override;
+    void DrawGeometry(SDL_Renderer *renderer, Point2D<int>& origin_s, int grid_size)const override;
+    void ProcessEditModeInput(Telecontroller *controller, const Point2D<int> origin, int grid_size)override{};
+    void ProcessData()override;
+    std::vector<std::shared_ptr<GeoData>> GetOutputData()override;
+private:
+    std::vector<std::shared_ptr<Curve>> geo_pool;
+    static size_t counter;
 };
 
 #endif

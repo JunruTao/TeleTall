@@ -218,11 +218,6 @@ void DrawNurbs(SDL_Renderer* renderer, std::vector<Point2D<double>> points, int 
             SDL_RenderDrawLineF(renderer, (double)tempList[i].x + vecperp1.x, (double)tempList[i].y + vecperp1.y, (double)tempList[i + 1].x + vecperp1.x, (double)tempList[i + 1].y  + vecperp1.y);
             vecperp1 *= -1;
             SDL_RenderDrawLineF(renderer, (double)tempList[i].x + vecperp1.x, (double)tempList[i].y + vecperp1.y, (double)tempList[i + 1].x + vecperp1.x, (double)tempList[i + 1].y  + vecperp1.y);
-
-
-
             SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
         }
-
-   
 }

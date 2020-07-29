@@ -173,35 +173,48 @@ private:
 
 
 
-
 class Line : public GeoData
 {
-    public:
-    Line(std::shared_ptr<Point3D> a, std::shared_ptr<Point3D> b);
-    ~Line();
+public:
+    Line(double &&x1, double &&y1, double &&x2, double &&y2);
+    Line(const double &x1, const double &y1, const double &x2, const double &y2);
+    ~Line(){};
+
+    //copy constructor(deep copies)
+    Line(const Line& line);
+    //assignment copy operator(deep copies)
+    Line &operator=(const Line& line);
+    //move constructor(deep copies)
+    Line(Line&& line);
+    //move assignment copy operator(deep copies)
+    Line &operator=(Line&& line);
 
     void Draw(SDL_Renderer *renderer, Point2D<int> origin, int gridscale, int mode) override;
 
-    private:
-    std::shared_ptr<Point3D> A;
-    std::shared_ptr<Point3D> B;
+private:
+    double _x1;
+    double _y1;
+    double _z1;
+
+    double _x2;
+    double _y2;
+    double _z2;
 };
 
 
 
-class Polyline: public GeoData
+
+class Curve : public GeoData
 {
-    public:
-    Polyline(std::vector<std::shared_ptr<Point3D>>& points);
-    ~Polyline();
-
+public:
+    Curve(std::vector<std::shared_ptr<Point3D>> &points, int degree);
+    ~Curve(){};
     void Draw(SDL_Renderer *renderer, Point2D<int> origin, int gridscale, int mode) override;
 
-    private:
-    std::vector<std::shared_ptr<Point3D>> points;
+private:
+    std::vector<std::shared_ptr<Point3D>> _points;
+    int _degree;
 };
-
-
 
 
 static int ScreenTransformX(double x, Point2D<int> origin, int grid_size)

@@ -51,7 +51,7 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
 
 
 
-### :white_circle:Program Guide
+### :white_circle: User's Program Guide
 
 ##### 💡 1.Start: Viewport and Window
 |<sup>:notebook: notes:</sup>|
@@ -98,12 +98,19 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
 
 |<sup>:notebook: notes:</sup>|
 |:---|
-|<img src=".package.extra.merge/tltl_node_icon/pointnode.bmp"> **Point Node** is a `editable node`, when one **Point Node** is seleted and it has been entered **Edit Mode**, you can create points, delete points, move points. |
+|<img src=".package.extra.merge/tltl_node_icon/pointnode.bmp"> **Point Node** is a `editable node`, when one **Point Node** is seleted and it has been entered **Edit Mode**, you can create points, delete points, move points. However, if this node **already had an input, you won't be able to enter edit mode**; this **Point Node** will behave as a _'Point Relay'_, which functions as a relay object passing the same point data from upper stream. |
 
   * 🖱️`Left mouse button`: <ins>**double-click**</ins> to **create points**.    &larr;`tall`
   * 🖱️`Left mouse button`: <ins>**single-click and drag**</ins> to **move points**.    &larr;`tall`
   * ⌨️"`Ctrl`+`Z`" keys(or undo in menu): **delete** last created point.    &larr;`tall`
   * ⌨️"`X`" key: toggle on/off **Grid Snap**.    &larr;`tall`
+
+
+##### 💡 4.Creative: Tele-Nodes Dictionary
+
+|<sup>:notebook: notes:</sup>|
+|:---|
+| |
 
 ***
 
@@ -177,11 +184,26 @@ This a repo for my Capstone project in the [Udacity C++ Nanodegree Program](http
 #### :pushpin: Latest!!!: :arrow_down: :arrow_down: :arrow_down:
 
 :radio_button: &larr;- - - - :bookmark_tabs:
+* #### DAY 21 { <ins>7/29/2020</ins> } : Other Nodes:
+
+  * **<img src=".package.extra.merge/tltl_node_icon/pointnode.bmp"> Point Node**
+  * **<img src=".package.extra.merge/tltl_node_icon/mergenode.bmp"> Merge Node**
+  * **<img src=".package.extra.merge/tltl_node_icon/linenode.bmp"> Line Node**
+  * **<img src=".package.extra.merge/tltl_node_icon/polylinenode.bmp"> Polyline Node**
+  * **<img src=".package.extra.merge/tltl_node_icon/curvenode.bmp"> Curve Node**
+
+There are some very serious issues with line node and merge node. If there more than 2 input in merge(except points), the program crashes. If there are too many points or streams in line node, it crashes. I realised it might take me a long time to fix. I might have to interogate each procedure including tall window. It's possible something wrong with smart point casting, shared_pointer's owner ship, or needing a condition varible at very top of the program. However, this program had already archieved what I have expected.
+
+<img src=".markdown.images/20200729_Nodes.png">
+
+----
+
+:radio_button: &larr;- - - - :bookmark_tabs:
 * #### DAY 20 { <ins>7/28/2020</ins> } : Merge Node
 **[2:03 AM] Added Merge Node, Node Geo's Polymorphism**
 The problem I was having was how to pass data properly from a node to a different node? Luckly I realised that my `Point3D` Geometry type is derived from `GeoData` which is a virtual class and I can simply define `std::vector<std::shared_ptr<GeoData>> GetOutputData` as a node's uniformed virtual function so that each node overrides it and cast its `data pool` into `Geo Data` vector and then pass it down to the next node. So for `point nodes`, I used `std::shared_ptr<Point3D> points = std::dynamic_pointer_cast<Point3D>(data)` to recieve the `GeoData` package from upper stream. 
 
-* The **<img src=".package.extra.merge/tltl_node_icon/mergenode.bmp"> Merge Node :**, which holds data as `GeoData` type, so even if the inputs are lines or curves, they will still draw themselves in one node.
+* The **<img src=".package.extra.merge/tltl_node_icon/mergenode.bmp"> Merge Node :**, which holds data as `GeoData` type, so even if the inputs are lines or curves, they will still draw themselves in one node. The inputs will automatically increase as wells.
 
 <img src=".markdown.images/20200729_mergeNode.png">
 

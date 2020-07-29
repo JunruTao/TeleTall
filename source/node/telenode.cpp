@@ -7,7 +7,10 @@ void IconManager::LoadIcons(SDL_Renderer* renderer)
     std::vector<std::string> names = 
     {
         "pointnode",
-        "mergenode"
+        "mergenode",
+        "linenode",
+        "polylinenode",
+        "curvenode"
     };
 
     for(auto e : names)
@@ -284,6 +287,8 @@ void NodeConnector::DrawConnection(SDL_Renderer *renderer, int mode)
 //++++++++++++++++++++++++++++++== N O D E ==++++++++++++++++++++++++++++++++++++++++++
 //_____________________________________________________________________________________
 //* Node class -static members
+std::mutex Node::_mutex;
+
 int Node::_node_width = 100;
 int Node::_node_height = 30;
 int Node::_icon_edge_len = 24;
@@ -947,8 +952,9 @@ void PointNode::DrawGeometry(SDL_Renderer* renderer, Point2D<int>& origin_s, int
 
 void PointNode::ProcessEditModeInput(Telecontroller *controller, const Point2D<int> origin, int grid_size)
 {
-    //lock mutex here
-    std::lock_guard<std::mutex> glock(_mutex);
+    // //lock mutex here
+    // std::lock_guard<std::mutex> glock(_mutex);
+    
     if (controller->GetCurrentPanel() == PanelID::ON_TALL)
     {
         if (!point_pool.empty())
@@ -1090,7 +1096,7 @@ void MergeNode::Update(Telecontroller *controller, const Point2D<int> origin_s, 
 
     ProcessUserInputs(controller, origin_s, scale);
     ScreenTransform(origin_s, scale);
-
+    
     UpdateConnectors(controller, origin_s);
 
     int connectlock = 0;
@@ -1116,17 +1122,18 @@ void MergeNode::Update(Telecontroller *controller, const Point2D<int> origin_s, 
             }
         }
     }
-    if(connectlock == _inputs.size())
+    if (connectlock == _inputs.size())
     {
         Point2D<double> loc;
         _inputs.emplace_back(std::make_shared<NodeConnector>(loc, true, this, DataType::Data));
-    }else if(_inputs.size() == connectlock+2 && connectlock > 0)
+    }
+    else if (_inputs.size() == connectlock + 2 && connectlock > 0)
     {
-        for (size_t i = 0; i<_inputs.size(); ++i)
+        for (size_t i = 0; i < _inputs.size(); ++i)
         {
             if (!_inputs[i]->IsConnected())
             {
-                _inputs.erase(_inputs.begin() +i);
+                _inputs.erase(_inputs.begin() + i);
                 break;
             }
         }
@@ -1143,37 +1150,459 @@ void MergeNode::DrawNode(SDL_Renderer *renderer, std::shared_ptr<IconManager> Ic
 
 void MergeNode::DrawGeometry(SDL_Renderer *renderer, Point2D<int> &origin_s, int grid_size) const
 {
-    if (!geo_pool.empty())
+    for(auto& ip : _inputs)
     {
-        for (auto &g : geo_pool)
+        if(ip->IsConnected() &&  !ip->IsConnectingMode())
         {
-            if (_displaying)
-            {
-                g->Draw(renderer, origin_s, grid_size, 1);
-            }
-            else
-            {
-                g->Draw(renderer, origin_s, grid_size, 0);
-            }
+            ip->GetTargetParent()->DrawGeometry(renderer,origin_s,grid_size);
         }
     }
+    // if (!geo_pool.empty())
+    // {
+    //     for (auto &g : geo_pool)
+    //     {
+    //         if (_displaying)
+    //         {
+    //             g->Draw(renderer, origin_s, grid_size, 1);
+    //         }
+    //         else
+    //         {
+    //             g->Draw(renderer, origin_s, grid_size, 0);
+    //         }
+    //     }
+    // }
 }
 
 void MergeNode::ProcessData()
 {
-    std::lock_guard<std::mutex> glock(_mutex);
-    geo_pool.clear();
-    for (size_t i = 0; i < _inputs.size(); ++i)
-    {
-        if (_inputs[i]->IsConnected())
-        {
-            std::vector<std::shared_ptr<GeoData>> data = _inputs[i]->GetTargetParent()->GetOutputData();
-            geo_pool.insert(geo_pool.end(), data.begin(), data.end());
-        }
-    }
+    //lock mutex here
+    // geo_pool.clear();
+    // std::lock_guard<std::mutex> glock(_mutex);
+
+    // for (size_t i = 0; i < _inputs.size(); ++i)
+    // {
+    //     if (_inputs[i]->IsConnected() && !_inputs[i]->IsConnectingMode())
+    //     {
+    //         std::vector<std::shared_ptr<GeoData>> data = _inputs[i]->GetTargetParent()->GetOutputData();
+    //         if (!data.empty())
+    //         {
+    //             for (size_t k = 0; k < data.size(); k++)
+    //             {
+    //                 geo_pool.push_back(data[k]);
+    //             }
+    //         }
+    //         std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    //     }
+    // }
+    
 }
 
 std::vector<std::shared_ptr<GeoData>> MergeNode::GetOutputData()
 { 
+    geo_pool.clear();
+    for (size_t i = 0; i < _inputs.size()-1; ++i)
+    {
+        if (_inputs[i]->IsConnected() && !_inputs[i]->IsConnectingMode())
+        {
+            std::vector<std::shared_ptr<GeoData>> data = _inputs[i]->GetTargetParent()->GetOutputData();
+            if (!data.empty())
+            {
+                geo_pool.insert(geo_pool.end(), data.begin(), data.end());
+            }
+        }
+    }
     return geo_pool;
+}
+
+
+
+size_t LineNode::counter = 0;
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++++++++++++++++++++++++++++++== LINE NODE ==++++++++++++++++++++++++++++++++++++++++++
+//________________________________________________________________________________________
+LineNode::LineNode(Point2D<double> drop_location, const Point2D<int> &origin_s, double scale)
+{
+    counter++;
+    //native attributs
+    _editable = false;
+    _editing = false;
+
+    std::string NODE_name = "Line";
+    GetNonDuplicatedNames(NODE_name);
+
+    _center = drop_location;
+    _clicked_old_pos = _center;
+
+    Point2D<double> loc;
+    //Creating input buttons
+    _inputs.emplace_back(std::make_shared<NodeConnector>(loc, true, this, DataType::Point));
+    _inputs.emplace_back(std::make_shared<NodeConnector>(loc, true, this, DataType::Point));
+    //Creating output
+    _outputs.emplace_back(std::make_shared<NodeConnector>(loc, false, this, DataType::Data));
+
+    ScreenTransform(origin_s, scale);
+    _textdisplay = std::make_unique<ScreenText>();
+}
+
+LineNode::~LineNode() { counter--; }
+
+
+void LineNode::Update(Telecontroller *controller, const Point2D<int> origin_s, double scale)
+{
+    //lock mutex here
+    std::lock_guard<std::mutex> glock(_mutex);
+
+    ProcessUserInputs(controller, origin_s, scale);
+    ScreenTransform(origin_s, scale);
+    UpdateConnectors(controller, origin_s);
+    int connectlock = 0;
+    for (auto &i : _inputs)
+    {
+        if (i->IsConnected())
+        {
+            if (i->GetTargetParent() == nullptr)
+            {
+                i->Disconnect();
+            }
+            else if (i->GetInputTargetAddress() == nullptr)
+            {
+                i->Disconnect();
+            }
+            else if (!GetIsNodeExist(i->GetTargetParent()->GetName()))
+            {
+                i->Disconnect();
+            }
+            else
+            {
+                connectlock++;
+            }
+        }
+    }
+    _editing = false;
+}
+
+
+void LineNode::DrawNode(SDL_Renderer *renderer, std::shared_ptr<IconManager> Icm)
+{
+    DrawDisplayRects(renderer, "linenode", Icm);
+    DrawNodeConnectors(renderer);
+}
+
+
+void LineNode::DrawGeometry(SDL_Renderer *renderer, Point2D<int> &origin_s, int grid_size) const
+{
+    if (!line_pool.empty())
+    {
+        for (auto &l : line_pool)
+        {
+            if (_displaying)
+            {
+                l->Draw(renderer, origin_s, grid_size, 1);
+            }
+            else
+            {
+                l->Draw(renderer, origin_s, grid_size, 0);
+            }
+        }
+    }
+}
+void LineNode::ProcessData()
+{
+    //lock mutex here
+    std::lock_guard<std::mutex> glock(_mutex);
+    line_pool.clear();
+
+    //needing both inputs connected
+    if (_inputs[0]->IsConnected() && _inputs[1]->IsConnected())
+    {
+        std::vector<std::shared_ptr<GeoData>> dataA = _inputs[0]->GetTargetParent()->GetOutputData();
+        std::vector<std::shared_ptr<GeoData>> dataB = _inputs[1]->GetTargetParent()->GetOutputData();
+
+        if (dataA.size() != 0 && dataB.size() != 0)
+        {
+            if (dataA.size() > dataB.size())
+            {
+                while (dataA.size() > dataB.size())
+                {
+                    dataB.push_back(dataB.back());
+                }
+            }
+            else if (dataA.size() < dataB.size())
+            {
+                while (dataA.size() < dataB.size())
+                {
+                    dataA.push_back(dataA.back());
+                }
+            }
+
+            for (size_t i = 0; i < dataA.size(); i++)
+            {
+                if (std::shared_ptr<Point3D> p1 = std::dynamic_pointer_cast<Point3D>(dataA[i]))
+                {
+                    if (std::shared_ptr<Point3D> p2 = std::dynamic_pointer_cast<Point3D>(dataB[i]))
+                    {
+                        line_pool.emplace_back(std::make_shared<Line>(p1->GetLocation().x,p1->GetLocation().y,p2->GetLocation().x,p2->GetLocation().y));
+                    }
+                    else
+                    {
+                        _inputs[1]->Disconnect();
+                    }
+                }
+                else
+                {
+                    _inputs[0]->Disconnect();
+                    break;
+                }
+            }
+        }
+    }
+}
+
+
+std::vector<std::shared_ptr<GeoData>> LineNode::GetOutputData()
+{
+    std::vector<std::shared_ptr<GeoData>> data;
+    for (auto l : line_pool)
+    {
+        data.push_back(std::dynamic_pointer_cast<GeoData>(l));
+    }
+    return data;
+}
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++++++++++++++++++++++++++++++== POLYLINE NODE ==++++++++++++++++++++++++++++++++++++++
+//________________________________________________________________________________________
+size_t PolylineNode::counter = 0;
+PolylineNode::PolylineNode(Point2D<double> drop_location, const Point2D<int> &origin_s, double scale)
+{
+    counter++;
+    //native attributs
+    _editable = false;
+    _editing = false;
+
+    std::string NODE_name = "Polyline";
+    GetNonDuplicatedNames(NODE_name);
+
+    _center = drop_location;
+    _clicked_old_pos = _center;
+
+    Point2D<double> loc;
+    //Creating input buttons
+    _inputs.emplace_back(std::make_shared<NodeConnector>(loc, true, this, DataType::Point));
+    //Creating output
+    _outputs.emplace_back(std::make_shared<NodeConnector>(loc, false, this, DataType::Polyline));
+
+    ScreenTransform(origin_s, scale);
+    _textdisplay = std::make_unique<ScreenText>();
+}
+PolylineNode::~PolylineNode()
+{
+    counter--;
+}
+void PolylineNode::Update(Telecontroller *controller, const Point2D<int> origin_s, double scale)
+{
+    //lock mutex here
+    std::lock_guard<std::mutex> glock(_mutex);
+
+    ProcessUserInputs(controller, origin_s, scale);
+    ScreenTransform(origin_s, scale);
+    UpdateConnectors(controller, origin_s);
+    for (auto &i : _inputs)
+    {
+        if (i->IsConnected())
+        {
+            if (i->GetTargetParent() == nullptr)
+            {
+                i->Disconnect();
+            }
+            else if (i->GetInputTargetAddress() == nullptr)
+            {
+                i->Disconnect();
+            }
+            else if (!GetIsNodeExist(i->GetTargetParent()->GetName()))
+            {
+                i->Disconnect();
+            }
+        }
+    }
+    _editing = false;
+}
+void PolylineNode::DrawNode(SDL_Renderer *renderer, std::shared_ptr<IconManager> Icm)
+{
+    DrawDisplayRects(renderer, "polylinenode", Icm);
+    DrawNodeConnectors(renderer);
+}
+void PolylineNode::DrawGeometry(SDL_Renderer *renderer, Point2D<int> &origin_s, int grid_size) const
+{
+    if (!geo_pool.empty())
+    {
+        for (auto &c : geo_pool)
+        {
+            if (_displaying)
+            {
+                c->Draw(renderer, origin_s, grid_size, 1);
+            }
+            else
+            {
+                c->Draw(renderer, origin_s, grid_size, 0);
+            }
+        }
+    }
+}
+void PolylineNode::ProcessData()
+{
+    //lock mutex here
+    std::lock_guard<std::mutex> glock(_mutex);
+    geo_pool.clear();
+
+    //needing both inputs connected
+    if (_inputs[0]->IsConnected())
+    {
+        std::vector<std::shared_ptr<GeoData>> data = _inputs[0]->GetTargetParent()->GetOutputData();
+        std::vector<std::shared_ptr<Point3D>> pts;
+        if (data.size() > 1)
+        {
+            for (size_t i = 0; i < data.size(); i++)
+            {
+                if (std::shared_ptr<Point3D> p1 = std::dynamic_pointer_cast<Point3D>(data[i]))
+                {
+                    pts.push_back(p1);
+                }
+                else
+                {
+                    _inputs[0]->Disconnect();
+                    break;
+                }
+            }
+            geo_pool.emplace_back(std::make_shared<Curve>(pts, 1));
+        }
+    }
+}
+std::vector<std::shared_ptr<GeoData>> PolylineNode::GetOutputData()
+{
+    std::vector<std::shared_ptr<GeoData>> data;
+    for (auto l : geo_pool)
+    {
+        data.push_back(std::dynamic_pointer_cast<GeoData>(l));
+    }
+    return data;
+}
+
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++++++++++++++++++++++++++++++== CURVE NODE ==+++++++++++++++++++++++++++++++++++++++++
+//________________________________________________________________________________________
+
+size_t CurveNode::counter = 0;
+CurveNode::CurveNode(Point2D<double> drop_location, const Point2D<int> &origin_s, double scale)
+{
+    counter++;
+    //native attributs
+    _editable = false;
+    _editing = false;
+
+    std::string NODE_name = "Curve";
+    GetNonDuplicatedNames(NODE_name);
+
+    _center = drop_location;
+    _clicked_old_pos = _center;
+
+    Point2D<double> loc;
+    //Creating input buttons
+    _inputs.emplace_back(std::make_shared<NodeConnector>(loc, true, this, DataType::Point));
+    //Creating output
+    _outputs.emplace_back(std::make_shared<NodeConnector>(loc, false, this, DataType::Geometry));
+
+    ScreenTransform(origin_s, scale);
+    _textdisplay = std::make_unique<ScreenText>();
+}
+CurveNode::~CurveNode()
+{
+    counter--;
+}
+void CurveNode::Update(Telecontroller *controller, const Point2D<int> origin_s, double scale)
+{
+    //lock mutex here
+    std::lock_guard<std::mutex> glock(_mutex);
+
+    ProcessUserInputs(controller, origin_s, scale);
+    ScreenTransform(origin_s, scale);
+    UpdateConnectors(controller, origin_s);
+    for (auto &i : _inputs)
+    {
+        if (i->IsConnected())
+        {
+            if (i->GetTargetParent() == nullptr)
+            {
+                i->Disconnect();
+            }
+            else if (i->GetInputTargetAddress() == nullptr)
+            {
+                i->Disconnect();
+            }
+            else if (!GetIsNodeExist(i->GetTargetParent()->GetName()))
+            {
+                i->Disconnect();
+            }
+        }
+    }
+    _editing = false;
+}
+void CurveNode::DrawNode(SDL_Renderer *renderer, std::shared_ptr<IconManager> Icm)
+{
+    DrawDisplayRects(renderer, "curvenode", Icm);
+    DrawNodeConnectors(renderer);
+}
+void CurveNode::DrawGeometry(SDL_Renderer *renderer, Point2D<int> &origin_s, int grid_size) const
+{
+    if (!geo_pool.empty())
+    {
+        for (auto &c : geo_pool)
+        {
+            if (_displaying)
+            {
+                c->Draw(renderer, origin_s, grid_size, 1);
+            }
+            else
+            {
+                c->Draw(renderer, origin_s, grid_size, 0);
+            }
+        }
+    }
+}
+void CurveNode::ProcessData()
+{
+    //lock mutex here
+    std::lock_guard<std::mutex> glock(_mutex);
+    geo_pool.clear();
+
+    //needing both inputs connected
+    if (_inputs[0]->IsConnected())
+    {
+        std::vector<std::shared_ptr<GeoData>> data = _inputs[0]->GetTargetParent()->GetOutputData();
+        std::vector<std::shared_ptr<Point3D>> pts;
+        if (data.size() > 1)
+        {
+            for (size_t i = 0; i < data.size(); i++)
+            {
+                if (std::shared_ptr<Point3D> p1 = std::dynamic_pointer_cast<Point3D>(data[i]))
+                {
+                    pts.push_back(p1);
+                }
+                else
+                {
+                    _inputs[0]->Disconnect();
+                    break;
+                }
+            }
+            geo_pool.emplace_back(std::make_shared<Curve>(pts, 3));
+        }
+    }
+}
+std::vector<std::shared_ptr<GeoData>> CurveNode::GetOutputData()
+{
+    std::vector<std::shared_ptr<GeoData>> data;
+    for (auto l : geo_pool)
+    {
+        data.push_back(std::dynamic_pointer_cast<GeoData>(l));
+    }
+    return data;
 }

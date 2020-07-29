@@ -192,4 +192,172 @@ void Point3D::SetLocation(double x, double y, double z)
 
 //_________________________________________________ 1
 //Line Constructor
-Line::Line(std::shared_ptr<Point3D> a, std::shared_ptr<Point3D> b) : A(a), B(b){}
+Line::Line(double &&x1, double &&y1, double &&x2, double &&y2) : _x1(x1),
+                                                                 _y1(y1),
+                                                                 _z1(0.0),
+                                                                 _x2(x2),
+                                                                 _y2(y2),
+                                                                 _z2(0.0)
+{
+}
+
+Line::Line(const double &x1, const double &y1, const double &x2, const double &y2) : _x1(x1),
+                                                                                     _y1(y1),
+                                                                                     _z1(0.0),
+                                                                                     _x2(x2),
+                                                                                     _y2(y2),
+                                                                                     _z2(0.0)
+{
+}
+
+//copy constructor(deep copies)
+Line::Line(const Line &line) : _x1(line._x1),
+                               _y1(line._y1),
+                               _z1(line._z1),
+                               _x2(line._x2),
+                               _y2(line._y2),
+                               _z2(line._z2)
+{
+}
+//assignment copy operator(deep copies)
+Line &Line::operator=(const Line &line) 
+{
+    if (this == &line)
+    {
+        return *this;
+    }
+    else
+    {
+        this->_x1 = line._x1;
+        this->_y1 = line._y1;
+        this->_z1 = line._z1;
+        _color = line._color;
+        return *this;
+    }
+}
+
+//move constructor(deep copies)
+Line::Line(Line &&line) : _x1(line._x1),
+                          _y1(line._y1),
+                          _z1(line._z1),
+                          _x2(line._x2),
+                          _y2(line._y2),
+                          _z2(line._z2)
+{
+}
+//move assignment copy operator(deep copies)
+Line &Line::operator=(Line &&line) 
+{
+    if (this == &line)
+    {
+        return *this;
+    }
+    else
+    {
+        this->_x1 = line._x1;
+        this->_y1 = line._y1;
+        this->_z1 = line._z1;
+        _color = line._color;
+        return *this;
+    }
+}
+
+
+
+//_________________________________________________ 2
+//Line Drawer
+void Line::Draw(SDL_Renderer *renderer, Point2D<int> origin, int gridscale, int mode)
+{
+    if (mode == 1)
+    {
+        SDL_SetRenderDrawColor(renderer, _color.r, _color.g, _color.b, _color.a);
+    }
+    else
+    {
+        SDL_SetRenderDrawColor(renderer, selection_color_grayscale, selection_color_grayscale, selection_color_grayscale, _color.a);
+    }
+
+    int x1 = ScreenTransformX(_x1, origin, gridscale);
+    int y1 = ScreenTransformY(_y1, origin, gridscale);
+    int x2 = ScreenTransformX(_x2, origin, gridscale);
+    int y2 = ScreenTransformY(_y2, origin, gridscale);
+
+    SDL_RenderDrawLine(renderer, x1, y1, x2, y2);
+}
+
+//_________________________________________________ 1
+//Curve Constructor
+Curve::Curve(std::vector<std::shared_ptr<Point3D>>& points, int degree) : _points(points)
+{
+    if(degree < 3)
+    {
+        _degree = 1;
+    }else
+    {
+        _degree = 3;
+    }
+}
+
+void Curve::Draw(SDL_Renderer *renderer, Point2D<int> origin, int gridscale, int mode)
+{
+    if (mode == 1)
+    {
+        SDL_SetRenderDrawColor(renderer, _color.r, _color.g, _color.b, _color.a);
+    }
+    else
+    {
+        SDL_SetRenderDrawColor(renderer, selection_color_grayscale, selection_color_grayscale, selection_color_grayscale, _color.a);
+    }
+
+    std::vector<Point2D<double>> tempList;
+    for (auto &p : _points)
+    {
+        double x = (double)ScreenTransformX(p->GetLocation().x, origin, gridscale);
+        double y = (double)ScreenTransformY(p->GetLocation().y, origin, gridscale);
+        tempList.emplace_back(Point2D<double>(x, y));
+    }
+
+    if (_degree == 3)
+    {
+        for (size_t j = 0; j < 3; ++j)
+        {
+            std::vector<Point2D<double>> tempList2;
+            for (size_t i = 0; i < tempList.size() - 2; i++)
+            {
+                if (i == 0)
+                {
+                    Point2D<double> be1 = tempList.front();
+                    tempList2.emplace_back(std::move(be1));
+                }
+
+                Point2D<double> oneQ;
+                oneQ.x = ((((double)tempList[i].x) * 0.5f) + (((double)tempList[i + 1].x) * 0.5f));
+                oneQ.y = ((((double)tempList[i].y) * 0.5f) + (((double)tempList[i + 1].y) * 0.5f));
+
+                tempList2.emplace_back(std::move(oneQ));
+                Point2D<double> threeQ;
+                threeQ.x = (((double)tempList[i].x) * 0.125f + ((double)tempList[i + 1].x) * 0.75f + ((double)tempList[i + 2].x) * 0.125f);
+                threeQ.y = (((double)tempList[i].y) * 0.125f + ((double)tempList[i + 1].y) * 0.75f + ((double)tempList[i + 2].y) * 0.125f);
+
+                tempList2.emplace_back(std::move(threeQ));
+                Point2D<double> fQ;
+                fQ.x = ((((double)tempList[i + 1].x) * 0.5f) + (((double)tempList[i + 2].x) * 0.5f));
+                fQ.y = ((((double)tempList[i + 1].y) * 0.5f) + (((double)tempList[i + 2].y) * 0.5f));
+                tempList2.emplace_back(std::move(fQ));
+
+                if (i == tempList.size() - 3)
+                {
+                    Point2D<double> be2 = tempList.back();
+                    tempList2.emplace_back(std::move(be2));
+                }
+            }
+            tempList = tempList2;
+        }
+    }
+
+    for (size_t i = 0; i < tempList.size() - 1; ++i)
+    {
+        //Drawing the center curve
+        SDL_RenderDrawLine(renderer, tempList[i].x, tempList[i].y, tempList[i + 1].x, tempList[i + 1].y);
+    }
+}

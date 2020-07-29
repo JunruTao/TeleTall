@@ -4,7 +4,7 @@
 #include <string>
 #include "node/telenode.h"
 
-#define VERSION "v0.2.2"
+#define VERSION "v0.2.4"
 #define WINDOW_NAME "TeleTall - Beta - "
 
 //[CONSTRUCTOR]-------------------------------------------------------------------------------------
@@ -312,10 +312,19 @@ void TeleTall::ConstructMenu()
     subm_View->AddCommand(viewtab_cmds);
 
 
-    NameList node_title = {"Point Node", "Merge Node"};
+    NameList node_title = {
+        "Point Node", 
+        "Merge Node",
+        "Line Node",
+        "Polyline Node",
+        "Curve Node"
+        };
     __KeyList__ node_cmds = {
         cmd_KEY::cmd_CREATE_NODE_Point_M,
-        cmd_KEY::cmd_CREATE_NODE_Merge_M
+        cmd_KEY::cmd_CREATE_NODE_Merge_M,
+        cmd_KEY::cmd_CREATE_NODE_Line_M,
+        cmd_KEY::cmd_CREATE_NODE_Polyline_M,
+        cmd_KEY::cmd_CREATE_NODE_Curve_M
     };
     ColumnMenu *subm_Nodes = new ColumnMenu(node_title, 200);
     subm_Nodes->AddCommand(node_cmds);

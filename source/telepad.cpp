@@ -486,6 +486,49 @@ void Telepad::CreateNode(Telecontroller& controller, int x, int y)
             node_pool.emplace_back(std::make_shared<MergeNode>(loc, origin, 1.0));
         }
     }
+    else if (controller.GetCommand() == cmd_KEY::cmd_CREATE_NODE_Line_M)
+    {
+        if (node_pool.empty())
+        {
+            loc.x = controller.GetPadRect()->x + (controller.GetPadRect()->w / 2) - origin.x;
+            loc.y = controller.GetPadRect()->y + (controller.GetPadRect()->h / 2) - origin.y;
+            node_pool.emplace_back(std::make_shared<LineNode>(loc, origin, 1.0));
+        }
+        else
+        {
+            loc.x = node_pool[node_pool.size() - 1]->GetLocation().x + 50;
+            loc.y = node_pool[node_pool.size() - 1]->GetLocation().y + 50;
+            node_pool.emplace_back(std::make_shared<LineNode>(loc, origin, 1.0));
+        }
+    }else if (controller.GetCommand() == cmd_KEY::cmd_CREATE_NODE_Polyline_M)
+    {
+        if (node_pool.empty())
+        {
+            loc.x = controller.GetPadRect()->x + (controller.GetPadRect()->w / 2) - origin.x;
+            loc.y = controller.GetPadRect()->y + (controller.GetPadRect()->h / 2) - origin.y;
+            node_pool.emplace_back(std::make_shared<PolylineNode>(loc, origin, 1.0));
+        }
+        else
+        {
+            loc.x = node_pool[node_pool.size() - 1]->GetLocation().x + 50;
+            loc.y = node_pool[node_pool.size() - 1]->GetLocation().y + 50;
+            node_pool.emplace_back(std::make_shared<PolylineNode>(loc, origin, 1.0));
+        }
+    }else if (controller.GetCommand() == cmd_KEY::cmd_CREATE_NODE_Curve_M)
+    {
+        if (node_pool.empty())
+        {
+            loc.x = controller.GetPadRect()->x + (controller.GetPadRect()->w / 2) - origin.x;
+            loc.y = controller.GetPadRect()->y + (controller.GetPadRect()->h / 2) - origin.y;
+            node_pool.emplace_back(std::make_shared<CurveNode>(loc, origin, 1.0));
+        }
+        else
+        {
+            loc.x = node_pool[node_pool.size() - 1]->GetLocation().x + 50;
+            loc.y = node_pool[node_pool.size() - 1]->GetLocation().y + 50;
+            node_pool.emplace_back(std::make_shared<CurveNode>(loc, origin, 1.0));
+        }
+    }
 }
 
 
@@ -839,6 +882,17 @@ void Telepad::ProcessNodesIO()
             std::vector<std::string>::iterator stringp;
             stringp = std::unique(process_names.begin(),process_names.begin() + process_names.size());
             process_names.resize(std::distance(process_names.begin(), stringp));
+            
+            for(size_t i = 0; i<process_names.size(); ++i)
+            {
+                for(size_t j = 0; j<process_names.size(); ++j)
+                {
+                    if (j != i && process_names[j] == process_names[i])
+                    {
+                        process_names.erase(process_names.begin()+j);
+                    }
+                }
+            }
 
             
             for(size_t i = 0; i<process_names.size(); i++)
@@ -848,7 +902,7 @@ void Telepad::ProcessNodesIO()
                     if (node->GetName() == process_names[i])
                     {
                         node->ProcessData();
-                        std::this_thread::sleep_for(std::chrono::milliseconds(2));
+                        std::this_thread::sleep_for(std::chrono::milliseconds(10));
                         break;
                     }
                 }

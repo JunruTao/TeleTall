@@ -186,7 +186,6 @@ static void DrawLineExtendToBound(
 }
 
 
-
 //inplemented in screen space
 class ScreenText
 {
